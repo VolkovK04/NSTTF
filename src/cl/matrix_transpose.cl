@@ -4,7 +4,7 @@ __kernel void matrix_transpose(__global float *input, __global float *output,
                                const unsigned int width,
                                const unsigned int height) {
 
-  __local float tile[BLOCK_DIM][BLOCK_DIM + 1];
+  __local float tile[BLOCK_DIM][BLOCK_DIM + 1]; // bank conflict avoiding
 
   int xIndex = get_global_id(0);
   int yIndex = get_global_id(1);
