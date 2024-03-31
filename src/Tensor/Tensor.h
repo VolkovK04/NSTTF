@@ -1,27 +1,24 @@
 #include <vector>
 #include <iostream>
 
-namespace NSTTF
-{
-    class AbstractDataPointer
-    {
-    public:
-        AbstractDataPointer() = default;
-        virtual ~AbstractDataPointer() = default;
-        virtual void *get() = 0;
-    };
+namespace NSTTF {
+class AbstractDataPointer {
+public:
+  AbstractDataPointer() = default;
+  virtual ~AbstractDataPointer() = default;
+  virtual void *get() = 0;
+};
 
-    class Tensor
-    {
-    private:
-        AbstractDataPointer *pointer = nullptr;
-        const std::vector<const size_t> shape;
+class Tensor {
+private:
+  AbstractDataPointer *pointer = nullptr;
+  const std::vector<const size_t> shape;
 
-    public:
-        Tensor() = default;
+public:
+  Tensor() = default;
 
-        Tensor(AbstractDataPointer *pointer);
+  Tensor(AbstractDataPointer *pointer);
 
-        ~Tensor() = default;
-    };
-}
+  ~Tensor() = default;
+};
+} // namespace NSTTF
