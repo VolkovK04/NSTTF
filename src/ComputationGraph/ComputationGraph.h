@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <vector>
+#include "node.h"
 
 namespace NSTTF
 {
