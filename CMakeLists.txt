@@ -16,12 +16,29 @@ else()
     message(WARNING "OpenMP not found!")
 endif()
 
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/src/cl_build_headers)
+
+convertIntoHeader(src/cl/sum.cl src/cl_build_headers/sum_cl.h sum_kernel)
+convertIntoHeader(src/cl/matrix_multiplication.cl src/cl_build_headers/matrix_multiplication_cl.h matrix_multiplication_kernel)
+convertIntoHeader(src/cl/matrix_transpose.cl src/cl_build_headers/matrix_transpose_cl.h matrix_transpose_kernel)
+convertIntoHeader(src/cl/subtraction.cl src/cl_build_headers/subtraction_cl.h subtraction_kernel)
+convertIntoHeader(src/cl/multiplication.cl src/cl_build_headers/multiplication_cl.h multiplication_kernel)
+
+add_executable(gpu_main src/main.cpp 
+                      src/cl_build_headers/sum_cl.h 
+                      src/cl_build_headers/matrix_multiplication_cl.h 
+                      src/cl_build_headers/matrix_transpose_cl.h 
+                      src/cl_build_headers/subtraction_cl.h 
+                      src/cl_build_headers/multiplication_cl.h)
+
+target_link_libraries(gpu_main libclew libgpu libutils)
+
 # convertIntoHeader CMake-функция объявлена в libs/gpu/CMakeLists.txt:71
 # Она считывает все байты из файла src/cl/aplusb.cl (т.е. весь исходный код кернела) и преобразует их в массив байтов в файле src/cl/aplusb_cl.h aplusb_kernel
 # Обратите внимание что это происходит на этапе компиляции, кроме того необходимо чтобы файл src/cl/aplusb_cl.h был перечислен среди исходников для компиляции при вызове add_executable
-convertIntoHeader(src/cl/aplusb.cl src/cl/aplusb_cl.h aplusb_kernel)
-add_executable(aplusb src/main_aplusb.cpp src/cl/aplusb_cl.h)
-target_link_libraries(aplusb libclew libgpu libutils)
+# convertIntoHeader(src/cl/aplusb.cl src/cl/aplusb_cl.h aplusb_kernel)
+# add_executable(aplusb src/main_aplusb.cpp src/cl/aplusb_cl.h)
+# target_link_libraries(aplusb libclew libgpu libutils)
 
 # convertIntoHeader(src/cl/matrix_transpose.cl src/cl/matrix_transpose_cl.h matrix_transpose)
 # add_executable(matrix_transpose src/main_matrix_transpose.cpp src/cl/matrix_transpose_cl.h)
