@@ -1,7 +1,6 @@
 #pragma once
 #include <map>
 #include <string>
-#include "../operations/abstractOperation.h"
 
 namespace NSTTF
 {
