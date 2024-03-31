@@ -1,14 +1,11 @@
 #pragma once
 
-namespace NSTTF
-{
+namespace NSTTF {
 
-    class AbstractOperation
-    {
-    public:
-        AbstractOperation() = default;
-        virtual ~AbstractOperation() = default;
-        virtual void execute() = 0;
-    };
+class AbstractOperation {
+public:
+  AbstractOperation() = default;
+  virtual ~AbstractOperation() = default;
+};
 
-}
+} // namespace NSTTF
