@@ -1,43 +1,52 @@
-# NSTTF
-Not So Tiny Tensor Flow
+# NSTTF Plan
 
-## Plan
+## 1) API structure (methods, components etc.) development
+- Develop our library's API structure based on your goals and scope.
+- Define the classes and functions that will be available to users of our library.
+(_approximately by 11.03.24 as part of the second milestone_)
 
-1. **Defining Goals and Scope**:
-   - Study existing libraries and determine what tasks they solve.
-   - Formulate the goals of our library: what problems it should solve, what features it should provide.
+## 2) Implementation of basic data structures (Writing Tensor and connected with it classes)
+- Create classes to represent graph nodes, operations, connections between nodes, etc.
+- Define basic methods for working with these data structures, such as adding and removing nodes, performing operations, etc.
 
-2. **Designing the API**:
-   - Design the library's interface, defining classes and functions that will be included in the API.
-   - Pay special attention to usability and intuitive understanding of the interface.
+## 3) Implementation of tree evaluation, based on structures above
 
-3. **Implementing Basic Data Structures**:
-   - Start by creating basic data structures for representing the computational graph: classes for nodes, operations, connections between nodes, etc.
-   - Implement basic methods for managing these data structures.
+## 4) Implementation of specific optimizations and resource distributions for tree evaluation
+- Develop algorithms to optimize and perform operations on a computational graph.
+- Implement methods to allocate resources and control the execution of operations on various devices (e.g. CPU, GPU).
+(_work starts after the second milestone. Probably we have time and some kind of prototype will be prepared_)
 
-4. **Implementation of Operation Execution**:
-   - Develop algorithms for optimizing and executing operations in the graph.
-   - Implement methods for resource allocation and operation execution on different devices.
+## 5) Cover logic with tests for implemented above (during the whole development)
+(_this point is the one the others is going to be tested on_)
 
-5. **Testing**:
-   - Write tests for all components of our library to ensure their correct operation.
-   - Ensure full code coverage with tests to minimize the likelihood of errors.
+---
 
-6. **Documentation**:
-   - Create detailed documentation describing each class and function of our library.
-   - Explain the main concepts and methods of working with the library so that users can easily understand how to use it.
+### What will be ready by the second milestone in brief (all details are mentioned above):
+(_Criterias for each milestone_)
 
-7. **Integration and Demonstration**:
-   - Integrate our library into simple examples or small projects to demonstrate its capabilities.
-   - Prepare a presentation or demonstration video showing how to use our library to solve various tasks.
+## Second milestone (01.04.24):
+1. API structure
+2. Prototype of basic data structures with tests
+   - Tensors
+   - Operations
+   - Dependencies and connections
+   - Prototype of data distribution
+   - Tests (sum, sub, mult, conc)
+3. Prototype of evaluation tree with tests
+   - Building evaluation trees on given equations (just prototype based on API)
 
-8. **Report**:
-   - Write a report on the work done, describing all stages of development, problems encountered, and ways to solve them.
-   - Provide code samples and test results.
+## Third milestone (29.04.24):
+1. Extended eval tree:
+   - Building derivative equation based on tree
+   - Tests (creation, building and evaluation)
+2. GPU optimizations prototype development
+   - Parallel evaluation of tensors with OpenCL 
+   - Lazy evaluation and improving data distribution 
+   - All-reduce
+   - Tests (data distribution based on GPU)
 
-9. **Defense of the Coursework**:
-   - Prepare for the defense of our coursework before teachers or experts, preparing a presentation and answers to questions.
-
-10. **Further Development**:
-    - Continue to develop our library, taking into account user feedback and adding new features and capabilities.
-    - Maintain active communication with the community and provide updates and bug fixes.
+## Fourth milestone (27.05.24):
+1. Polishing base structure
+2. Adding more logic with test coverage if needed
+3. Implementation of basic layers for training
+   _GOAL: Training if a simple NN should work_
