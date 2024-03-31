@@ -1,5 +1,5 @@
 #include "Tensor.h"
 
-Tensor::Tensor(AbstractPointer *pointer) : pointer(pointer)
+Tensor::Tensor(AbstractDataPointer *pointer) : pointer(pointer)
 {
 }

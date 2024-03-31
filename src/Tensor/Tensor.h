@@ -1,10 +1,10 @@
+#include <vector>
 
-
-class AbstractPointer
+class AbstractDataPointer
 {
 public:
-    AbstractPointer() = default;
-    virtual ~AbstractPointer() = default;
+    AbstractDataPointer() = default;
+    virtual ~AbstractDataPointer() = default;
     virtual void* get() = 0;
 };
 
@@ -13,13 +13,13 @@ public:
 class Tensor
 {
 private:
-    AbstractPointer* pointer = nullptr;
-    
+    AbstractDataPointer* pointer = nullptr;
+    const std::vector<const size_t> shape;
 
 public:
     Tensor() = default;
 
-    Tensor(AbstractPointer* pointer);
+    Tensor(AbstractDataPointer* pointer);
 
     ~Tensor() = default;
 };
