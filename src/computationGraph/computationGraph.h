@@ -14,7 +14,7 @@ class ComputationGraph {
     void getAllNextNodes(AbstractNode *node,
                          std::unordered_set<AbstractNode *> &output) const;
 
-    std::unordered_set<AbstractNode *> ComputationGraph::getAllNodes() const;
+    std::unordered_set<AbstractNode *> getAllNodes() const;
 
   public:
     ComputationGraph() = default;

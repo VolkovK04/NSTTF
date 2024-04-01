@@ -31,14 +31,28 @@ convertIntoHeader(src/cl/matrix_transpose.cl src/cl_build_headers/matrix_transpo
 convertIntoHeader(src/cl/subtraction.cl src/cl_build_headers/subtraction_cl.h subtraction_kernel)
 convertIntoHeader(src/cl/multiplication.cl src/cl_build_headers/multiplication_cl.h multiplication_kernel)
 
-add_executable(gpu_main src/main.cpp 
-                      src/cl_build_headers/sum_cl.h 
-                      src/cl_build_headers/matrix_multiplication_cl.h 
-                      src/cl_build_headers/matrix_transpose_cl.h 
-                      src/cl_build_headers/subtraction_cl.h 
-                      src/cl_build_headers/multiplication_cl.h)
+add_executable(gpu_main src/main.cpp)
+                    #   src/cl_build_headers/sum_cl.h 
+                    #   src/cl_build_headers/matrix_multiplication_cl.h 
+                    #   src/cl_build_headers/matrix_transpose_cl.h 
+                    #   src/cl_build_headers/subtraction_cl.h 
+                    #   src/cl_build_headers/multiplication_cl.h)
 
 target_link_libraries(gpu_main libclew libgpu libutils)
+
+include_directories(
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/cl_build_headers/
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/compputationGraph/
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/operations/
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/tensor/
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/utils/
+        # ${CMAKE_CURRENT_SOURCE_DIR}/src
+)
+
+
+
+
+
 
 # convertIntoHeader CMake-функция объявлена в libs/gpu/CMakeLists.txt:71
 # Она считывает все байты из файла src/cl/aplusb.cl (т.е. весь исходный код кернела) и преобразует их в массив байтов в файле src/cl/aplusb_cl.h aplusb_kernel
