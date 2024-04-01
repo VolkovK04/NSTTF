@@ -30,6 +30,10 @@ const std::vector<InputNode *> ComputationGraph::getInputNodes() const {
   return input;
 }
 
+const std::vector<AbstractNode *> ComputationGraph::getOutputNodes() const {
+  return output;
+}
+
 void ComputationGraph::getAllNextNodes(
     AbstractNode *node, std::unordered_set<AbstractNode *> &output) const {
   if (output.find(node) == output.end()) {
