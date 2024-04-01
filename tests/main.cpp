@@ -97,9 +97,9 @@ TEST_F(OpenCLTestFixture, multiplication_test) {
 
 TEST_F(OpenCLTestFixture, sum_test) {
   unsigned int n = 50 * 1000 * 1000;
-  as.resize(n);
-  bs.resize(n);
-  cs.resize(n);
+  as.resize(n, 0);
+  bs.resize(n, 0);
+  cs.resize(n, 0);
 
   FastRandom r(n);
   for (unsigned int i = 0; i < n; ++i) {
@@ -118,7 +118,7 @@ TEST_F(OpenCLTestFixture, sum_test) {
   sum.compile();
 
   unsigned int workGroupSize = 128;
-  unsigned int global_work_size =
+  unsigned int global_work_size =\
       (n + workGroupSize - 1) / workGroupSize * workGroupSize;
   sum.exec(gpu::WorkSize(workGroupSize, global_work_size), as_gpu, bs_gpu,
            cs_gpu, n);
@@ -133,9 +133,9 @@ TEST_F(OpenCLTestFixture, sum_test) {
 
 TEST_F(OpenCLTestFixture, subtraction_test) {
   unsigned int n = 50 * 1000 * 1000;
-  as.resize(n);
-  bs.resize(n);
-  cs.resize(n);
+  as.resize(n, 0);
+  bs.resize(n, 0);
+  cs.resize(n, 0);
 
   FastRandom r(n);
   for (unsigned int i = 0; i < n; ++i) {
