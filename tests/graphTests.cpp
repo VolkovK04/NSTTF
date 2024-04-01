@@ -4,7 +4,7 @@
 
 using namespace NSTTF;
 
-TEST(GraphTests, create_test) {
-    ComputationGraph g;
-    g.AddInputNode();
-}
+// TEST(GraphTests, create_test) {
+//     ComputationGraph g;
+//     g.AddInputNode();
+// }

@@ -1,4 +1,5 @@
-#include "../tensor/tensor.h"
+#include "functions.h"
+
 
 #include <libutils/misc.h>
 
