@@ -20,12 +20,13 @@
 namespace NSTTF {
 class GraphExecutor {
   private:
-    static const std::map<std::string, ocl::Kernel> funcMap;
     std::vector<Instruction> instructions;
 
   public:
     GraphExecutor(std::vector<Instruction> instructions)
         : instructions(instructions) {}
+
+    
 
     void init();
     void execute(std::map<std::string, Tensor> &tensorsMap);

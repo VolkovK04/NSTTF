@@ -8,17 +8,17 @@ namespace NSTTF {
 class Instruction {
   private:
     std::string name;
-    std::vector<std::string> input;
-    std::vector<std::string> output;
+    std::vector<const std::string> input;
+    std::vector<const std::string> output;
 
   public:
     std::string getName();
-    std::vector<std::string> getInputs();
-    std::vector<std::string> getOutputs();
+    std::vector<const std::string> getInputs();
+    std::vector<const std::string> getOutputs();
 
-    Instruction(std::string &name,
-                std::vector<std::string> &input,
-                std::vector<std::string> &output)
+    Instruction(const std::string &name,
+                const std::vector<const std::string> &input,
+                const std::vector<const std::string> &output)
         : name(name), output(output), input(input) {}
     ~Instruction() = default;
 };

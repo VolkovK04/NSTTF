@@ -1,12 +1,6 @@
 #pragma once
-#include "../operations/abstractOperation.h"
-#include <map>
-#include <string>
+#include <vector>
 
 namespace NSTTF {
-namespace utils {
-std::map<const std::string, const AbstractOperation *> operationNameMap = {
-    // TODO: Add more operations
-};
-} // namespace utils
+size_t getSize(const std::vector<size_t>& shape);
 } // namespace NSTTF

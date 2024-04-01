@@ -4,10 +4,15 @@
 namespace NSTTF {
 
 class AbstractOperation {
-public:
-  std::string name; // TODO
-  AbstractOperation() = default;
-  virtual ~AbstractOperation() = default;
+
+  private:
+    std::string name;
+
+  public:
+    const std::string getName();
+
+    AbstractOperation() = default;
+    virtual ~AbstractOperation() = default;
 };
 
 } // namespace NSTTF

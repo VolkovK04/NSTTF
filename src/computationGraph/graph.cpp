@@ -10,7 +10,7 @@ InputNode &ComputationGraph::AddInputNode() {
 }
 
 OperationNode &
-ComputationGraph::AddOperationNode(const AbstractOperation operation,
+ComputationGraph::AddOperationNode(const AbstractOperation& operation,
                                    const std::vector<AbstractNode *> &nodes,
                                    const std::string& name,
                                    bool output = false) {
