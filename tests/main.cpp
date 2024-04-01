@@ -1,6 +1,13 @@
 #include <CL/cl.h>
 #include "gtest/gtest.h"
 
+#include "../src/cl_build_headers/sum_cl.h"
+#include "../src/cl_build_headers/matrix_transpose_cl.h"
+#include "../src/cl_build_headers/subtraction_cl.h"
+#include "../src/cl_build_headers/multiplication_cl.h"
+#include "../src/cl_build_headers/matrix_multiplication_cl.h"
+
+
 class OpenCLTestFixture : public ::testing::Test {
 protected:
     cl_context context;

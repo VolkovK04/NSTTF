@@ -19,6 +19,8 @@ FetchContent_MakeAvailable(googletest)
 find_package(GTest)
 
 add_executable(${BINARY} ${TEST_SOURCES})
+# add_executable(${BINARY} ${TEST_SOURCES}
+target_include_directories(${BINARY} PUBLIC ${PROJECT_SOURCE_DIR}/../src)
 
 gtest_add_tests(TARGET ${BINARY})
 
