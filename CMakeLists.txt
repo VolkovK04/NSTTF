@@ -41,12 +41,12 @@ add_executable(gpu_main src/main.cpp)
 target_link_libraries(gpu_main libclew libgpu libutils)
 
 include_directories(
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/cl_build_headers/
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/compputationGraph/
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/operations/
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/tensor/
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/utils/
-        # ${CMAKE_CURRENT_SOURCE_DIR}/src
+        # ${CMAKE_CURRENT_SOURCE_DIR}/src/cl_build_headers/
+        # ${CMAKE_CURRENT_SOURCE_DIR}/src/compputationGraph/
+        # ${CMAKE_CURRENT_SOURCE_DIR}/src/operations/
+        # ${CMAKE_CURRENT_SOURCE_DIR}/src/tensor/
+        # ${CMAKE_CURRENT_SOURCE_DIR}/src/utils/
+        ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
 
