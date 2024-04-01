@@ -188,19 +188,15 @@ TEST_F(OpenCLTestFixture, matrix_multiplication_updated_test) {
     bs[i] = r.nextf();
   }
 
-  {
-    timer t;
-    for (int iter = 0; iter < benchmarkingIters; ++iter) {
-      for (int j = 0; j < M; ++j) {
-        for (int i = 0; i < N; ++i) {
-          float sum = 0.0f;
-          for (int k = 0; k < K; ++k) {
-            sum += as.data()[j * K + k] * bs.data()[k * N + i];
-          }
-          cs.data()[j * N + i] = sum;
+  for (int iter = 0; iter < benchmarkingIters; ++iter) {
+    for (int j = 0; j < M; ++j) {
+      for (int i = 0; i < N; ++i) {
+        float sum = 0.0f;
+        for (int k = 0; k < K; ++k) {
+          sum += as.data()[j * K + k] * bs.data()[k * N + i];
         }
+        cs.data()[j * N + i] = sum;
       }
-      t.nextLap();
     }
   }
 
@@ -219,25 +215,20 @@ TEST_F(OpenCLTestFixture, matrix_multiplication_updated_test) {
                                     "matrix_multiplication_updated");
   matrix_multiplication.compile();
 
-  {
-    timer t;
-    for (int iter = 0; iter < benchmarkingIters; ++iter) {
-      unsigned int x_work_group_size = 16;
-      unsigned int y_work_group_size = 4;
-      unsigned int x_work_size =
-          (M + x_work_group_size - 1) / x_work_group_size * x_work_group_size;
-      unsigned int y_work_size =
-          (N + y_work_group_size - 1) / y_work_group_size * y_work_group_size;
-      // почему работает так?
+  for (int iter = 0; iter < benchmarkingIters; ++iter) {
+    unsigned int x_work_group_size = 16;
+    unsigned int y_work_group_size = 4;
+    unsigned int x_work_size =
+        (M + x_work_group_size - 1) / x_work_group_size * x_work_group_size;
+    unsigned int y_work_size =
+        (N + y_work_group_size - 1) / y_work_group_size * y_work_group_size;
+    // почему работает так?
 
-      y_work_size /= THREAD_WORK;
-      matrix_multiplication.exec(gpu::WorkSize(x_work_group_size,
-                                               y_work_group_size, x_work_size,
-                                               y_work_size),
-                                 as_gpu, bs_gpu, cs_gpu, M, K, N);
-
-      t.nextLap();
-    }
+    y_work_size /= THREAD_WORK;
+    matrix_multiplication.exec(gpu::WorkSize(x_work_group_size,
+                                             y_work_group_size, x_work_size,
+                                             y_work_size),
+                               as_gpu, bs_gpu, cs_gpu, M, K, N);
   }
   cs.resize(M * N);
   cs_gpu.readN(cs.data(), M * N);
@@ -280,22 +271,18 @@ TEST_F(OpenCLTestFixture, matrix_transposition_test) {
                                       "matrix_transpose");
   matrix_transpose_kernel.compile();
 
-  {
-    timer t;
-    for (int iter = 0; iter < benchmarkingIters; ++iter) {
-      unsigned int x_work_group_size = 16;
-      unsigned int y_work_group_size = 16; // не ставить другое значение
-      unsigned int x_work_size =
-          (M + x_work_group_size - 1) / x_work_group_size * x_work_group_size;
-      unsigned int y_work_size =
-          (K + y_work_group_size - 1) / y_work_group_size * y_work_group_size;
+  for (int iter = 0; iter < benchmarkingIters; ++iter) {
+    unsigned int x_work_group_size = 16;
+    unsigned int y_work_group_size = 16; // не ставить другое значение
+    unsigned int x_work_size =
+        (M + x_work_group_size - 1) / x_work_group_size * x_work_group_size;
+    unsigned int y_work_size =
+        (K + y_work_group_size - 1) / y_work_group_size * y_work_group_size;
 
-      matrix_transpose_kernel.exec(gpu::WorkSize(x_work_group_size,
-                                                 y_work_group_size, x_work_size,
-                                                 y_work_size),
-                                   as_gpu, bs_gpu, M, K);
-      t.nextLap();
-    }
+    matrix_transpose_kernel.exec(gpu::WorkSize(x_work_group_size,
+                                               y_work_group_size, x_work_size,
+                                               y_work_size),
+                                 as_gpu, bs_gpu, M, K);
   }
 
   bs_gpu.readN(bs.data(), M * K);
