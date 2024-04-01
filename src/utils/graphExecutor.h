@@ -6,7 +6,6 @@
 #include <libutils/misc.h>
 #include <libutils/timer.h>
 
-
 #include "../tensor/tensor.h"
 #include "instruction.h"
 #include <map>

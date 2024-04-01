@@ -8,10 +8,10 @@ add_subdirectory(tests)
 
 
 set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
 
-add_compile_definitions(_DISABLE_VECTOR_ANNOTATION)
-add_compile_definitions(_DISABLE_STRING_ANNOTATION)
+# add_compile_definitions(_DISABLE_VECTOR_ANNOTATION)
+# add_compile_definitions(_DISABLE_STRING_ANNOTATION)
 
 # OpenMP позволит распараллеливать циклы на все ядра процессора простыми директивами
 
