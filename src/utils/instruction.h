@@ -5,17 +5,21 @@
 #include <vector>
 
 namespace NSTTF {
-class instruction {
+class Instruction {
   private:
     const std::string name;
     const std::vector<const std::string> input;
     const std::vector<const std::string> output;
 
   public:
-    instruction(const std::string &name,
+    std::string getName();
+    std::vector<const std::string> getInputs();
+    std::vector<const std::string> getOutputs();
+
+    Instruction(const std::string &name,
                 const std::vector<const std::string> &input,
                 const std::vector<const std::string> &output)
         : name(name), output(output), input(input) {}
-    ~instruction() = default;
+    ~Instruction() = default;
 };
 } // namespace NSTTF

@@ -12,6 +12,7 @@ InputNode &ComputationGraph::AddInputNode() {
 OperationNode &
 ComputationGraph::AddOperationNode(const AbstractOperation operation,
                                    const std::vector<AbstractNode *> &nodes,
+                                   const std::string& name,
                                    bool output = false) {
   OperationNode *node = new OperationNode();
   node->prevs = nodes;

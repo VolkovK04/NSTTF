@@ -1,4 +1,5 @@
 #pragma once
+
 #include "node.h"
 #include <iostream>
 #include <unordered_set>
@@ -26,6 +27,7 @@ class ComputationGraph {
     InputNode &AddInputNode();
     OperationNode &AddOperationNode(const AbstractOperation operation,
                                     const std::vector<AbstractNode *> &nodes,
+                                    const std::string& name,
                                     bool output);
 };
 } // namespace NSTTF
