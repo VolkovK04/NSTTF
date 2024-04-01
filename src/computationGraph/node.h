@@ -1,12 +1,20 @@
 #pragma once
 #include "../operations/abstractOperation.h"
+#include "computationGraph.h"
 #include <vector>
 
+
 namespace NSTTF {
+
+class ComputationGraph;
+
 class AbstractNode {
+  friend class ComputationGraph;
+
 protected:
   std::vector<AbstractNode *> prevs;
   std::vector<AbstractNode *> nexts;
+  bool output = false;
 
 public:
   AbstractNode() = default;
@@ -14,13 +22,17 @@ public:
   virtual ~AbstractNode() = default;
 };
 
-class Node : public AbstractNode {
+class OperationNode : public AbstractNode {
+  friend class ComputationGraph;
+
 private:
-  AbstractOperation *operation;
+  AbstractOperation operation;
 
 public:
-  Node() = default;
-  ~Node() = default;
+  OperationNode() = default;
+  OperationNode(const AbstractOperation operation,
+                const std::vector<AbstractNode *> &nodes);
+  ~OperationNode() = default;
 };
 
 class InputNode : public AbstractNode {
@@ -28,11 +40,6 @@ class InputNode : public AbstractNode {
 public:
   InputNode() = default;
   ~InputNode() = default;
-};
-
-class OutputNode : public AbstractNode {
-public:
-  ~OutputNode() = default;
 };
 
 } // namespace NSTTF
