@@ -9,10 +9,12 @@ namespace NSTTF
     class Compiler 
     {
         private: 
-        void compute(AbstractNode node);
+        void get_instruction(AbstractNode* node, std::vector<AbstractNode *> result);
         
 
         public:
+        std::vector<AbstractNode *> get_all_instructions();
+
         GraphExecutor compile(const ComputationGraph& graph);
     };
 };

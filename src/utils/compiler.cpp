@@ -3,28 +3,43 @@
 #include <vector>
 #include "../computationGraph/node.h"
 
-
-namespace NSTTF 
+namespace NSTTF
 {
-    class Compiler 
+    class Compiler
     {
-        GraphExecutor compile(const ComputationGraph& graph)
+        std::unordered_set<AbstractNode *> computed;
+        std::vector<InputNode *> inputs;
+
+        GraphExecutor compile(const ComputationGraph &graph)
         {
+            
+            inputs = graph.getInputNodes();
+            std::vector<AbstractNode *> instructions = get_all_instructions();
 
-            std::unordered_set<AbstractNode *> computed;
-            for (AbstractNode* input : graph.getInputNodes()) 
-            {
-                computed.insert(input);
-            }
-            for (AbstractNode* output : graph.getOutputNodes()) 
-            {
-                auto previousNodes = output->getPreviousNodes();
-                for (auto prevNode : previousNodes) 
-                {
 
-                }
-            }
             return GraphExecutor();
         }
+        void get_instruction(AbstractNode *node, std::vector<AbstractNode *> result)
+        {
+            if (computed.count(node))
+            {
+                return;
+            }
+
+            result.push_back(new );
+            computed.insert(node);
+        }
+
+        std::vector<AbstractNode *> get_all_instructions()
+        {
+            std::vector<AbstractNode *> result;
+
+            for (AbstractNode * inp : inputs){
+                get_instruction(inp, result);
+            }
+
+            return result;
+        } 
     };
+
 }
