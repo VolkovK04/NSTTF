@@ -36,6 +36,7 @@ void GraphExecutor::execute(std::map<std::string, Tensor> &tensorsMap) {
             // }
             tensors.push_back(tensorsMap[input]);
         }
+        funcMap[instruction.getName()](tensors);
     }
 }
 } // namespace NSTTF
