@@ -29,12 +29,12 @@ protected:
 
     std::vector<gpu::Device> devices = gpu::enumDevices();
 
-    if (devices.size() <= 1) {
-      std::cerr << "No GPU found" << std::endl;
-      throw std::runtime_error("No GPU found");
-    }
+    // if (devices.size() <= 1) {
+    //   std::cerr << "No GPU found" << std::endl;
+    //   throw std::runtime_error("No GPU found");
+    // }
 
-    device = devices[1];
+    device = devices[0];
 
     context.init(device.device_id_opencl);
     context.activate();
@@ -269,10 +269,10 @@ TEST_F(OpenCLTestFixture, matrix_transposition_test) {
 
   as_gpu.writeN(as.data(), M * K);
 
-  ocl::Kernel matrix_transpose_kernel(matrix_transpose_kernel,
+  ocl::Kernel matrix_transpose(matrix_transpose_kernel,
                                       matrix_transpose_kernel_length,
                                       "matrix_transpose");
-  matrix_transpose_kernel.compile();
+  matrix_transpose.compile();
 
   for (int iter = 0; iter < benchmarkingIters; ++iter) {
     unsigned int x_work_group_size = 16;
@@ -282,7 +282,7 @@ TEST_F(OpenCLTestFixture, matrix_transposition_test) {
     unsigned int y_work_size =
         (K + y_work_group_size - 1) / y_work_group_size * y_work_group_size;
 
-    matrix_transpose_kernel.exec(gpu::WorkSize(x_work_group_size,
+    matrix_transpose.exec(gpu::WorkSize(x_work_group_size,
                                                y_work_group_size, x_work_size,
                                                y_work_size),
                                  as_gpu, bs_gpu, M, K);

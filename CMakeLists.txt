@@ -19,7 +19,7 @@ else()
     message(WARNING "OpenMP not found!")
 endif()
 
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/src/cl_build_headers)
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/cl_build_headers)
 
 convertIntoHeader(src/cl/sum.cl src/cl_build_headers/sum_cl.h sum_kernel)
 convertIntoHeader(src/cl/matrix_multiplication.cl src/cl_build_headers/matrix_multiplication_cl.h matrix_multiplication_kernel)
