@@ -24,7 +24,7 @@ class ComputationGraph {
 
     const std::vector<AbstractNode *> getOutputNodes() const;
 
-    InputNode &ComputationGraph::AddInputNode(const std::string& name);
+    InputNode &AddInputNode(const std::string& name);
     OperationNode &AddOperationNode(const AbstractOperation& operation,
                                     const std::vector<AbstractNode *> &nodes,
                                     const std::string& name,
