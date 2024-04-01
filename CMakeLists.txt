@@ -1,10 +1,13 @@
 cmake_minimum_required(VERSION 3.21)
+project(gpu)
+
+enable_testing()
 
 add_subdirectory(libs)
+add_subdirectory(tests)
 
-project(task4)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 20)
 
 # OpenMP позволит распараллеливать циклы на все ядра процессора простыми директивами
 
