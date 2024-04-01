@@ -34,7 +34,8 @@ protected:
     //   throw std::runtime_error("No GPU found");
     // }
 
-    device = devices[0];
+    device = devices[devices.size() - 1];
+    printf("Using device: %s\n", device.name.c_str());
 
     context.init(device.device_id_opencl);
     context.activate();
