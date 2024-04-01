@@ -1,28 +1,23 @@
-#define BLOCK_DIM 16
+#line 2
 
-__kernel void matrix_transpose(__global float *input, __global float *output,
-                               const unsigned int width,
-                               const unsigned int height) {
 
-  __local float tile[BLOCK_DIM][BLOCK_DIM + 1]; // bank conflict avoiding
+#define TILE_SIZE 16
 
-  int xIndex = get_global_id(0);
-  int yIndex = get_global_id(1);
+__kernel void matrix_transpose(global const float *inputMatrix, global float *transposedMatrix, unsigned int rowCount, unsigned int columnCount)
+{
+    int columnIndex = get_global_id(0);
+    int rowIndex = get_global_id(1);
 
-  int transposedIndex = yIndex * width + xIndex;
+    __local float localTile[TILE_SIZE][TILE_SIZE + 1];
+    int localColumnIndex = get_local_id(0);
+    int localRowIndex = get_local_id(1);
 
-  if (xIndex < width && yIndex < height) {
-    tile[get_local_id(1)][get_local_id(0)] = input[transposedIndex];
-  }
+    if (columnIndex < columnCount && rowIndex < rowCount) {
+        localTile[localRowIndex][localColumnIndex] = inputMatrix[rowIndex * columnCount + columnIndex];
+    }
+    barrier(CLK_LOCAL_MEM_FENCE);
 
-  barrier(CLK_LOCAL_MEM_FENCE);
-
-  int xIndexTransposed = get_local_id(1);
-  int yIndexTransposed = get_local_id(0);
-
-  int originalIndex = yIndexTransposed * width + xIndexTransposed;
-
-  if (xIndexTransposed < height && yIndexTransposed < width) {
-    output[originalIndex] = tile[get_local_id(0)][get_local_id(1)];
-  }
+    if (columnIndex < columnCount && rowIndex < rowCount) {
+        transposedMatrix[columnIndex * rowCount + rowIndex] = localTile[localRowIndex][localColumnIndex];
+    }
 }

@@ -5,5 +5,5 @@ __kernel void subtraction(__global const float *a, __global const float *b,
   if (index >= n)
     return;
 
-  c[index] = a[index] + b[index];
+  c[index] = a[index] - b[index];
 }
