@@ -20,6 +20,7 @@ class AbstractNode {
   public:
     std::vector<AbstractNode *> getPreviousNodes();
     std::vector<AbstractNode *> getNextNodes();
+    std::string AbstractNode::getName();
 
     AbstractNode() = default;
 
@@ -37,6 +38,8 @@ class OperationNode : public AbstractNode {
     OperationNode(const AbstractOperation operation,
                   const std::vector<AbstractNode *> &nodes);
     ~OperationNode() = default;
+
+    AbstractOperation OperationNode::getOperation();
 };
 
 class InputNode : public AbstractNode {

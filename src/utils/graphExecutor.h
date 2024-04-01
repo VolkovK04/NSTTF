@@ -4,10 +4,6 @@
 #include "instruction.h"
 #include <map>
 #include "../tensor/tensor.h"
-#include <CL/cl.h>
-
-#include <libgpu/context.h>
-#include <libgpu/shared_device_buffer.h>
 
 namespace NSTTF 
 {
