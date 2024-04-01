@@ -19,6 +19,16 @@ protected:
 public:
   AbstractNode() = default;
 
+  std::vector<AbstractNode *> getPreviousNodes() 
+  {
+    return prevs;
+  }
+
+  std::vector<AbstractNode *> getNextNodes() 
+  {
+    return nexts;
+  }
+
   virtual ~AbstractNode() = default;
 };
 
