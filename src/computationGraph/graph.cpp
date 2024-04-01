@@ -3,8 +3,9 @@
 #include <unordered_set>
 
 namespace NSTTF {
-InputNode &ComputationGraph::AddInputNode() {
+InputNode &ComputationGraph::AddInputNode(const std::string& name) {
   InputNode *node = new InputNode();
+  node->name = name;
   this->input.push_back(node);
   return *node;
 }
