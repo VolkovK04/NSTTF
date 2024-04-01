@@ -245,7 +245,10 @@ TEST_F(OpenCLTestFixture, matrix_multiplication_updated_test) {
   }
 
   double diff_avg = diff_sum / (M * N);
-  EXPECT_TRUE(diff_avg <= 0.01);
+  // EXPECT_TRUE(diff_avg <= 0.01);
+  if (diff_avg > 0.01) {
+    FAIL() << "diff_avg = " << diff_avg;
+  }
 }
 
 TEST_F(OpenCLTestFixture, matrix_transposition_test) {
@@ -292,7 +295,7 @@ TEST_F(OpenCLTestFixture, matrix_transposition_test) {
       float a = as[j * K + i];
       float b = bs[i * M + j];
       if (a != b) {
-        EXPECT_TRUE(a == b);
+        FAIL() << "a = " << a << ", b = " << b;
       }
     }
   }
