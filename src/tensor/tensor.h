@@ -9,8 +9,8 @@ class AbstractDataPointer {
   public:
     AbstractDataPointer() = default;
     virtual ~AbstractDataPointer() = default;
-    virtual std::vector<float> toVector();
-    virtual gpu::gpu_mem_32f toGPUBuffer();
+    virtual std::vector<float> toVector() = 0;
+    virtual gpu::gpu_mem_32f toGPUBuffer() = 0;
 };
 
 class GPUPointer : AbstractDataPointer {

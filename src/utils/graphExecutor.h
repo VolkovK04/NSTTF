@@ -11,11 +11,6 @@
 #include <map>
 #include <vector>
 
-#include "../cl_build_headers/matrix_multiplication_cl.h"
-#include "../cl_build_headers/matrix_transpose_cl.h"
-#include "../cl_build_headers/multiplication_cl.h"
-#include "../cl_build_headers/subtraction_cl.h"
-#include "../cl_build_headers/sum_cl.h"
 
 namespace NSTTF {
 class GraphExecutor {

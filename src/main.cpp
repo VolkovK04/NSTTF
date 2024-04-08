@@ -20,6 +20,7 @@
 // #include "tensor/tensor.h"
 
 #include <vector>
+#include <map>
 
 int main(int argc, char **argv) {
   auto g = NSTTF::ComputationGraph();
@@ -30,7 +31,14 @@ int main(int argc, char **argv) {
 
   auto c = g.AddOperationNode(oper, {&a, &b}, "c", true);
 
+  NSTTF::GraphExecutor executor = NSTTF::Compiler().compile(g);
 
+  NSTTF::Tensor tensor1(std::vector<float>{1, 2, 3});
+  NSTTF::Tensor tensor2(std::vector<float>{4, 5, 6});
+
+  std::map<std::string, NSTTF::Tensor> tensors = {{"a", tensor1}, {"b", tensor2}};
+
+  executor.execute(tensors);
 
   return 0;
 }
