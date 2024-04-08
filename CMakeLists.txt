@@ -7,6 +7,14 @@ add_subdirectory(libs)
 add_subdirectory(tests)
 add_subdirectory(src)
 
+include_directories(
+        # ${CMAKE_CURRENT_SOURCE_DIR}/src/cl_build_headers/
+        # ${CMAKE_CURRENT_SOURCE_DIR}/src/compputationGraph/
+        # ${CMAKE_CURRENT_SOURCE_DIR}/src/operations/
+        # ${CMAKE_CURRENT_SOURCE_DIR}/src/tensor/
+        # ${CMAKE_CURRENT_SOURCE_DIR}/src/utils/
+        ${CMAKE_CURRENT_SOURCE_DIR}/src
+)
 
 set(CMAKE_CXX_STANDARD 20)
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
@@ -39,16 +47,9 @@ add_executable(gpu_main src/main.cpp)
                     #   src/cl_build_headers/subtraction_cl.h 
                     #   src/cl_build_headers/multiplication_cl.h)
 
-target_link_libraries(gpu_main libclew libgpu libutils ${PROJECT_NAME}_computationGraph)
+target_link_libraries(gpu_main libclew libgpu libutils 
+    ${PROJECT_NAME}_computationGraph ${PROJECT_NAME}_operation ${PROJECT_NAME}_tensor ${PROJECT_NAME}_utils)
 
-include_directories(
-        # ${CMAKE_CURRENT_SOURCE_DIR}/src/cl_build_headers/
-        # ${CMAKE_CURRENT_SOURCE_DIR}/src/compputationGraph/
-        # ${CMAKE_CURRENT_SOURCE_DIR}/src/operations/
-        # ${CMAKE_CURRENT_SOURCE_DIR}/src/tensor/
-        # ${CMAKE_CURRENT_SOURCE_DIR}/src/utils/
-        ${CMAKE_CURRENT_SOURCE_DIR}/src
-)
 
 
 
