@@ -1,20 +1,21 @@
-#pragma once 
+#pragma once
 
-#include "graphExecutor.h"
 #include "../computationGraph/computationGraph.h"
 #include "../computationGraph/node.h"
+#include "graphExecutor.h"
 
-namespace NSTTF 
-{
-    class Compiler 
-    {
-        private: 
-        void get_instruction(AbstractNode* node, std::vector<AbstractNode *> result);
-        
+namespace NSTTF {
+class Compiler {
+private:
+  std::unordered_set<AbstractNode *> computed;
+  std::vector<AbstractNode *> outputs;
 
-        public:
-        std::vector<AbstractNode *> get_all_instructions();
+  void get_instruction(AbstractNode *node, std::vector<Instruction> &result);
 
-        GraphExecutor compile(const ComputationGraph& graph);
-    };
+public:
+  Compiler() = default;
+  std::vector<Instruction> get_all_instructions();
+
+  GraphExecutor compile(const ComputationGraph &graph);
 };
+} // namespace NSTTF

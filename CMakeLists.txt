@@ -7,14 +7,6 @@ add_subdirectory(libs)
 add_subdirectory(tests)
 add_subdirectory(src)
 
-include_directories(
-        # ${CMAKE_CURRENT_SOURCE_DIR}/src/cl_build_headers/
-        # ${CMAKE_CURRENT_SOURCE_DIR}/src/compputationGraph/
-        # ${CMAKE_CURRENT_SOURCE_DIR}/src/operations/
-        # ${CMAKE_CURRENT_SOURCE_DIR}/src/tensor/
-        # ${CMAKE_CURRENT_SOURCE_DIR}/src/utils/
-        ${CMAKE_CURRENT_SOURCE_DIR}/src
-)
 
 set(CMAKE_CXX_STANDARD 20)
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
@@ -26,10 +18,10 @@ set(CMAKE_CXX_STANDARD 20)
 
 find_package(OpenMP)
 if (OpenMP_CXX_FOUND)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
 else()
-    message(WARNING "OpenMP not found!")
+message(WARNING "OpenMP not found!")
 endif()
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/cl_build_headers)
@@ -41,14 +33,22 @@ convertIntoHeader(src/cl/subtraction.cl src/cl_build_headers/subtraction_cl.h su
 convertIntoHeader(src/cl/multiplication.cl src/cl_build_headers/multiplication_cl.h multiplication_kernel)
 
 add_executable(gpu_main src/main.cpp)
-                    #   src/cl_build_headers/sum_cl.h 
-                    #   src/cl_build_headers/matrix_multiplication_cl.h 
-                    #   src/cl_build_headers/matrix_transpose_cl.h 
-                    #   src/cl_build_headers/subtraction_cl.h 
-                    #   src/cl_build_headers/multiplication_cl.h)
+#   src/cl_build_headers/sum_cl.h 
+#   src/cl_build_headers/matrix_multiplication_cl.h 
+#   src/cl_build_headers/matrix_transpose_cl.h 
+#   src/cl_build_headers/subtraction_cl.h 
+#   src/cl_build_headers/multiplication_cl.h)
+include_directories(
+        # ${CMAKE_CURRENT_SOURCE_DIR}/src/cl_build_headers/
+        # ${CMAKE_CURRENT_SOURCE_DIR}/src/compputationGraph/
+        # ${CMAKE_CURRENT_SOURCE_DIR}/src/operations/
+        # ${CMAKE_CURRENT_SOURCE_DIR}/src/tensor/
+        # ${CMAKE_CURRENT_SOURCE_DIR}/src/utils/
+        ${CMAKE_CURRENT_SOURCE_DIR}/src
+)
 
 target_link_libraries(gpu_main libclew libgpu libutils 
-    ${PROJECT_NAME}_computationGraph ${PROJECT_NAME}_operation ${PROJECT_NAME}_tensor ${PROJECT_NAME}_utils)
+${PROJECT_NAME}_computationGraph ${PROJECT_NAME}_operation ${PROJECT_NAME}_tensor ${PROJECT_NAME}_utils)
 
 
 

@@ -27,8 +27,6 @@ class GraphExecutor {
         : instructions(instructions) {}
 
     
-
-    void init();
     void execute(std::map<std::string, Tensor> &tensorsMap);
 };
 } // namespace NSTTF

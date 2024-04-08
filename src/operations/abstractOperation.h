@@ -12,6 +12,7 @@ class AbstractOperation {
     const std::string getName();
 
     AbstractOperation() = default;
+    AbstractOperation(std::string name);
     virtual ~AbstractOperation() = default;
 };
 

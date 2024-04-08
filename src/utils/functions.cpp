@@ -24,6 +24,7 @@ ocl::Kernel matrix_transpose(matrix_transpose_kernel,
                              matrix_transpose_kernel_length,
                              "matrix_transpose");
 
+unsigned int n = 128;
 unsigned int workGroupSize = 128;
 unsigned int global_work_size =
     (n + workGroupSize - 1) / workGroupSize * workGroupSize;

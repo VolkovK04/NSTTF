@@ -18,6 +18,7 @@ class GPUPointer : AbstractDataPointer {
     gpu::gpu_mem_32f pointer;
 
   public:
+    GPUPointer() = default;
     GPUPointer(gpu::gpu_mem_32f& pointer);
     GPUPointer(const std::vector<float>& vector);
     GPUPointer(size_t size);
@@ -45,7 +46,7 @@ class Tensor {
 
     Tensor(GPUPointer pointer);
 
-    Tensor(const std::vector<size_t>& shape);
+    Tensor(const std::vector<size_t>& shape) ;
 
     Tensor(const std::vector<float>& vector);
 
