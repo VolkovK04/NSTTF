@@ -1,5 +1,4 @@
 #include "computationGraph.h"
-#include "node.h"
 #include <unordered_set>
 
 namespace NSTTF {

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../operations/abstractOperation.h"
-#include "computationGraph.h"
 #include <vector>
 
 namespace NSTTF {

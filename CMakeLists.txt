@@ -5,6 +5,7 @@ enable_testing()
 
 add_subdirectory(libs)
 add_subdirectory(tests)
+add_subdirectory(src)
 
 
 set(CMAKE_CXX_STANDARD 20)
@@ -38,7 +39,7 @@ add_executable(gpu_main src/main.cpp)
                     #   src/cl_build_headers/subtraction_cl.h 
                     #   src/cl_build_headers/multiplication_cl.h)
 
-target_link_libraries(gpu_main libclew libgpu libutils)
+target_link_libraries(gpu_main libclew libgpu libutils ${PROJECT_NAME}_computationGraph)
 
 include_directories(
         # ${CMAKE_CURRENT_SOURCE_DIR}/src/cl_build_headers/

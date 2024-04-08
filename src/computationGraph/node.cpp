@@ -1,5 +1,7 @@
 #include "node.h"
 
+#include "computationGraph.h"
+
 namespace NSTTF {
 std::vector<AbstractNode *> AbstractNode::getPreviousNodes() { return prevs; }
 

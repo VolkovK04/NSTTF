@@ -1,0 +1,4 @@
+add_subdirectory(computationGraph)
+add_subdirectory(operations)
+add_subdirectory(tensor)
+add_subdirectory(utils)
