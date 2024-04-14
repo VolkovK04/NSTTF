@@ -75,13 +75,17 @@ TEST(GraphTests, MatrixTranspose) {
 }
 
 TEST(GraphTests, NodesFromDifferentGraphs) {
-//   try {
-//     ComputationGraph g1;
-//     NodeInterface node1 = g.AddInputNode("test");
-//     FAIL() << "No exception";
-//   } catch (std::invalid_argument &err) {
-//     EXPECT_EQ(err.what(), std::string("Incompatible shapes"));
-//   } catch (...) {
-//     FAIL() << "Another exception";
-//   }
+  try {
+    ComputationGraph g1;
+    NodeInterface node1 = g1.AddInputNode("node1");
+    ComputationGraph g2;
+    NodeInterface node2 = g2.AddInputNode("node2");
+    NodeInterface node3 = node1 + node2;
+
+    FAIL() << "No exception";
+  } catch (std::runtime_error &err) {
+    EXPECT_EQ(err.what(), std::string("Nodes defined in different graphs"));
+  } catch (...) {
+    FAIL() << "Another exception";
+  }
 }
