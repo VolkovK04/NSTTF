@@ -8,14 +8,14 @@ namespace NSTTF {
 
 GraphExecutor Compiler::compile(const ComputationGraph &graph) {
   outputs = graph.getOutputNodes();
-  std::vector<Instruction> instructions = get_all_instructions();
+  std::vector<Instruction> instructions = getAllInstructions();
 
   GraphExecutor executor(instructions);
 
   return executor;
 }
 
-void Compiler::get_instruction(AbstractNode *node,
+void Compiler::getInstruction(AbstractNode *node,
                                std::vector<Instruction> &result) {
   if (computed.count(node)) {
     return;
@@ -42,11 +42,11 @@ void Compiler::get_instruction(AbstractNode *node,
   computed.insert(operationNode);
 }
 
-std::vector<Instruction> Compiler::get_all_instructions() {
+std::vector<Instruction> Compiler::getAllInstructions() {
   std::vector<Instruction> result;
 
-  for (AbstractNode *inp : outputs) {
-    get_instruction(inp, result);
+  for (AbstractNode *out : outputs) {
+    getInstruction(out, result);
   }
 
   return result;

@@ -1,5 +1,4 @@
 #include "gtest/gtest.h"
-#include <iostream>
 #include "../src/computationGraph/computationGraph.h"
 
 using namespace NSTTF;
