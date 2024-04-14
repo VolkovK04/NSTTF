@@ -1,9 +1,10 @@
 set(BINARY ${CMAKE_PROJECT_NAME}_test)
 
-# file(GLOB_RECURSE TEST_SOURCES LIST_DIRECTORIES false *.h *.cpp)
+file(GLOB_RECURSE TEST_SOURCES LIST_DIRECTORIES false *.h *.cpp)
 
-set(TEST_SOURCES main.cpp gpuTests.cpp functionsTests.cpp)
-set(SOURCES ${TEST_SOURCES})
+# set(TEST_SOURCES main.cpp gpuTests.cpp functionsTests.cpp)
+set(TEST_SOURCES main.cpp functionsTests.cpp)
+
 
 include_directories(libs)
 
