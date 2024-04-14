@@ -135,4 +135,18 @@ void checkShape(Tensor &arg1, Tensor &arg2) {
     }
 }
 
+Tensor callFunction(std::string &name, std::vector<Tensor> &tensors) {
+    if (name == "sum") {
+        return sum(tensors);
+    } else if (name == "subtraction") {
+        return subtraction(tensors);
+    } else if (name == "multiplication") {
+        return multiplication(tensors);
+    } else if (name == "matrix_transpose") {
+        return matrix_transpose(tensors);
+    } else if (name == "matrix_multiplication") {
+        return matrix_multiplication(tensors);
+    }
+}
+
 } // namespace NSTTF
