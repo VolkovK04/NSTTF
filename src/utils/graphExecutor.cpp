@@ -8,6 +8,9 @@ std::vector<std::string> Instruction::getInputs() { return input; }
 
 std::vector<std::string> Instruction::getOutputs() { return output; }
 
+GraphExecutor::GraphExecutor(std::vector<Instruction> instructions)
+    : instructions(instructions) {}
+
 void GraphExecutor::execute(std::map<std::string, Tensor> &tensorsMap) {
     std::vector<Tensor> tensors;
     for (auto instruction : instructions) {
@@ -16,6 +19,6 @@ void GraphExecutor::execute(std::map<std::string, Tensor> &tensorsMap) {
             tensors.push_back(tensorsMap[input]);
         }
     }
-    //TODO call cl func
+    // TODO call cl func
 }
 } // namespace NSTTF

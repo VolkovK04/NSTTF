@@ -19,8 +19,8 @@ class GPUPointer : AbstractDataPointer {
 
   public:
     GPUPointer() = default;
-    GPUPointer(gpu::gpu_mem_32f& pointer);
-    GPUPointer(const std::vector<float>& vector);
+    GPUPointer(gpu::gpu_mem_32f &pointer);
+    GPUPointer(const std::vector<float> &vector);
     GPUPointer(size_t size);
     std::vector<float> toVector();
     gpu::gpu_mem_32f toGPUBuffer();
@@ -31,7 +31,7 @@ class RAMPointer : AbstractDataPointer {
     std::vector<float> pointer;
 
   public:
-    RAMPointer(std::vector<float>& pointer);
+    RAMPointer(std::vector<float> &pointer);
     std::vector<float> toVector();
     gpu::gpu_mem_32f toGPUBuffer();
 };
@@ -41,21 +41,23 @@ class Tensor {
     GPUPointer pointer;
     const std::vector<size_t> shape;
 
+    static size_t getSize(const std::vector<size_t> &shape);
+
   public:
     Tensor() = default;
 
     Tensor(GPUPointer pointer);
 
-    Tensor(const std::vector<size_t>& shape) ;
+    Tensor(const std::vector<size_t> &shape);
 
-    Tensor(const std::vector<float>& vector);
+    Tensor(const std::vector<float> &vector);
 
     gpu::gpu_mem_32f getGPUBuffer();
 
     std::vector<size_t> getShape();
+
+    size_t getSize();
     ~Tensor() = default;
-
 };
-
 
 } // namespace NSTTF
