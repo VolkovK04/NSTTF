@@ -57,5 +57,4 @@ void Tensor::reshape(const std::vector<size_t> &newShape) {
   }
   shape = newShape;
 }
-
 } // namespace NSTTF
