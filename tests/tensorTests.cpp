@@ -28,8 +28,8 @@ protected:
 };
 
 TEST_F(TensorTests, universalCtorTest) {
-  Tensor tensor{{1.f, 2.f, 3.f}, {3}};
-  std::vector<size_t> expectedShape{3};
+  Tensor tensor{{1.f, 2.f, 3.f}, {1, 3}};
+  std::vector<size_t> expectedShape{1, 3};
   std::vector<float> expectedData{1.f, 2.f, 3.f};
   EXPECT_EQ(tensor.getData(), expectedData);
   EXPECT_EQ(tensor.getShape(), expectedShape);
