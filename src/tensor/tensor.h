@@ -39,7 +39,7 @@ class RAMPointer : AbstractDataPointer {
 class Tensor {
   private:
     GPUPointer pointer;
-    const std::vector<size_t> shape;
+    std::vector<size_t> shape;
 
     static size_t getSize(const std::vector<size_t> &shape);
 
