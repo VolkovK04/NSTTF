@@ -19,7 +19,7 @@ class AbstractNode {
   public:
     std::vector<AbstractNode *> getPreviousNodes();
     std::vector<AbstractNode *> getNextNodes();
-    const std::string getName();
+    const std::string& getName() const;
 
     AbstractNode() = default;
 
@@ -38,7 +38,7 @@ class OperationNode : public AbstractNode {
                   const std::vector<AbstractNode *> &nodes);
     ~OperationNode() = default;
 
-    AbstractOperation getOperation();
+    AbstractOperation getOperation() const;
 };
 
 class InputNode : public AbstractNode {
@@ -46,6 +46,24 @@ class InputNode : public AbstractNode {
   public:
     InputNode() = default;
     ~InputNode() = default;
+};
+
+class NodeInterface {
+  private:
+  AbstractNode* node;
+  ComputationGraph& graph;
+
+  static uint64_t UID_Counter;
+  static std::string createName();
+  public:
+  NodeInterface(AbstractNode* node, ComputationGraph& g);
+
+  const AbstractNode& getNode() const;
+  void setOutput();
+
+  NodeInterface operator+ (const NodeInterface& nodeInterface) const;
+  NodeInterface operator- (const NodeInterface& nodeInterface) const;
+  NodeInterface operator* (const NodeInterface& nodeInterface) const;
 };
 
 } // namespace NSTTF

@@ -2,14 +2,14 @@
 #include <unordered_set>
 
 namespace NSTTF {
-InputNode &ComputationGraph::AddInputNode(const std::string& name) {
+NodeInterface ComputationGraph::AddInputNode(const std::string& name) {
   InputNode *node = new InputNode();
   node->name = name;
   this->input.push_back(node);
-  return *node;
+  return NodeInterface(node, *this);
 }
 
-OperationNode &
+NodeInterface
 ComputationGraph::AddOperationNode(const AbstractOperation& operation,
                                    const std::vector<AbstractNode *> &nodes,
                                    const std::string& name,
@@ -24,7 +24,13 @@ ComputationGraph::AddOperationNode(const AbstractOperation& operation,
   if (output) {
     this->output.push_back(node);
   }
-  return *node;
+  return NodeInterface(node, *this);
+}
+
+void ComputationGraph::setOutputNode(AbstractNode* node) {
+  // TODO check if output nodes also contains this node
+  node->output = true;
+  output.push_back(node);
 }
 
 const std::vector<InputNode *> ComputationGraph::getInputNodes() const {
