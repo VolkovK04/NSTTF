@@ -20,6 +20,9 @@ class Instruction {
                 const std::vector<std::string> &input,
                 const std::vector<std::string> &output)
         : name(name), output(output), input(input) {}
+
+    Instruction() = default;
+
     ~Instruction() = default;
 };
 } // namespace NSTTF

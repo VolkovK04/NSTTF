@@ -77,11 +77,12 @@ Tensor matrix_multiplication(Tensor &arg1, Tensor &arg2) {
     std::vector<size_t> arg1Shape = arg1.getShape();
     std::vector<size_t> arg2Shape = arg2.getShape();
 
-    if(arg1Shape[2] != arg2Shape[1]){
+    if ((arg1Shape.size() == arg2Shape.size()) &&
+        arg1Shape[2] != arg2Shape[1]) {
         throw std::runtime_error("Different size");
     }
 
-    Tensor res(std::vector<size_t> {arg1Shape[0], arg1Shape[1], arg2Shape[2]});
+    Tensor res(std::vector<size_t>{arg1Shape[0], arg1Shape[1], arg2Shape[2]});
     functions::matrix_multiplication.exec(
         gpu::WorkSize(functions::workGroupSize, functions::global_work_size),
         arg1.getGPUBuffer(), arg2.getGPUBuffer(), res.getGPUBuffer(),
@@ -94,7 +95,7 @@ Tensor matrix_transpose(Tensor &arg) {
     std::vector<size_t> baseShape = arg.getShape();
     size_t rowCount = baseShape[1], columnCount = baseShape[2];
 
-    Tensor res(std::vector<size_t> {baseShape[0], columnCount, rowCount});
+    Tensor res(std::vector<size_t>{baseShape[0], columnCount, rowCount});
     functions::matrix_transpose.exec(
         gpu::WorkSize(functions::workGroupSize, functions::global_work_size),
         arg.getGPUBuffer(), res.getGPUBuffer(), rowCount, columnCount);
@@ -104,6 +105,20 @@ Tensor matrix_transpose(Tensor &arg) {
 void checkShape(Tensor &arg1, Tensor &arg2) {
     if (arg1.getShape() != arg2.getShape()) {
         throw std::runtime_error("Different size");
+    }
+}
+
+Tensor callFunction(std::string &name, std::vector<Tensor> &tensors) {
+    if (name == "sum") {
+        return sum(tensors);
+    } else if (name == "subtraction") {
+        return subtraction(tensors);
+    } else if (name == "multiplication") {
+        return multiplication(tensors);
+    } else if (name == "matrix_transpose") {
+        return matrix_transpose(tensors);
+    } else if (name == "matrix_multiplication") {
+        return matrix_multiplication(tensors);
     }
 }
 
