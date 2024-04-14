@@ -37,7 +37,12 @@ void init() {
 }
 } // namespace functions
 
-Tensor sum(Tensor &arg1, Tensor &arg2) {
+Tensor sum(std::vector<Tensor> &tensors) {
+    checkNumOfTensors(tensors, 2);
+
+    Tensor arg1 = tensors[0];
+    Tensor arg2 = tensors[1];
+
     checkShape(arg1, arg2);
 
     Tensor res(arg1.getShape());
@@ -50,7 +55,12 @@ Tensor sum(Tensor &arg1, Tensor &arg2) {
     return res;
 }
 
-Tensor subtraction(Tensor &arg1, Tensor &arg2) {
+Tensor subtraction(std::vector<Tensor> &tensors) {
+    checkNumOfTensors(tensors, 2);
+
+    Tensor arg1 = tensors[0];
+    Tensor arg2 = tensors[1];
+
     checkShape(arg1, arg2);
 
     Tensor res(arg1.getShape());
@@ -61,7 +71,12 @@ Tensor subtraction(Tensor &arg1, Tensor &arg2) {
     return res;
 }
 
-Tensor multiplication(Tensor &arg1, Tensor &arg2) {
+Tensor multiplication(std::vector<Tensor> &tensors) {
+    checkNumOfTensors(tensors, 2);
+
+    Tensor arg1 = tensors[0];
+    Tensor arg2 = tensors[1];
+
     checkShape(arg1, arg2);
 
     Tensor res(arg1.getShape());
@@ -73,7 +88,11 @@ Tensor multiplication(Tensor &arg1, Tensor &arg2) {
 }
 
 // Пока считаем, что подаются только матрицы
-Tensor matrix_multiplication(Tensor &arg1, Tensor &arg2) {
+Tensor matrix_multiplication(std::vector<Tensor> &tensors) {
+    checkNumOfTensors(tensors, 2);
+
+    Tensor arg1 = tensors[0];
+    Tensor arg2 = tensors[1];
 
     std::vector<size_t> arg1Shape = arg1.getShape();
     std::vector<size_t> arg2Shape = arg2.getShape();
@@ -107,7 +126,11 @@ Tensor matrix_multiplication(Tensor &arg1, Tensor &arg2) {
 }
 
 // Пока считаем, что подаются только матрицы
-Tensor matrix_transpose(Tensor &arg) {
+Tensor matrix_transpose(std::vector<Tensor> &tensors) {
+    checkNumOfTensors(tensors, 2);
+
+    Tensor arg = tensors[0];
+
     std::vector<size_t> baseShape = arg.getShape();
     size_t shapeSize = baseShape.size();
 
@@ -136,20 +159,28 @@ void checkShape(Tensor &arg1, Tensor &arg2) {
     }
 }
 
-Tensor callFunction(const std::string &name,
-                    const std::vector<Tensor> &tensors) {
-    // if (name == "sum") {
-    //     return sum(tensors);
-    // } else if (name == "subtraction") {
-    //     return subtraction(tensors);
-    // } else if (name == "multiplication") {
-    //     return multiplication(tensors);
-    // } else if (name == "matrix_transpose") {
-    //     return matrix_transpose(tensors);
-    // } else if (name == "matrix_multiplication") {
-    //     return matrix_multiplication(tensors);
-    // }
-    return Tensor(std::vector<float>({1, 2, 3}));
+void checkNumOfTensors(const std::vector<Tensor> &tensors, size_t num) {
+    if (tensors.size() < num) {
+        throw std::runtime_error("Not enought tensors");
+    } else if (tensors.size() > num) {
+        throw std::runtime_error("Too many tensors");
+    }
+}
+
+Tensor callFunction(std::string &name, std::vector<Tensor> &tensors) {
+    if (name == "sum") {
+        return sum(tensors);
+    } else if (name == "subtraction") {
+        return subtraction(tensors);
+    } else if (name == "multiplication") {
+        return multiplication(tensors);
+    } else if (name == "matrix_transpose") {
+        return matrix_transpose(tensors);
+    } else if (name == "matrix_multiplication") {
+        return matrix_multiplication(tensors);
+    } else{
+        throw std::runtime_error("Wrong operation name");
+    }
 }
 
 } // namespace NSTTF
