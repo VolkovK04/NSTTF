@@ -178,6 +178,8 @@ Tensor callFunction(std::string &name, std::vector<Tensor> &tensors) {
         return matrix_transpose(tensors);
     } else if (name == "matrix_multiplication") {
         return matrix_multiplication(tensors);
+    } else{
+        throw std::runtime_error("Wrong operation name");
     }
 }
 
