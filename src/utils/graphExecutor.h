@@ -19,6 +19,6 @@ class GraphExecutor {
   public:
     GraphExecutor(std::vector<Instruction> instructions);
 
-    void execute(std::map<std::string, Tensor> &tensorsMap);
+    std::map<std::string, Tensor> execute(const std::map<std::string, Tensor> &tensorsMap);
 };
 } // namespace NSTTF
