@@ -7,7 +7,7 @@ Tensor::Tensor(const std::vector<size_t> &shape)
     : shape(shape), pointer(getSize(shape)) {}
 std::vector<size_t> Tensor::getShape() { return shape; }
 Tensor::Tensor(const std::vector<float> &vector)
-    : pointer(vector), shape(vector.size()) {}
+    : pointer(vector), shape(1, vector.size()) {}
 
 size_t Tensor::getSize() {
     std::vector<size_t> shape = this->getShape();
