@@ -37,7 +37,7 @@ void Compiler::getInstruction(AbstractNode *node,
     nextNodes.push_back(next->getName());
   }
   Instruction instruction(operationNode->getOperation().getName(),
-                          std::move(nextNodes), std::move(prevNodes));
+                          std::move(prevNodes), {node->getName()});
   result.push_back(instruction);
   computed.insert(operationNode);
 }

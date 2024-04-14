@@ -35,8 +35,7 @@ TEST_F(ExecutorTests, SumNode) {
   ComputationGraph g;
   std::map<std::string, Tensor> tensorsMap = {
       {"test1", Tensor{{1.f, 2.f, 3.f}, {1, 3}}},
-      {"test2", Tensor{{4.f, 5.f, 6.f}, {1, 3}}},
-      {"result", Tensor{{5.f, 7.f, 9.f}, {1, 3}}}};
+      {"test2", Tensor{{4.f, 5.f, 6.f}, {1, 3}}}};
 
   NodeInterface nodeInterface1 = g.AddInputNode("test1");
   NodeInterface nodeInterface2 = g.AddInputNode("test2");
