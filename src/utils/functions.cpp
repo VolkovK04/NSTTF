@@ -186,7 +186,7 @@ void checkNumOfTensors(const std::vector<Tensor> &tensors, size_t num) {
   }
 }
 
-Tensor callFunction(std::string &name, const std::vector<Tensor> &tensors) {
+Tensor callFunction(const std::string &name, const std::vector<Tensor> &tensors) {
   if (name == "sum") {
     return sum(tensors);
   } else if (name == "subtraction") {
