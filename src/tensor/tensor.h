@@ -6,58 +6,62 @@
 
 namespace NSTTF {
 class AbstractDataPointer {
-  public:
-    AbstractDataPointer() = default;
-    virtual ~AbstractDataPointer() = default;
-    virtual std::vector<float> toVector() = 0;
-    virtual gpu::gpu_mem_32f toGPUBuffer() = 0;
+public:
+  AbstractDataPointer() = default;
+  virtual ~AbstractDataPointer() = default;
+  virtual std::vector<float> toVector() const = 0;
+  virtual gpu::gpu_mem_32f toGPUBuffer() const = 0;
 };
 
 class GPUPointer : AbstractDataPointer {
-  private:
-    gpu::gpu_mem_32f pointer;
+private:
+  gpu::gpu_mem_32f pointer;
 
-  public:
-    GPUPointer() = default;
-    explicit GPUPointer(gpu::gpu_mem_32f& pointer);
-    explicit GPUPointer(const std::vector<float>& vector);
-    explicit GPUPointer(size_t size);
-    std::vector<float> toVector();
-    gpu::gpu_mem_32f toGPUBuffer();
+public:
+  GPUPointer() = default;
+  explicit GPUPointer(gpu::gpu_mem_32f &pointer);
+  explicit GPUPointer(const std::vector<float> &vector);
+  explicit GPUPointer(size_t size);
+  std::vector<float> toVector() const;
+  gpu::gpu_mem_32f toGPUBuffer() const;
 };
 
 class RAMPointer : AbstractDataPointer {
-  private:
-    std::vector<float> pointer;
+private:
+  std::vector<float> pointer;
 
-  public:
-    explicit RAMPointer(std::vector<float>& pointer);
-    std::vector<float> toVector();
-    gpu::gpu_mem_32f toGPUBuffer();
+public:
+  explicit RAMPointer(std::vector<float> &pointer);
+  std::vector<float> toVector();
+  gpu::gpu_mem_32f toGPUBuffer();
 };
 
 class Tensor {
-  private:
-    GPUPointer pointer;
-    std::vector<size_t> shape;
+private:
+  GPUPointer pointer;
+  std::vector<size_t> shape;
 
-    static size_t getSize(const std::vector<size_t> &shape);
+  static size_t getSize(const std::vector<size_t> &shape);
 
-  public:
-    Tensor() = default;
+public:
+  Tensor() = default;
 
-    explicit Tensor(GPUPointer pointer);
+  Tensor(const std::vector<float> &data, const std::vector<size_t> &shape);
 
-    explicit Tensor(const std::vector<size_t>& shape);
+  explicit Tensor(const std::vector<size_t> &shape);
 
-    explicit Tensor(const std::vector<float>& vector);
+  explicit Tensor(const std::vector<float> &vector);
 
-    gpu::gpu_mem_32f getGPUBuffer();
+  gpu::gpu_mem_32f getGPUBuffer() const;
 
-    std::vector<size_t> getShape();
+  std::vector<size_t> getShape() const;
 
-    size_t getSize();
-    ~Tensor() = default;
+  std::vector<float> getData() const;
+
+  void reshape(const std::vector<size_t> &newShape);
+
+  size_t getSize() const;
+  ~Tensor() = default;
 };
 
 } // namespace NSTTF
