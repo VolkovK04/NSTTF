@@ -37,7 +37,12 @@ void init() {
 }
 } // namespace functions
 
-Tensor sum(Tensor &arg1, Tensor &arg2) {
+Tensor sum(std::vector<Tensor> &tensors) {
+    checkNumOfTensors(tensors, 2);
+
+    Tensor arg1 = tensors[0];
+    Tensor arg2 = tensors[1];
+
     checkShape(arg1, arg2);
 
     Tensor res(arg1.getShape());
@@ -50,7 +55,12 @@ Tensor sum(Tensor &arg1, Tensor &arg2) {
     return res;
 }
 
-Tensor subtraction(Tensor &arg1, Tensor &arg2) {
+Tensor subtraction(std::vector<Tensor> &tensors) {
+    checkNumOfTensors(tensors, 2);
+
+    Tensor arg1 = tensors[0];
+    Tensor arg2 = tensors[1];
+
     checkShape(arg1, arg2);
 
     Tensor res(arg1.getShape());
@@ -61,7 +71,12 @@ Tensor subtraction(Tensor &arg1, Tensor &arg2) {
     return res;
 }
 
-Tensor multiplication(Tensor &arg1, Tensor &arg2) {
+Tensor multiplication(std::vector<Tensor> &tensors) {
+    checkNumOfTensors(tensors, 2);
+
+    Tensor arg1 = tensors[0];
+    Tensor arg2 = tensors[1];
+
     checkShape(arg1, arg2);
 
     Tensor res(arg1.getShape());
@@ -73,25 +88,28 @@ Tensor multiplication(Tensor &arg1, Tensor &arg2) {
 }
 
 // Пока считаем, что подаются только матрицы
-Tensor matrix_multiplication(Tensor &arg1, Tensor &arg2) {
+Tensor matrix_multiplication(std::vector<Tensor> &tensors) {
+    checkNumOfTensors(tensors, 2);
 
+    Tensor arg1 = tensors[0];
+    Tensor arg2 = tensors[1];
 
     std::vector<size_t> arg1Shape = arg1.getShape();
     std::vector<size_t> arg2Shape = arg2.getShape();
 
-    if(arg1Shape.size() != arg2Shape.size()){
+    if (arg1Shape.size() != arg2Shape.size()) {
         throw std::runtime_error("Different size");
     }
 
     size_t shapeSize = arg1Shape.size();
 
-    for(size_t i = 0; i <= shapeSize - 3; i ++){
-        if (arg1Shape[i] != arg2Shape[i]){
+    for (size_t i = 0; i <= shapeSize - 3; i++) {
+        if (arg1Shape[i] != arg2Shape[i]) {
             throw std::runtime_error("Different num of tensors");
         }
     }
 
-    if(arg1Shape[shapeSize - 1] != arg2Shape[shapeSize - 2]){
+    if (arg1Shape[shapeSize - 1] != arg2Shape[shapeSize - 2]) {
         throw std::runtime_error("Wrong matrix shape");
     }
 
@@ -102,20 +120,26 @@ Tensor matrix_multiplication(Tensor &arg1, Tensor &arg2) {
     functions::matrix_multiplication.exec(
         gpu::WorkSize(functions::workGroupSize, functions::global_work_size),
         arg1.getGPUBuffer(), arg2.getGPUBuffer(), res.getGPUBuffer(),
-        arg1Shape[shapeSize - 2], arg2Shape[shapeSize - 2], arg2Shape[shapeSize - 1]);
+        arg1Shape[shapeSize - 2], arg2Shape[shapeSize - 2],
+        arg2Shape[shapeSize - 1]);
     return res;
 }
 
 // Пока считаем, что подаются только матрицы
-Tensor matrix_transpose(Tensor &arg) {
+Tensor matrix_transpose(std::vector<Tensor> &tensors) {
+    checkNumOfTensors(tensors, 2);
+
+    Tensor arg = tensors[0];
+
     std::vector<size_t> baseShape = arg.getShape();
     size_t shapeSize = baseShape.size();
 
-    if(shapeSize < 2){
+    if (shapeSize < 2) {
         throw std::runtime_error("Wrong shape");
     }
 
-    size_t rowCount = baseShape[shapeSize - 2], columnCount = baseShape[shapeSize - 1];
+    size_t rowCount = baseShape[shapeSize - 2],
+           columnCount = baseShape[shapeSize - 1];
 
     baseShape.pop_back();
     baseShape.pop_back();
@@ -132,6 +156,14 @@ Tensor matrix_transpose(Tensor &arg) {
 void checkShape(Tensor &arg1, Tensor &arg2) {
     if (arg1.getShape() != arg2.getShape()) {
         throw std::runtime_error("Different size");
+    }
+}
+
+void checkNumOfTensors(const std::vector<Tensor> &tensors, size_t num) {
+    if (tensors.size() < num) {
+        throw std::runtime_error("Not enought tensors");
+    } else if (tensors.size() > num) {
+        throw std::runtime_error("Too many tensors");
     }
 }
 
