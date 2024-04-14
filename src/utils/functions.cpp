@@ -1,6 +1,5 @@
 #include "functions.h"
 
-
 #include <libutils/misc.h>
 
 #include "../cl_build_headers/matrix_multiplication_cl.h"
@@ -24,7 +23,7 @@ ocl::Kernel matrix_transpose(matrix_transpose_kernel,
                              matrix_transpose_kernel_length,
                              "matrix_transpose");
 
-unsigned int n = 128;
+unsigned int n = 128; // TODO: ХЗ чё за херь, надо поменять
 unsigned int workGroupSize = 128;
 unsigned int global_work_size =
     (n + workGroupSize - 1) / workGroupSize * workGroupSize;
@@ -39,14 +38,115 @@ void init() {
 } // namespace functions
 
 Tensor sum(Tensor &arg1, Tensor &arg2) {
+    checkShape(arg1, arg2);
+
+    Tensor res(arg1.getShape());
+    functions::sum.exec(
+        gpu::WorkSize(functions::workGroupSize, functions::global_work_size),
+        arg1.getGPUBuffer(), arg2.getGPUBuffer(), res.getGPUBuffer(),
+        // getSize(arg1.getShape()));
+        arg1.getSize());
+
+    return res;
+}
+
+Tensor subtraction(Tensor &arg1, Tensor &arg2) {
+    checkShape(arg1, arg2);
+
+    Tensor res(arg1.getShape());
+    functions::subtraction.exec(
+        gpu::WorkSize(functions::workGroupSize, functions::global_work_size),
+        arg1.getGPUBuffer(), arg2.getGPUBuffer(), res.getGPUBuffer(),
+        arg1.getSize());
+    return res;
+}
+
+Tensor multiplication(Tensor &arg1, Tensor &arg2) {
+    checkShape(arg1, arg2);
+
+    Tensor res(arg1.getShape());
+    functions::multiplication.exec(
+        gpu::WorkSize(functions::workGroupSize, functions::global_work_size),
+        arg1.getGPUBuffer(), arg2.getGPUBuffer(), res.getGPUBuffer(),
+        arg1.getSize());
+    return res;
+}
+
+// Пока считаем, что подаются только матрицы
+Tensor matrix_multiplication(Tensor &arg1, Tensor &arg2) {
+
+
+    std::vector<size_t> arg1Shape = arg1.getShape();
+    std::vector<size_t> arg2Shape = arg2.getShape();
+
+    if(arg1Shape.size() != arg2Shape.size()){
+        throw std::runtime_error("Different size");
+    }
+
+    size_t shapeSize = arg1Shape.size();
+
+    for(size_t i = 0; i <= shapeSize - 3; i ++){
+        if (arg1Shape[i] != arg2Shape[i]){
+            throw std::runtime_error("Different num of tensors");
+        }
+    }
+
+    if(arg1Shape[shapeSize - 1] != arg2Shape[shapeSize - 2]){
+        throw std::runtime_error("Wrong matrix shape");
+    }
+
+    arg1Shape.pop_back();
+    arg1Shape.push_back(arg2Shape[shapeSize - 1]);
+
+    Tensor res(arg1Shape);
+    functions::matrix_multiplication.exec(
+        gpu::WorkSize(functions::workGroupSize, functions::global_work_size),
+        arg1.getGPUBuffer(), arg2.getGPUBuffer(), res.getGPUBuffer(),
+        arg1Shape[shapeSize - 2], arg2Shape[shapeSize - 2], arg2Shape[shapeSize - 1]);
+    return res;
+}
+
+// Пока считаем, что подаются только матрицы
+Tensor matrix_transpose(Tensor &arg) {
+    std::vector<size_t> baseShape = arg.getShape();
+    size_t shapeSize = baseShape.size();
+
+    if(shapeSize < 2){
+        throw std::runtime_error("Wrong shape");
+    }
+
+    size_t rowCount = baseShape[shapeSize - 2], columnCount = baseShape[shapeSize - 1];
+
+    baseShape.pop_back();
+    baseShape.pop_back();
+    baseShape.push_back(columnCount);
+    baseShape.push_back(rowCount);
+
+    Tensor res(baseShape);
+    functions::matrix_transpose.exec(
+        gpu::WorkSize(functions::workGroupSize, functions::global_work_size),
+        arg.getGPUBuffer(), res.getGPUBuffer(), rowCount, columnCount);
+    return res;
+}
+
+void checkShape(Tensor &arg1, Tensor &arg2) {
     if (arg1.getShape() != arg2.getShape()) {
         throw std::runtime_error("Different size");
     }
-    Tensor res(arg1.getShape());
-    // TODO: check to work
-    functions::sum.exec(
-        gpu::WorkSize(functions::workGroupSize, functions::global_work_size),
-        arg1.getGPUBuffer(), arg2.getGPUBuffer(), res.getGPUBuffer());
-    return res;
 }
+
+Tensor callFunction(std::string &name, std::vector<Tensor> &tensors) {
+    if (name == "sum") {
+        return sum(tensors);
+    } else if (name == "subtraction") {
+        return subtraction(tensors);
+    } else if (name == "multiplication") {
+        return multiplication(tensors);
+    } else if (name == "matrix_transpose") {
+        return matrix_transpose(tensors);
+    } else if (name == "matrix_multiplication") {
+        return matrix_multiplication(tensors);
+    }
+}
+
 } // namespace NSTTF

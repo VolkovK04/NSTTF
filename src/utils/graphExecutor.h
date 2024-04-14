@@ -11,17 +11,14 @@
 #include <map>
 #include <vector>
 
-
 namespace NSTTF {
 class GraphExecutor {
   private:
     std::vector<Instruction> instructions;
 
   public:
-    GraphExecutor(std::vector<Instruction> instructions)
-        : instructions(instructions) {}
+    GraphExecutor(std::vector<Instruction> instructions);
 
-    
     void execute(std::map<std::string, Tensor> &tensorsMap);
 };
 } // namespace NSTTF

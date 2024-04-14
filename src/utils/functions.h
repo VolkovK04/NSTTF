@@ -3,8 +3,8 @@
 #include "../tensor/tensor.h"
 
 namespace NSTTF {
-namespace functions {
-void init();
+    namespace functions {
+    void init();
+    }
+    Tensor sum(Tensor& arg1, Tensor& arg2);
 }
-Tensor sum(Tensor &arg1, Tensor &arg2);
-} // namespace NSTTF

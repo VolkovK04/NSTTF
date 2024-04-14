@@ -41,6 +41,8 @@ class Tensor {
     GPUPointer pointer;
     const std::vector<size_t> shape;
 
+    static size_t getSize(const std::vector<size_t> &shape);
+
   public:
     Tensor() = default;
 
@@ -53,9 +55,9 @@ class Tensor {
     gpu::gpu_mem_32f getGPUBuffer();
 
     std::vector<size_t> getShape();
+
+    size_t getSize();
     ~Tensor() = default;
-
 };
-
 
 } // namespace NSTTF
