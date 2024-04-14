@@ -74,27 +74,55 @@ Tensor multiplication(Tensor &arg1, Tensor &arg2) {
 
 // Пока считаем, что подаются только матрицы
 Tensor matrix_multiplication(Tensor &arg1, Tensor &arg2) {
+
+
     std::vector<size_t> arg1Shape = arg1.getShape();
     std::vector<size_t> arg2Shape = arg2.getShape();
 
-    if(arg1Shape[2] != arg2Shape[1]){
+    if(arg1Shape.size() != arg2Shape.size()){
         throw std::runtime_error("Different size");
     }
 
-    Tensor res(std::vector<size_t> {arg1Shape[0], arg1Shape[1], arg2Shape[2]});
+    size_t shapeSize = arg1Shape.size();
+
+    for(size_t i = 0; i <= shapeSize - 3; i ++){
+        if (arg1Shape[i] != arg2Shape[i]){
+            throw std::runtime_error("Different num of tensors");
+        }
+    }
+
+    if(arg1Shape[shapeSize - 1] != arg2Shape[shapeSize - 2]){
+        throw std::runtime_error("Wrong matrix shape");
+    }
+
+    arg1Shape.pop_back();
+    arg1Shape.push_back(arg2Shape[shapeSize - 1]);
+
+    Tensor res(arg1Shape);
     functions::matrix_multiplication.exec(
         gpu::WorkSize(functions::workGroupSize, functions::global_work_size),
         arg1.getGPUBuffer(), arg2.getGPUBuffer(), res.getGPUBuffer(),
-        arg1Shape[1], arg2Shape[1], arg2Shape[2]);
+        arg1Shape[shapeSize - 2], arg2Shape[shapeSize - 2], arg2Shape[shapeSize - 1]);
     return res;
 }
 
 // Пока считаем, что подаются только матрицы
 Tensor matrix_transpose(Tensor &arg) {
     std::vector<size_t> baseShape = arg.getShape();
-    size_t rowCount = baseShape[1], columnCount = baseShape[2];
+    size_t shapeSize = baseShape.size();
 
-    Tensor res(std::vector<size_t> {baseShape[0], columnCount, rowCount});
+    if(shapeSize < 2){
+        throw std::runtime_error("Wrong shape");
+    }
+
+    size_t rowCount = baseShape[shapeSize - 2], columnCount = baseShape[shapeSize - 1];
+
+    baseShape.pop_back();
+    baseShape.pop_back();
+    baseShape.push_back(columnCount);
+    baseShape.push_back(rowCount);
+
+    Tensor res(baseShape);
     functions::matrix_transpose.exec(
         gpu::WorkSize(functions::workGroupSize, functions::global_work_size),
         arg.getGPUBuffer(), res.getGPUBuffer(), rowCount, columnCount);
