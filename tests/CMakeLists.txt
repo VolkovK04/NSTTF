@@ -4,7 +4,7 @@ set(BINARY ${CMAKE_PROJECT_NAME}_test)
 file(GLOB_RECURSE TEST_SOURCES LIST_DIRECTORIES false *.h *.cpp)
 
 # set(TEST_SOURCES main.cpp gpuTests.cpp functionsTests.cpp)
-set(TEST_SOURCES main.cpp functionsTests.cpp graphTests.cpp)
+set(TEST_SOURCES main.cpp functionsTests.cpp graphTests.cpp tensorTests.cpp)
 
 include_directories(libs)
 

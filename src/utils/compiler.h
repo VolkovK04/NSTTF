@@ -10,11 +10,11 @@ private:
   std::unordered_set<AbstractNode *> computed;
   std::vector<AbstractNode *> outputs;
 
-  void get_instruction(AbstractNode *node, std::vector<Instruction> &result);
+  void getInstruction(AbstractNode *node, std::vector<Instruction> &result);
+  std::vector<Instruction> getAllInstructions();
 
 public:
   Compiler() = default;
-  std::vector<Instruction> get_all_instructions();
 
   GraphExecutor compile(const ComputationGraph &graph);
 };
