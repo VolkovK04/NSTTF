@@ -1,11 +1,12 @@
 project(gpu)
 set(BINARY ${CMAKE_PROJECT_NAME}_test)
 
-file(GLOB_RECURSE TEST_SOURCES LIST_DIRECTORIES false *.h *.cpp)
+file(GLOB_RECURSE TEST_SOURCES LIST_DIRECTORIES true *.h *.cpp)
 
 # set(TEST_SOURCES main.cpp gpuTests.cpp functionsTests.cpp)
 
-set(TEST_SOURCES main.cpp functionsTests.cpp graphTests.cpp tensorTests.cpp executorTest.cpp)
+# set(TEST_SOURCES main.cpp functionsTests.cpp graphTests.cpp tensorTests.cpp executorTest.cpp)
+
 
 include_directories(libs)
 
@@ -23,9 +24,10 @@ find_package(GTest)
 
 add_executable(${BINARY} ${TEST_SOURCES}) # ${HEADERS} ${CPPERS})
 
-gtest_add_tests(TARGET ${BINARY})
+gtest_discover_tests(${BINARY})
 
 target_include_directories(${BINARY} PUBLIC ../src ../libs/)
 
 target_link_libraries(${BINARY} gtest gmock libclew libgpu libutils
-  ${PROJECT_NAME}_computationGraph ${PROJECT_NAME}_operation ${PROJECT_NAME}_tensor ${PROJECT_NAME}_utils)
+  ${PROJECT_NAME}_computationGraph ${PROJECT_NAME}_operation ${PROJECT_NAME}_tensor ${PROJECT_NAME}_utils cl_funcs
+  )

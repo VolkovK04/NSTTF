@@ -7,15 +7,11 @@
 #include <libutils/misc.h>
 #include <libutils/timer.h>
 
-#include "../src/cl_build_headers/matrix_multiplication_cl.h"
-#include "../src/cl_build_headers/matrix_transpose_cl.h"
-#include "../src/cl_build_headers/multiplication_cl.h"
-#include "../src/cl_build_headers/subtraction_cl.h"
-#include "../src/cl_build_headers/sum_cl.h"
+#include <cl_functions/cl_functions.h>
 
 #define THREAD_WORK 4
 
-class OpenCLTestFixture : public ::testing::Test {
+class GPUTests : public ::testing::Test {
 protected:
   gpu::Context context;
   gpu::Device device;
@@ -58,7 +54,7 @@ protected:
   }
 };
 
-TEST_F(OpenCLTestFixture, multiplication_test) {
+TEST_F(GPUTests, multiplication_test) {
   unsigned int n = 50 * 1000 * 1000;
   as.resize(n);
   bs.resize(n);
@@ -95,7 +91,7 @@ TEST_F(OpenCLTestFixture, multiplication_test) {
   }
 }
 
-TEST_F(OpenCLTestFixture, sum_test) {
+TEST_F(GPUTests, sum_test) {
   unsigned int n = 50 * 1000 * 1000;
   as.resize(n, 0);
   bs.resize(n, 0);
@@ -131,7 +127,7 @@ TEST_F(OpenCLTestFixture, sum_test) {
   }
 }
 
-TEST_F(OpenCLTestFixture, subtraction_test) {
+TEST_F(GPUTests, subtraction_test) {
   unsigned int n = 50 * 1000 * 1000;
   as.resize(n, 0);
   bs.resize(n, 0);
@@ -168,7 +164,7 @@ TEST_F(OpenCLTestFixture, subtraction_test) {
   }
 }
 
-TEST_F(OpenCLTestFixture, matrix_multiplication_updated_test) {
+TEST_F(GPUTests, matrix_multiplication_updated_test) {
   // Load and compile the kernel from your src/cl directory
   // Create buffers, set arguments, etc.
   int benchmarkingIters = 1;
@@ -251,7 +247,7 @@ TEST_F(OpenCLTestFixture, matrix_multiplication_updated_test) {
   }
 }
 
-TEST_F(OpenCLTestFixture, matrix_transposition_test) {
+TEST_F(GPUTests, matrix_transposition_test) {
   int benchmarkingIters = 1;
   unsigned int M = 1024;
   unsigned int K = 1024;

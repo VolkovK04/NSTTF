@@ -2,11 +2,7 @@
 
 #include <libutils/misc.h>
 
-#include "../cl_build_headers/matrix_multiplication_cl.h"
-#include "../cl_build_headers/matrix_transpose_cl.h"
-#include "../cl_build_headers/multiplication_cl.h"
-#include "../cl_build_headers/subtraction_cl.h"
-#include "../cl_build_headers/sum_cl.h"
+#include <cl_functions/cl_functions.h>
 
 namespace NSTTF {
 

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 #include "../operations/abstractOperation.h"
 #include <vector>
 

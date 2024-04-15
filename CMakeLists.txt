@@ -24,13 +24,13 @@ else()
 message(WARNING "OpenMP not found!")
 endif()
 
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/cl_build_headers)
+# file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/cl_build_headers)
 
-convertIntoHeader(src/cl/sum.cl src/cl_build_headers/sum_cl.h sum_kernel)
-convertIntoHeader(src/cl/matrix_multiplication.cl src/cl_build_headers/matrix_multiplication_cl.h matrix_multiplication_kernel)
-convertIntoHeader(src/cl/matrix_transpose.cl src/cl_build_headers/matrix_transpose_cl.h matrix_transpose_kernel)
-convertIntoHeader(src/cl/subtraction.cl src/cl_build_headers/subtraction_cl.h subtraction_kernel)
-convertIntoHeader(src/cl/multiplication.cl src/cl_build_headers/multiplication_cl.h multiplication_kernel)
+# convertIntoHeader(src/cl/sum.cl src/cl_build_headers/sum_cl.h sum_kernel)
+# convertIntoHeader(src/cl/matrix_multiplication.cl src/cl_build_headers/matrix_multiplication_cl.h matrix_multiplication_kernel)
+# convertIntoHeader(src/cl/matrix_transpose.cl src/cl_build_headers/matrix_transpose_cl.h matrix_transpose_kernel)
+# convertIntoHeader(src/cl/subtraction.cl src/cl_build_headers/subtraction_cl.h subtraction_kernel)
+# convertIntoHeader(src/cl/multiplication.cl src/cl_build_headers/multiplication_cl.h multiplication_kernel)
 
 add_executable(gpu_main src/main.cpp)
 #   src/cl_build_headers/sum_cl.h 
