@@ -41,12 +41,9 @@
    - Creation (tests)
    - Compiling (tests)
    - Execution (tests)
-2. GPU optimizations prototype development
-   - Lazy evaluation of tensors with OpenCL
-   - Tests
+2. Compiler optimizations (just starting)
 
 ## Fourth milestone (27.05.24):
-1. Polishing base structure
-2. Adding more logic with test coverage if needed
-3. Implementation of basic layers for training
+1. Compiler optimizations (probably)
+2. Implementation of basic layers for training
    _GOAL: Training if a simple NN should work_
