@@ -38,12 +38,12 @@
 ## Third milestone (29.04.24):
 1. Extended eval tree:
    - Building derivative equation based on tree
-   - Tests (creation, building and evaluation)
+   - Creation (tests)
+   - Compiling (tests)
+   - Execution (tests)
 2. GPU optimizations prototype development
-   - Parallel evaluation of tensors with OpenCL 
-   - Lazy evaluation and improving data distribution 
-   - All-reduce
-   - Tests (data distribution based on GPU)
+   - Lazy evaluation of tensors with OpenCL
+   - Tests
 
 ## Fourth milestone (27.05.24):
 1. Polishing base structure
