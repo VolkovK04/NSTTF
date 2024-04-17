@@ -1,27 +1,5 @@
 # NSTTF Plan
-
-## 1) API structure (methods, components etc.) development
-- Develop our library's API structure based on your goals and scope.
-- Define the classes and functions that will be available to users of our library.
-(_approximately by 11.03.24 as part of the second milestone_)
-
-## 2) Implementation of basic data structures (Writing Tensor and connected with it classes)
-- Create classes to represent graph nodes, operations, connections between nodes, etc.
-- Define basic methods for working with these data structures, such as adding and removing nodes, performing operations, etc.
-
-## 3) Implementation of tree evaluation, based on structures above
-
-## 4) Implementation of specific optimizations and resource distributions for tree evaluation
-- Develop algorithms to optimize and perform operations on a computational graph.
-- Implement methods to allocate resources and control the execution of operations on various devices (e.g. CPU, GPU).
-(_work starts after the second milestone. Probably we have time and some kind of prototype will be prepared_)
-
-## 5) Cover logic with tests for implemented above (during the whole development)
-(_this point is the one the others is going to be tested on_)
-
----
-
-### What will be ready by the second milestone in brief (all details are mentioned above):
+## Stands for Not So Tiny Tensorflow (a.k.a. Tensorlow Killer)
 (_Criterias for each milestone_)
 
 ## Second milestone (01.04.24):
@@ -65,6 +43,7 @@ By the third phase:
 9. (?) Tensor broadcasting
 10. (?) Provide users with tools to create their own functions (additional)
 11. (?) CompositNode class that contains an entire graph within itself; the graph's inputs and outputs should link with the node's inputs and outputs. Should be supported at the compiler level
+12. (?) Code documentation
 
 ## Fourth milestone (27.05.24):
 1. Implement some graph optimization algorithms
