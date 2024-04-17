@@ -72,8 +72,6 @@ By the third phase:
    - Node fusion (for example, `a * b + c` can be replaced by calling one cl function like `multAndSum(a, b, c)`)
    - Parenthesis placement when multiplying more than two matrices (solved in an algorithms course)
    - Optimization by distributivity (`AB+AC = A(B+C)`, similarly with the right side)
-   - etc.
-P.S. The compiler should not modify the graph itself; all optimizations work at the level of code consisting of function calls that it generates.
 I imagine it like this:
    - we traverse the graph and generate naive code
    - then in a loop, we look for some patterns in this code similar to regexes and replace them with more efficient code
