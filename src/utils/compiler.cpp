@@ -1,8 +1,4 @@
 #include "compiler.h"
-#include "../computationGraph/node.h"
-#include "instruction.h"
-#include <unordered_set>
-#include <vector>
 
 namespace NSTTF {
 

@@ -1,13 +1,14 @@
 #pragma once
 
-#include <libgpu/context.h>
-#include <libgpu/shared_device_buffer.h>
-#include <libutils/fast_random.h>
-#include <libutils/misc.h>
-#include <libutils/timer.h>
+// #include <libgpu/context.h>
+// #include <libgpu/shared_device_buffer.h>
+// #include <libutils/fast_random.h>
+// #include <libutils/misc.h>
+// #include <libutils/timer.h>
 
-#include "../tensor/tensor.h"
-#include "instruction.h"
+#include <tensor/tensor.h>
+#include <utils/instruction.h>
+#include <utils/functions.h>
 #include <map>
 #include <vector>
 

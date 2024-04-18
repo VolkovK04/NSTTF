@@ -6,8 +6,8 @@
 #include <libgpu/shared_device_buffer.h>
 #include <libutils/misc.h>
 
-#include "../src/tensor/tensor.h"
-#include "../src/utils/functions.h"
+#include <tensor/tensor.h>
+#include <utils/functions.h>
 
 #include <vector>
 

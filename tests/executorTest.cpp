@@ -6,9 +6,9 @@
 #include <libgpu/shared_device_buffer.h>
 #include <libutils/misc.h>
 
-#include "../src/computationGraph/computationGraph.h"
-#include "../src/utils/compiler.h"
-#include "../src/utils/graphExecutor.h"
+#include <computationGraph/computationGraph.h>
+#include <utils/compiler.h>
+#include <executor/graphExecutor.h>
 
 #include <map>
 

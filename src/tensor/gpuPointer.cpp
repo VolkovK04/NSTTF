@@ -1,6 +1,4 @@
 #include "tensor.h"
-#include <libgpu/context.h>
-#include <libgpu/shared_device_buffer.h>
 
 namespace NSTTF {
 

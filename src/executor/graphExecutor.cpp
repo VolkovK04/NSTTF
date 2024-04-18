@@ -1,5 +1,4 @@
 #include "graphExecutor.h"
-#include "functions.h"
 
 namespace NSTTF {
 

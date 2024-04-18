@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <libgpu/shared_device_buffer.h>
+#include <libgpu/context.h>
 #include <vector>
 
 namespace NSTTF {

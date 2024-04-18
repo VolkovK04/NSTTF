@@ -1,6 +1,8 @@
 #pragma once
 
-#include "../tensor/tensor.h"
+#include <tensor/tensor.h>
+#include <cl_functions/cl_functions.h>
+#include <libutils/misc.h>
 
 namespace NSTTF {
 namespace functions {

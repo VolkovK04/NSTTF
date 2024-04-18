@@ -1,13 +1,30 @@
 cmake_minimum_required(VERSION 3.21)
-project(gpu)
+project(NSTTF)
+set(BINARY ${PROJECT_NAME}_main)
 
 enable_testing()
+
+set(EXTERNAL_LIBRARIES
+        libclew
+        libgpu
+        libutils
+        CACHE INTERNAL "List of external libraries")
+
+set(INTERNAL_LIBRARIES
+        cl_funcs 
+        computationGraph
+        operations
+        tensor
+        utils
+        
+        CACHE INTERNAL "list of internal libraries")
 
 add_subdirectory(libs)
 add_subdirectory(tests)
 add_subdirectory(src)
 
 set(CMAKE_CXX_STANDARD 20)
+
 
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
 
@@ -18,51 +35,18 @@ set(CMAKE_CXX_STANDARD 20)
 # OpenMP позволит распараллеливать циклы на все ядра процессора простыми директивами
 find_package(OpenMP)
 
-if(OpenMP_CXX_FOUND)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
-else()
-        message(WARNING "OpenMP not found!")
-endif()
+# if(OpenMP_CXX_FOUND)
+#         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+#         set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
+# else()
+#         message(WARNING "OpenMP not found!")
+# endif()
 
-# file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/cl_build_headers)
+add_executable(${BINARY} src/main.cpp)
 
-# convertIntoHeader(src/cl/sum.cl src/cl_build_headers/sum_cl.h sum_kernel)
-# convertIntoHeader(src/cl/matrix_multiplication.cl src/cl_build_headers/matrix_multiplication_cl.h matrix_multiplication_kernel)
-# convertIntoHeader(src/cl/matrix_transpose.cl src/cl_build_headers/matrix_transpose_cl.h matrix_transpose_kernel)
-# convertIntoHeader(src/cl/subtraction.cl src/cl_build_headers/subtraction_cl.h subtraction_kernel)
-# convertIntoHeader(src/cl/multiplication.cl src/cl_build_headers/multiplication_cl.h multiplication_kernel)
-add_executable(gpu_main src/main.cpp)
+target_include_directories(${BINARY} PUBLIC src libs)
 
-# src/cl_build_headers/sum_cl.h
-# src/cl_build_headers/matrix_multiplication_cl.h
-# src/cl_build_headers/matrix_transpose_cl.h
-# src/cl_build_headers/subtraction_cl.h
-# src/cl_build_headers/multiplication_cl.h)
-include_directories(
-
-        # ${CMAKE_CURRENT_SOURCE_DIR}/src/cl_build_headers/
-        # ${CMAKE_CURRENT_SOURCE_DIR}/src/compputationGraph/
-        # ${CMAKE_CURRENT_SOURCE_DIR}/src/operations/
-        # ${CMAKE_CURRENT_SOURCE_DIR}/src/tensor/
-        # ${CMAKE_CURRENT_SOURCE_DIR}/src/utils/
-        ${CMAKE_CURRENT_SOURCE_DIR}/src
+target_link_libraries(${BINARY}
+        ${EXTERNAL_LIBRARIES}
+        ${INTERNAL_LIBRARIES}
 )
-
-target_link_libraries(gpu_main libclew libgpu libutils
-        ${PROJECT_NAME}_computationGraph ${PROJECT_NAME}_operation ${PROJECT_NAME}_tensor ${PROJECT_NAME}_utils)
-
-# convertIntoHeader CMake-функция объявлена в libs/gpu/CMakeLists.txt:71
-# Она считывает все байты из файла src/cl/aplusb.cl (т.е. весь исходный код кернела) и преобразует их в массив байтов в файле src/cl/aplusb_cl.h aplusb_kernel
-# Обратите внимание что это происходит на этапе компиляции, кроме того необходимо чтобы файл src/cl/aplusb_cl.h был перечислен среди исходников для компиляции при вызове add_executable
-# convertIntoHeader(src/cl/aplusb.cl src/cl/aplusb_cl.h aplusb_kernel)
-# add_executable(aplusb src/main_aplusb.cpp src/cl/aplusb_cl.h)
-# target_link_libraries(aplusb libclew libgpu libutils)
-
-# convertIntoHeader(src/cl/matrix_transpose.cl src/cl/matrix_transpose_cl.h matrix_transpose)
-# add_executable(matrix_transpose src/main_matrix_transpose.cpp src/cl/matrix_transpose_cl.h)
-# target_link_libraries(matrix_transpose libclew libgpu libutils)
-
-# convertIntoHeader(src/cl/matrix_multiplication.cl src/cl/matrix_multiplication_cl.h matrix_multiplication)
-# add_executable(matrix_multiplication src/main_matrix_multiplication.cpp src/cl/matrix_multiplication_cl.h)
-# target_link_libraries(matrix_multiplication libclew libgpu libutils)

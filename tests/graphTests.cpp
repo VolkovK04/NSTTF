@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "../src/computationGraph/computationGraph.h"
+#include <computationGraph/computationGraph.h>
 
 using namespace NSTTF;
 

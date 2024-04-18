@@ -1,9 +1,5 @@
 #include "functions.h"
 
-#include <libutils/misc.h>
-
-#include <cl_functions/cl_functions.h>
-
 namespace NSTTF {
 
 namespace functions {

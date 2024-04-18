@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-#include "../operations/abstractOperation.h"
+#include <operations/abstractOperation.h>
 #include <vector>
 
 namespace NSTTF {
