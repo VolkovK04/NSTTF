@@ -15,11 +15,11 @@
 
 ## Third milestone (29.04.24):
 By the third phase:
-1. Construction of a differentiation graph
+1. Construction of a differentiation graph -> Novikov Serega
    - Implement the backpropagation algorithm
    - Add flags to instruct the compiler on which nodes the algorithm should reach (or pass them as arguments)
    - Define the derivatives for all existing operations concerning all their arguments (for some, it may be necessary to write new compute language functions, while for others, existing ones can be reused)
-2. Implement the gradient descent algorithm (GD/SGD)
+2. Implement the gradient descent algorithm (GD/SGD) -> Novikov Serega
    - Simply implement the following operation:
      ```
      W = W - learning_rate * grad(W)
@@ -33,7 +33,7 @@ By the third phase:
    - Most operations with such stacks will be just as efficient
    - During computations, it can be converted into a regular tensor
    - It should be possible to add and remove tensors from the stack without additional memory allocations
-6. (?) Function class that contains:
+6. (?) Function class that contains: -> Novikov Serega
    - The name of the function
    - The algorithm for its computation
    - The algorithm for its differentiation (which may differ for various arguments)
@@ -44,6 +44,7 @@ By the third phase:
 10. (?) Provide users with tools to create their own functions (additional)
 11. (?) CompositNode class that contains an entire graph within itself; the graph's inputs and outputs should link with the node's inputs and outputs. Should be supported at the compiler level
 12. (?) Code documentation
+13. CL code to hex array (function in utils for that) -> Novikov Serega
 
 ## Fourth milestone (27.05.24):
 1. Implement some graph optimization algorithms
