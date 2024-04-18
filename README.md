@@ -15,11 +15,11 @@
 
 ## Third milestone (29.04.24):
 By the third phase:
-1. Construction of a differentiation graph
+1. Construction of a differentiation graph -> Yolkin Maxim
    - Implement the backpropagation algorithm
    - Add flags to instruct the compiler on which nodes the algorithm should reach (or pass them as arguments)
    - Define the derivatives for all existing operations concerning all their arguments (for some, it may be necessary to write new compute language functions, while for others, existing ones can be reused)
-2. Implement the gradient descent algorithm (GD/SGD) -> Novikov Serega
+2. Implement the gradient descent algorithm (GD/SGD) -> Yolkin Maxim
    - Simply implement the following operation:
      ```
      W = W - learning_rate * grad(W)
