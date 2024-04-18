@@ -7,8 +7,8 @@ extern const char multiplication_kernel[];
 extern const char subtraction_kernel[];
 extern const char sum_kernel[];
 
-extern size_t matrix_multiplication_kernel_length;
-extern size_t matrix_transpose_kernel_length;
-extern size_t multiplication_kernel_length;
-extern size_t subtraction_kernel_length;
-extern size_t sum_kernel_length;
+extern std::size_t matrix_multiplication_kernel_length;
+extern std::size_t matrix_transpose_kernel_length;
+extern std::size_t multiplication_kernel_length;
+extern std::size_t subtraction_kernel_length;
+extern std::size_t sum_kernel_length;
