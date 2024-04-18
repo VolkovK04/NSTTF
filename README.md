@@ -15,7 +15,7 @@
 
 ## Third milestone (29.04.24):
 By the third phase:
-1. Construction of a differentiation graph -> Novikov Serega
+1. Construction of a differentiation graph
    - Implement the backpropagation algorithm
    - Add flags to instruct the compiler on which nodes the algorithm should reach (or pass them as arguments)
    - Define the derivatives for all existing operations concerning all their arguments (for some, it may be necessary to write new compute language functions, while for others, existing ones can be reused)
