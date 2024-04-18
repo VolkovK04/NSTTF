@@ -28,7 +28,7 @@ By the third phase:
 3. Write a TensorDict class that acts as a wrapper over
    `std::map<std::string name, Tensor tensor>` and overloads all operations defined over tensors
    - Operations that take more than one tensor should check that the dictionaries contain tensors with the same names and apply operations to such pairs
-4. Write functional tests
+4. Write functional tests -> Ovchinnikov Maksim
 5. (?) TensorStack class representing an array of tensors of the same size
    - Most operations with such stacks will be just as efficient
    - During computations, it can be converted into a regular tensor
@@ -38,9 +38,9 @@ By the third phase:
    - The algorithm for its computation
    - The algorithm for its differentiation (which may differ for various arguments)
    - Some additional data, such as the number of parameters and any flags needed by the compiler
-7. Efficiency tests for all operations
+7. Efficiency tests for all operations -> Ovchinnikov Maksim
 8. ConstNode class that initializes from a tensor and then functions like an InputNode
-9. (?) Tensor broadcasting
+9. (?) Tensor broadcasting -> Ovchinnikov Maksim
 10. (?) Provide users with tools to create their own functions (additional)
 11. (?) CompositNode class that contains an entire graph within itself; the graph's inputs and outputs should link with the node's inputs and outputs. Should be supported at the compiler level
 12. (?) Code documentation
