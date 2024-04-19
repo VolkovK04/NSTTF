@@ -22,6 +22,9 @@ RUN sed -i "s|http://archive.ubuntu.com|${apt_archive}|g" /etc/apt/sources.list 
           cmake \
           cppcheck \
           ninja-build \
+          xorg-dev \
+          pocl-opencl-icd \
+          ocl-icd-opencl-dev \
     && apt-get clean \
     && rm -rf \
         /var/lib/apt/lists/* \

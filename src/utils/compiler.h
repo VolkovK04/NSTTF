@@ -1,9 +1,9 @@
 #pragma once
 
+#include "instruction.h"
 #include <computationGraph/computationGraph.h>
 #include <computationGraph/node.h>
 #include <executor/graphExecutor.h>
-#include "instruction.h"
 #include <unordered_set>
 #include <vector>
 

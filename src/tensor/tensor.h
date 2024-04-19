@@ -1,8 +1,8 @@
 #pragma once
 
 #include <iostream>
-#include <libgpu/shared_device_buffer.h>
 #include <libgpu/context.h>
+#include <libgpu/shared_device_buffer.h>
 #include <vector>
 
 namespace NSTTF {

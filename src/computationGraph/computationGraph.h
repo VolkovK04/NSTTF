@@ -8,6 +8,7 @@
 namespace NSTTF {
 class ComputationGraph {
   friend NodeInterface;
+
 private:
   std::vector<InputNode *> input;
   std::vector<AbstractNode *> output;
@@ -17,7 +18,7 @@ private:
 
   std::unordered_set<AbstractNode *> getAllNodes() const;
 
-  void setOutputNode(AbstractNode* node);
+  void setOutputNode(AbstractNode *node);
 
 public:
   ComputationGraph() = default;
@@ -27,11 +28,9 @@ public:
 
   const std::vector<AbstractNode *> getOutputNodes() const;
 
-
-
   NodeInterface AddInputNode(const std::string &name);
   NodeInterface AddOperationNode(const AbstractOperation &operation,
-                                  const std::vector<AbstractNode *> &nodes,
-                                  const std::string &name, bool output);
+                                 const std::vector<AbstractNode *> &nodes,
+                                 const std::string &name, bool output);
 };
 } // namespace NSTTF

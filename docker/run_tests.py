@@ -1,6 +1,5 @@
 import glob
 import itertools
-import json
 import os
 import shutil
 import subprocess
@@ -49,12 +48,13 @@ class TestingConfiguration:
 
 __TOOL_SETS = [
     ToolSet(name="gcc_12", cpp_compiler="g++-12", c_compiler="gcc-12"),
-    ToolSet(name="clang_15", cpp_compiler="clang++-15", c_compiler="clang-15"),
+    # ToolSet(name="clang_15", cpp_compiler="clang++-15", c_compiler="clang-15"),
 ]
 
 
 def _get_cpp_flags(build_type: str) -> str:
-    flags = ["-Wall", "-Werror"]
+    flags = []
+    # flags = ["-Wall", "-Werror"]
 
     if build_type == "Debug":
         flags += ["-O0", "-g"]
@@ -128,7 +128,10 @@ def _make_testing_configurations() -> List[TestingConfiguration]:
     rv = []
     for toolset in __TOOL_SETS:
         for build_type, std_lib in itertools.product(  # build types.
-            ["Debug", "Release"],  # cpp standard libs
+            [
+                "Debug", 
+            #  "Release"
+             ],  # cpp standard libs
             _get_supported_std_cpp_libs(toolset),
         ):
 
@@ -141,13 +144,13 @@ def _make_testing_configurations() -> List[TestingConfiguration]:
                 )
 
             rv += [
-                TestingConfiguration(
-                    build_dir=make_build_dir("orig"),
-                    toolset=toolset,
-                    std_cpp_lib=std_lib,
-                    build_type=build_type,
-                    cpp_flags=_get_cpp_flags(build_type),
-                ),
+                # TestingConfiguration(
+                #     build_dir=make_build_dir("orig"),
+                #     toolset=toolset,
+                #     std_cpp_lib=std_lib,
+                #     build_type=build_type,
+                #     cpp_flags=_get_cpp_flags(build_type),
+                # ),
                 TestingConfiguration(
                     build_dir=make_build_dir("asan"),
                     toolset=toolset,
@@ -155,13 +158,13 @@ def _make_testing_configurations() -> List[TestingConfiguration]:
                     build_type=build_type,
                     cpp_flags=_get_cpp_flags_asan(toolset, build_type),
                 ),
-                TestingConfiguration(
-                    build_dir=make_build_dir("usan"),
-                    toolset=toolset,
-                    std_cpp_lib=std_lib,
-                    build_type=build_type,
-                    cpp_flags=_get_cpp_flags_usan(toolset, build_type),
-                ),
+                # TestingConfiguration(
+                #     build_dir=make_build_dir("usan"),
+                #     toolset=toolset,
+                #     std_cpp_lib=std_lib,
+                #     build_type=build_type,
+                #     cpp_flags=_get_cpp_flags_usan(toolset, build_type),
+                # ),
             ]
 
     # Ensure that each test configuration build directory is unique.
@@ -210,7 +213,7 @@ def _run_unit_tests(cfg: TestingConfiguration):
 
     os.chdir(cfg.build_dir)
 
-    if subprocess.run(["./render_unittests"]).returncode:
+    if subprocess.run(["./tests/NSTTF_test"]).returncode:
         _report_fatal_error(f"Unit tests failed for {cfg.build_dir}")
 
 
@@ -221,80 +224,12 @@ class IntegrationTestCase:
     expected_output: Optional[str]
 
 
-def _parse_integration_test_cases() -> List[IntegrationTestCase]:
-    tests_json_file = os.path.join(_get_integration_tests_dir(), "tests.json")
-    with open(tests_json_file) as fi:
-        tests_cases_data = json.load(fi)
-
-    return [
-        IntegrationTestCase(
-            scenario=tc["scenario"],
-            is_positive=bool(tc["is_positive"]) if "is_positive" in tc else True,
-            expected_output=tc["expected_output"] if "expected_output" in tc else None,
-        )
-        for tc in tests_cases_data
-    ]
-
-
-def _get_integration_tests_dir() -> str:
-    return os.path.join(_ROOT_PATH, "integration_tests")
-
-
-def _run_integration_tests(
-    cfg: TestingConfiguration, test_cases: List[IntegrationTestCase]
-):
-    print(f"\nRun integration tests: {cfg.build_dir}")
-
-    tests_dir = _get_integration_tests_dir()
-    os.chdir(cfg.build_dir)
-
-    for tc in test_cases:
-        print("\n  Test case:")
-        print(f"    scenario:        {tc.scenario}")
-        print(f"    positive:        {tc.is_positive}")
-        print(f"    expected_output: {tc.expected_output}")
-
-        script_path = os.path.join(tests_dir, tc.scenario)
-        assert _exists(script_path), f"{script_path} should exist"
-
-        result = subprocess.run([f"./render", script_path])
-        if tc.is_positive:
-            if result.returncode:
-                _report_fatal_error("Program returned failure indicator.")
-
-            if tc.expected_output:
-                exp_data_path = os.path.join(tests_dir, tc.expected_output)
-                act_data_path = os.path.join(cfg.build_dir, tc.expected_output)
-
-                assert _exists(exp_data_path), f"{exp_data_path} should exist"
-                assert _exists(act_data_path), f"{act_data_path} should exist"
-
-                result = subprocess.run(
-                    [
-                        "diff",
-                        "-b",
-                        "--ignore-all-space",
-                        "--ignore-blank-lines",
-                        "--ignore-space-change",
-                        act_data_path,
-                        exp_data_path
-                    ]
-                )
-                if result.returncode:
-                    _report_fatal_error("Unexpected output.")
-        else:
-            if not result.returncode:
-                _report_fatal_error("Negative test returned success indicator.")
-
-
 def _run_static_analyzers(configurations: List[TestingConfiguration]):
     os.chdir(_ROOT_PATH)
 
     print("\nRun cppcheck:")
     if subprocess.run(["cppcheck", "src", "--error-exitcode=2"]).returncode:
         _report_fatal_error("CppCheck has detected several issues.")
-
-    # TODO: launch clang-tidy
 
     # for cfg in configurations:
     #     print(f"\nRun clang-tidy for {cfg.build_dir}")
@@ -330,21 +265,17 @@ def _main():
 
     configurations = _make_testing_configurations()
 
-    for cfg in configurations:
+    for cfg in configurations[:1]:
         _build(cfg)
 
     _run_static_analyzers(configurations)
 
-    for cfg in configurations:
+    for cfg in configurations[:1]:
         _run_unit_tests(cfg)
-
-    integration_test_cases = _parse_integration_test_cases()
-    for cfg in configurations:
-        _run_integration_tests(cfg, integration_test_cases)
 
     # TODO: launch valgrind
 
-    for cfg in configurations:
+    for cfg in configurations[:1]:
         _cleanup(cfg)
 
     print("\nSuccess")

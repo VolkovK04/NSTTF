@@ -65,14 +65,15 @@ public:
 
   const AbstractNode &getNode() const;
   void setOutput();
-  void setName(const std::string& name);
+  void setName(const std::string &name);
 
   NodeInterface operator+(const NodeInterface &nodeInterface) const;
   NodeInterface operator-(const NodeInterface &nodeInterface) const;
   NodeInterface operator*(const NodeInterface &nodeInterface) const;
 
-  static NodeInterface MatrixMult(const NodeInterface& left, const NodeInterface& right);
-  static NodeInterface MatrixTranspose(const NodeInterface& node);
+  static NodeInterface MatrixMult(const NodeInterface &left,
+                                  const NodeInterface &right);
+  static NodeInterface MatrixTranspose(const NodeInterface &node);
 };
 
 } // namespace NSTTF

@@ -14,7 +14,6 @@ Tensor::Tensor(const std::vector<float> &data, const std::vector<size_t> &shape)
   }
 }
 
-
 Tensor::Tensor(const std::vector<size_t> &shape)
     : shape(shape), pointer(getSize(shape)) {
   if (getSize() == 0) {

@@ -1,8 +1,8 @@
 #pragma once
 
-#include <tensor/tensor.h>
 #include <cl_functions/cl_functions.h>
 #include <libutils/misc.h>
+#include <tensor/tensor.h>
 
 namespace NSTTF {
 namespace functions {
@@ -14,7 +14,8 @@ Tensor multiplication(const std::vector<Tensor> &tensors);
 Tensor matrix_multiplication(const std::vector<Tensor> &tensors);
 Tensor matrix_transpose(const std::vector<Tensor> &tensors);
 
-Tensor callFunction(const std::string &name, const std::vector<Tensor> &tensors);
+Tensor callFunction(const std::string &name,
+                    const std::vector<Tensor> &tensors);
 
 void checkNumOfTensors(const std::vector<Tensor> &tensors, size_t num);
 void checkShape(Tensor &arg1, Tensor &arg2);

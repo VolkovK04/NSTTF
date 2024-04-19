@@ -2,7 +2,7 @@
 #include <unordered_set>
 
 namespace NSTTF {
-NodeInterface ComputationGraph::AddInputNode(const std::string& name) {
+NodeInterface ComputationGraph::AddInputNode(const std::string &name) {
   InputNode *node = new InputNode();
   node->name = name;
   this->input.push_back(node);
@@ -10,24 +10,24 @@ NodeInterface ComputationGraph::AddInputNode(const std::string& name) {
 }
 
 NodeInterface
-ComputationGraph::AddOperationNode(const AbstractOperation& operation,
+ComputationGraph::AddOperationNode(const AbstractOperation &operation,
                                    const std::vector<AbstractNode *> &nodes,
-                                   const std::string& name,
+                                   const std::string &name,
                                    bool output = false) {
   OperationNode *node = new OperationNode();
   node->prevs = nodes;
   node->operation = operation;
-  node->output = output;
-  for (auto node : nodes) {
-    node->nexts.push_back(node);
+
+  for (AbstractNode *prev : nodes) {
+    prev->nexts.push_back(node);
   }
   if (output) {
-    this->output.push_back(node);
+    setOutputNode(node);
   }
   return NodeInterface(node, *this);
 }
 
-void ComputationGraph::setOutputNode(AbstractNode* node) {
+void ComputationGraph::setOutputNode(AbstractNode *node) {
   // TODO check if output nodes also contains this node
   node->output = true;
   output.push_back(node);
@@ -42,13 +42,13 @@ const std::vector<AbstractNode *> ComputationGraph::getOutputNodes() const {
 }
 
 void ComputationGraph::getAllNextNodes(
-    AbstractNode *node, std::unordered_set<AbstractNode *> &output) const {
-  if (output.find(node) == output.end()) {
+    AbstractNode *node, std::unordered_set<AbstractNode *> &set) const {
+  if (set.find(node) != set.end()) {
     return;
   }
-  output.insert(node);
-  for (auto next : node->nexts) {
-    getAllNextNodes(next, output);
+  set.insert(node);
+  for (AbstractNode *next : node->nexts) {
+    getAllNextNodes(next, set);
   }
 }
 

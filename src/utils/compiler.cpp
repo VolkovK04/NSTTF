@@ -12,7 +12,7 @@ GraphExecutor Compiler::compile(const ComputationGraph &graph) {
 }
 
 void Compiler::getInstruction(AbstractNode *node,
-                               std::vector<Instruction> &result) {
+                              std::vector<Instruction> &result) {
   if (computed.count(node)) {
     return;
   }
