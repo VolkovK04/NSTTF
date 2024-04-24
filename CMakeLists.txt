@@ -22,6 +22,8 @@ set(INTERNAL_LIBRARIES
         
         CACHE INTERNAL "list of internal libraries")
 
+include_directories(src, libs)
+
 add_subdirectory(libs)
 add_subdirectory(tests)
 add_subdirectory(src)
