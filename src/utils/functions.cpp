@@ -6,12 +6,14 @@ namespace NSTTF
 
   namespace functions
   {
+
+    // source = clToCharVector("src/cl/matrix_multiplication.cl");
     ocl::Kernel subtraction(subtraction_kernel, subtraction_kernel_length,
                             "subtraction");
     ocl::Kernel multiplication(multiplication_kernel, multiplication_kernel_length,
                                "multiplication");
 
-    std::vector<char> source = clToCharVector(".\\..\\cl\\sum.cl");
+    auto source = clToCharVector("src/cl/sum.cl");
     ocl::Kernel sum = ocl::Kernel(source.data(), source.size(), "sum");
 
     ocl::Kernel matrix_multiplication(matrix_multiplication_kernel,
@@ -212,16 +214,18 @@ namespace NSTTF
 
   std::vector<char> clToCharVector(const char *clFilename)
   {
-    std::filesystem::path currentPath = std::filesystem::current_path();
-    std::filesystem::path buildDir = "build";
-
-    
-
-    std::ifstream file(clFilename, std::ios::binary);
-    if (!file)
+    if (!clFilename)
     {
-      
-      throw std::runtime_error("Can't open cl file");
+      throw std::runtime_error("No filename");
+    }
+
+    std::filesystem::path sourcePath(_PROJECT_SOURCE_DIR);
+    sourcePath.append(clFilename);
+    std::ifstream file(sourcePath, std::ios::binary);
+
+    if (!file.is_open())
+    {
+      throw std::runtime_error("Can't open cl file. Path: " + sourcePath.string());
     }
     file.seekg(0, std::ios::end);
     size_t size = file.tellg();

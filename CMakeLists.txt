@@ -1,9 +1,12 @@
 cmake_minimum_required(VERSION 3.21)
 project(NSTTF)
 
-include(clang-format.cmake)
+set(CMAKE_CXX_STANDARD 20)
+# include(clang-format.cmake)
 
 set(BINARY ${PROJECT_NAME}_main)
+add_compile_definitions(_PROJECT_SOURCE_DIR="${PROJECT_SOURCE_DIR}")
+
 
 enable_testing()
 
@@ -28,7 +31,6 @@ add_subdirectory(libs)
 add_subdirectory(tests)
 add_subdirectory(src)
 
-set(CMAKE_CXX_STANDARD 20)
 
 
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")

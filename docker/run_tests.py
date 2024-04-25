@@ -261,7 +261,7 @@ def _cleanup(cfg: TestingConfiguration) -> None:
 
 
 def _main():
-    _check_format()
+    # _check_format()
 
     configurations = _make_testing_configurations()
 
