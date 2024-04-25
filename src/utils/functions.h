@@ -22,5 +22,5 @@ namespace NSTTF
 
     void checkNumOfTensors(const std::vector<Tensor> &tensors, size_t num);
     void checkShape(Tensor &arg1, Tensor &arg2);
-    std::vector<char> clToCharVector(const char* clFilename);
+    std::vector<char> clToCharVector(const std::string& clFilename);
 } // namespace NSTTF

@@ -212,13 +212,8 @@ namespace NSTTF
     }
   }
 
-  std::vector<char> clToCharVector(const char *clFilename)
+  std::vector<char> clToCharVector(const std::string& clFilename)
   {
-    if (!clFilename)
-    {
-      throw std::runtime_error("No filename");
-    }
-
     std::filesystem::path sourcePath(_PROJECT_SOURCE_DIR);
     sourcePath.append(clFilename);
     std::ifstream file(sourcePath, std::ios::binary);
@@ -233,7 +228,7 @@ namespace NSTTF
     file.seekg(0, std::ios::beg);
     file.read(result.data(), size);
     file.close();
-    return result;
+    return std::move(result);
   }
 
 } // namespace NSTTF
