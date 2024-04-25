@@ -4,6 +4,8 @@
 #include <libgpu/context.h>
 #include <libgpu/shared_device_buffer.h>
 #include <vector>
+#include <unordered_map>
+#include <string>
 
 namespace NSTTF {
 class AbstractDataPointer {
@@ -81,6 +83,20 @@ class TensorStack {
 
     const Tensor& operator[](size_t index) const;
     // TODO iterators
+};
+
+class TensorMap {
+  private:
+    std::unordered_map<std::string, Tensor> data;
+  public:
+    TensorMap() = default;
+    explicit TensorMap(const std::unordered_map<std::string, Tensor>& data) : data(data) {}
+    void insert(std::string label, const Tensor& tensor);
+    void remove(std::string label);
+    
+    size_t count() const;
+
+    const Tensor& operator[](std::string label) const;
 };
 
 } // namespace NSTTF
