@@ -1,13 +1,14 @@
 #include "functions.h"
 #include <filesystem>
+#include <unordered_map>
 
 namespace NSTTF
 {
 
+
   namespace functions
   {
 
-    // source = clToCharVector("src/cl/matrix_multiplication.cl");
     ocl::Kernel subtraction(subtraction_kernel, subtraction_kernel_length,
                             "subtraction");
     ocl::Kernel multiplication(multiplication_kernel, multiplication_kernel_length,
@@ -23,15 +24,14 @@ namespace NSTTF
                                  matrix_transpose_kernel_length,
                                  "matrix_transpose");
 
-    void init() // вот этот рофл нигде не вызывается
-    {
-      sum.compile();
-      subtraction.compile();
-      multiplication.compile();
-      matrix_multiplication.compile();
-      matrix_transpose.compile();
-    }
-  } // namespace functions
+void init() {
+  subtraction.compile();
+  sum.compile();
+  multiplication.compile();
+  matrix_multiplication.compile();
+  matrix_transpose.compile();
+}
+} // namespace functions
 
   unsigned int workGroupSize = 128;
 
@@ -171,17 +171,13 @@ namespace NSTTF
     }
   }
 
-  void checkNumOfTensors(const std::vector<Tensor> &tensors, size_t num)
-  {
-    if (tensors.size() < num)
-    {
-      throw std::runtime_error("Not enought tensors");
-    }
-    else if (tensors.size() > num)
-    {
-      throw std::runtime_error("Too many tensors");
-    }
+void checkNumOfTensors(const std::vector<Tensor> &tensors, size_t num) {
+  if (tensors.size() < num) {
+    throw std::runtime_error("Not enought tensors");
+  } else if (tensors.size() > num) {
+    throw std::runtime_error("Too many tensors");
   }
+}
 
   Tensor callFunction(const std::string &name,
                       const std::vector<Tensor> &tensors)

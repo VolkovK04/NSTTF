@@ -3,6 +3,7 @@
 #include <cstdint>
 
 #include <operations/abstractOperation.h>
+#include <tensor/tensor.h>
 #include <vector>
 
 namespace NSTTF {
@@ -74,6 +75,16 @@ public:
   static NodeInterface MatrixMult(const NodeInterface &left,
                                   const NodeInterface &right);
   static NodeInterface MatrixTranspose(const NodeInterface &node);
+};
+
+class ConstNode : public AbstractNode {
+private:
+  Tensor data;
+
+public:
+  ConstNode() = default;
+  ConstNode(Tensor tensor);
+  Tensor getData() const;
 };
 
 } // namespace NSTTF

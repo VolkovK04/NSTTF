@@ -20,7 +20,7 @@ const AbstractNode &NodeInterface::getNode() const { return *node; }
 
 void NodeInterface::setOutput() { graph.setOutputNode(node); }
 
-void NodeInterface::setName(const std::string &name) { node->name = name; }
+void NodeInterface::setName(const std::string &name) { node->name = name; } // TODO check that node this current name is not already exist
 
 NodeInterface::NodeInterface(AbstractNode *node, ComputationGraph &g)
     : graph(g), node(node) {}
@@ -75,5 +75,9 @@ void NodeInterface::checkSameGraph(NodeInterface i1, NodeInterface i2) {
     throw std::runtime_error("Nodes defined in different graphs");
   }
 }
+
+ConstNode::ConstNode(Tensor tensor) : data(tensor) {}
+
+Tensor ConstNode::getData() const { return data; }
 
 } // namespace NSTTF

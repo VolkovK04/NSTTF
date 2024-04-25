@@ -65,4 +65,22 @@ public:
   ~Tensor() = default;
 };
 
+class TensorStack {
+  private:
+    std::vector<Tensor> tensors;
+  public:
+    TensorStack() = default;
+    explicit TensorStack(std::vector<Tensor> tensors);
+
+    void append(const Tensor& tensor);
+    void insert(const Tensor& tensor);
+    void remove(size_t index);
+    
+    size_t count() const;
+    Tensor toTensor() const;
+
+    const Tensor& operator[](size_t index) const;
+    // TODO iterators
+};
+
 } // namespace NSTTF
