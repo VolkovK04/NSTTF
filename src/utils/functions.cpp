@@ -121,7 +121,7 @@ namespace NSTTF
     unsigned int K = arg2Col;
     unsigned int N = arg2Rows;
     unsigned int x_work_group_size = 16;
-    unsigned int y_work_group_size = 4;
+    unsigned int y_work_group_size = 16;
     unsigned int x_work_size =
         (M + x_work_group_size - 1) / x_work_group_size * x_work_group_size;
     unsigned int y_work_size =

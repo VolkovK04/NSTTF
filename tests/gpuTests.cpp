@@ -12,8 +12,6 @@
 
 using namespace NSTTF::functions;
 
-#define THREAD_WORK 4
-
 class GPUTests : public ::testing::Test {
 protected:
   gpu::Context context;
@@ -217,14 +215,12 @@ TEST_F(GPUTests, matrix_multiplication_updated_test) {
 
   for (int iter = 0; iter < benchmarkingIters; ++iter) {
     unsigned int x_work_group_size = 16;
-    unsigned int y_work_group_size = 4;
+    unsigned int y_work_group_size = 16;
     unsigned int x_work_size =
         (M + x_work_group_size - 1) / x_work_group_size * x_work_group_size;
     unsigned int y_work_size =
         (N + y_work_group_size - 1) / y_work_group_size * y_work_group_size;
-    // почему работает так?
 
-    y_work_size /= THREAD_WORK;
     matrix_multiplication.exec(gpu::WorkSize(x_work_group_size,
                                              y_work_group_size, x_work_size,
                                              y_work_size),

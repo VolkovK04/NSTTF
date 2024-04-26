@@ -144,20 +144,20 @@ def _make_testing_configurations() -> List[TestingConfiguration]:
                 )
 
             rv += [
-                # TestingConfiguration(
-                #     build_dir=make_build_dir("orig"),
-                #     toolset=toolset,
-                #     std_cpp_lib=std_lib,
-                #     build_type=build_type,
-                #     cpp_flags=_get_cpp_flags(build_type),
-                # ),
                 TestingConfiguration(
-                    build_dir=make_build_dir("asan"),
+                    build_dir=make_build_dir("orig"),
                     toolset=toolset,
                     std_cpp_lib=std_lib,
                     build_type=build_type,
-                    cpp_flags=_get_cpp_flags_asan(toolset, build_type),
+                    cpp_flags=_get_cpp_flags(build_type),
                 ),
+                # TestingConfiguration(
+                #     build_dir=make_build_dir("asan"),
+                #     toolset=toolset,
+                #     std_cpp_lib=std_lib,
+                #     build_type=build_type,
+                #     cpp_flags=_get_cpp_flags_asan(toolset, build_type),
+                # ),
                 # TestingConfiguration(
                 #     build_dir=make_build_dir("usan"),
                 #     toolset=toolset,
