@@ -7,26 +7,39 @@ namespace NSTTF
     UnaryOperation::UnaryOperation(std::string name, std::shared_ptr<Expression> expression) : expression(expression), AbstractOperation(name)
     {
     }
-    bool UnaryOperation::equals(const Expression &expression) const
+    bool UnaryOperation::equals(std::shared_ptr<Expression> expression) const
     {
         return this->expression->equals(expression);
     }
-    BinaryOperation::BinaryOperation(std::string name, const Expression &left, const Expression &right) : left(left), right(right), AbstractOperation(name)
+    BinaryOperation::BinaryOperation(std::string name, std::shared_ptr<Expression> left, std::shared_ptr<Expression> right) : left_(left), right_(right), AbstractOperation(name)
     {
     }
-    bool BinaryOperation::equals(const Expression &expression) const
+    bool BinaryOperation::equals(std::shared_ptr<Expression> expression) const
     {
-        return this->left->equals(expression) && this->right->equals(expression);
+        return this->left_->equals(expression) && this->right_->equals(expression);
     }
     Variable::Variable(std::string name) : AbstractOperation(name)
     {
     }
-
-    Expression Variable::getDerivative(const Expression &expression)
+    bool Variable::equals(std::shared_ptr<Expression> expression) const
     {
-        if (*this == expression)
+        std::shared_ptr<Variable> var = std::dynamic_pointer_cast<Variable>(expression);
+        if (var)
         {
-            return Constant(1);
+            return this->getName() == var->getName();
+        }
+        return false;
+    }
+
+    std::shared_ptr<Expression> Variable::getDerivative(std::shared_ptr<Expression> expression) const
+    {
+        if (this->equals(expression))
+        {
+            return std::make_shared<Constant>(1);
+        }
+        else
+        {
+            return std::make_shared<Constant>(0);
         }
     }
 
@@ -35,22 +48,12 @@ namespace NSTTF
         return std::move(name);
     }
 
-    bool Variable::equals(const Expression &expression) const
-    {
-        const Variable *var = dynamic_cast<const Variable *>(&expression);
-        if (var)
-        {
-            return this->getName() == var->getName();
-        }
-        return false;
-    }
-
-    bool Expression::operator==(const Expression &other)
+    bool Expression::operator==(std::shared_ptr<Expression> other)
     {
         return this->equals(other);
     }
 
-    bool Expression::operator!=(const Expression &other)
+    bool Expression::operator!=(std::shared_ptr<Expression> other)
     {
         return !(this->equals(other));
     }
@@ -59,14 +62,14 @@ namespace NSTTF
     {
     }
 
-    Expression Constant::getDerivative(const Expression &expression)
+    std::shared_ptr<Expression> Constant::getDerivative(std::shared_ptr<Expression> expression) const
     {
-        return Constant(0);
+        return std::make_shared<Constant>(0);
     }
 
-    bool Constant::equals(const Expression &expression) const
+    bool Constant::equals(std::shared_ptr<Expression> expression) const
     {
-        const Constant *constant = dynamic_cast<const Constant *>(&expression);
+        std::shared_ptr<Constant> constant = std::dynamic_pointer_cast<Constant>(expression);
         if (constant)
         {
             return this->value == constant->value;
@@ -74,31 +77,31 @@ namespace NSTTF
         return false;
     }
 
-    Sum::Sum(std::string name, const Expression &left, const Expression &right) : left(left), right(right), AbstractOperation(name)
+    Sum::Sum(std::string name, std::shared_ptr<Expression> left, std::shared_ptr<Expression> right) : BinaryOperation(name, left, right)
     {
     }
 
-    Expression Sum::getDerivative(const Expression &expression)
+    std::shared_ptr<Expression> Sum::getDerivative(std::shared_ptr<Expression> expression) const
     {
-        return Sum("Sum", left.getDerivative(expression), right.getDerivative(expression));
+        return std::make_shared<Sum>("Sum", left_->getDerivative(expression), right_->getDerivative(expression));
     }
 
-    Subtraction::Subtraction(std::string name, const Expression &left, const Expression &right) : left(left), right(right), AbstractOperation(name)
-    {
-    }
-
-    Expression Subtraction::getDerivative(const Expression &expression)
-    {
-        return Subtraction("Subtraction", left.getDerivative(expression), right.getDerivative(expression));
-    }
-
-    Multiplication::Multiplication(std::string name, const Expression &left, const Expression &right) : left(left), right(right), AbstractOperation(name)
+    Subtraction::Subtraction(std::string name, std::shared_ptr<Expression> left, std::shared_ptr<Expression> right) : BinaryOperation(name, left, right)
     {
     }
 
-    Expression Multiplication::getDerivative(const Expression &expression)
+    std::shared_ptr<Expression> Subtraction::getDerivative(std::shared_ptr<Expression> expression) const
     {
-        return Sum("Sum", Multiplication("Multiplication", left.getDerivative(expression), right), Multiplication("Multiplication", left, right.getDerivative(expression)));
+        return std::make_shared<Subtraction>("Subtraction", left_->getDerivative(expression), right_->getDerivative(expression));
+    }
+
+    Multiplication::Multiplication(std::string name, std::shared_ptr<Expression> left, std::shared_ptr<Expression> right) : BinaryOperation(name, left, right)
+    {
+    }
+
+    std::shared_ptr<Expression> Multiplication::getDerivative(std::shared_ptr<Expression> expression) const
+    {
+        return std::make_shared<Sum>("Sum", std::make_shared<Multiplication>("Multiplication", left_->getDerivative(expression), right_), std::make_shared<Multiplication>("Multiplication", left_, right_->getDerivative(expression)));
     }
 
 } // namespace NSTTF

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include <tensor/tensor.h>
+#include <memory>
 
 namespace NSTTF
 {
@@ -11,16 +11,16 @@ namespace NSTTF
 
   public:
     Expression() = default;
-    virtual Expression getDerivative(const Expression &expression) = 0;
+    virtual std::shared_ptr<Expression> getDerivative(std::shared_ptr<Expression> expression) const = 0;
     virtual ~Expression() = default;
 
     // AbstractNode asNode() const;
     // идея в том, чтобы получить дифференциал и кастануть его в ноду или во что-то иное
 
-    virtual bool equals(const Expression &expression) const = 0;
+    virtual bool equals(std::shared_ptr<Expression> expression) const = 0;
 
-    virtual bool operator==(const Expression &other);
-    virtual bool operator!=(const Expression &other);
+    virtual bool operator==(std::shared_ptr<Expression> other);
+    virtual bool operator!=(std::shared_ptr<Expression> other);
   };
 
   class AbstractOperation
@@ -47,20 +47,20 @@ namespace NSTTF
   public:
     UnaryOperation(std::string name, std::shared_ptr<Expression> expression);
 
-    bool equals(const Expression &expression) const override;
+    bool equals(std::shared_ptr<Expression> expression) const override;
   };
 
   class BinaryOperation : public Expression, public AbstractOperation
   {
 
   protected:
-    const Expression &left;
-    const Expression &right;
+    std::shared_ptr<Expression> left_;
+    std::shared_ptr<Expression> right_;
 
   public:
-    BinaryOperation(std::string name, const Expression &left, const Expression &right);
+    BinaryOperation(std::string name, std::shared_ptr<Expression> left, std::shared_ptr<Expression> right);
 
-    bool equals(const Expression &expression) const override;
+    bool equals(std::shared_ptr<Expression> expression) const override;
   };
 
   class Variable : public Expression, public AbstractOperation
@@ -68,10 +68,10 @@ namespace NSTTF
 
   public:
     Variable(std::string name);
-    Expression getDerivative(const Expression &expression) override;
+    std::shared_ptr<Expression> getDerivative(std::shared_ptr<Expression> expression) const override;
     std::string getName() const;
 
-    bool equals(const Expression &expression) const override;
+    bool equals(std::shared_ptr<Expression> expression) const override;
   };
 
   class Constant : public Expression, public AbstractOperation
@@ -82,46 +82,46 @@ namespace NSTTF
 
   public:
     Constant(size_t value);
-    Expression getDerivative(const Expression &expression) override;
-    bool equals(const Expression &expression) const override;
+    std::shared_ptr<Expression> getDerivative(std::shared_ptr<Expression> expression) const override;
+    bool equals(std::shared_ptr<Expression> expression) const override;
   };
 
-  class Sum : public AbstractOperation, public BinaryOperation
+  class Sum : public BinaryOperation
   {
 
   public:
-    Sum(std::string name, const Expression &left, const Expression &right);
-    Expression getDerivative(const Expression &expression) override;
+    Sum(std::string name, std::shared_ptr<Expression> left, std::shared_ptr<Expression> right);
+    std::shared_ptr<Expression> getDerivative(std::shared_ptr<Expression> expression) const override;
   };
 
-  class Subtraction : public AbstractOperation, public BinaryOperation
+  class Subtraction : public BinaryOperation
   {
   public:
-    Subtraction(std::string name, const Expression &left, const Expression &right);
-    Expression getDerivative(const Expression &expression) override;
+    Subtraction(std::string name, std::shared_ptr<Expression> left, std::shared_ptr<Expression> right);
+    std::shared_ptr<Expression> getDerivative(std::shared_ptr<Expression> expression) const override;
   };
 
-  class Multiplication : public AbstractOperation, public BinaryOperation
+  class Multiplication : public BinaryOperation
   {
   public:
-    Multiplication(std::string name, const Expression &left, const Expression &right);
-    Expression getDerivative(const Expression &expression) override;
+    Multiplication(std::string name, std::shared_ptr<Expression> left, std::shared_ptr<Expression> right);
+    std::shared_ptr<Expression> getDerivative(std::shared_ptr<Expression> expression) const override;
   };
 
-  class Division : public AbstractOperation, public BinaryOperation
-  {
-  public:
-    // Можно не надо?
-    // Division(std::string name, const Expression& left, const Expression& right);
-    // Expression getDerivative(const Expression& expression) override;
-  };
-
-  class Exponent : public AbstractOperation, public BinaryOperation
+  class Division : public BinaryOperation
   {
   public:
     // Можно не надо?
-    // Exponent(std::string name, const Expression& left, const Expression& right);
-    // Expression getDerivative(const Expression& expression) override;
+    // Division(std::string name, std::shared_ptr<Expression> left, std::shared_ptr<Expression> right);
+    // Expression getDerivative(std::shared_ptr<Expression> expression) override;
+  };
+
+  class Exponent : public BinaryOperation
+  {
+  public:
+    // Можно не надо?
+    // Exponent(std::string name, std::shared_ptr<Expression> left, std::shared_ptr<Expression> right);
+    // Expression getDerivative(std::shared_ptr<Expression> expression) override;
   };
 
 } // namespace NSTTF
