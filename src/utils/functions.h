@@ -1,6 +1,6 @@
 #pragma once
 
-#include <cl_functions/cl_functions.h>
+// #include <cl_functions/cl_functions.h>
 #include <libutils/misc.h>
 #include <tensor/tensor.h>
 #include <fstream>
@@ -9,6 +9,11 @@ namespace NSTTF
 {
     namespace functions
     {
+        extern ocl::Kernel subtraction;
+        extern ocl::Kernel sum;
+        extern ocl::Kernel multiplication;
+        extern ocl::Kernel matrix_multiplication;
+        extern ocl::Kernel matrix_transpose;
         void init();
     }
     Tensor sum(const std::vector<Tensor> &tensors);

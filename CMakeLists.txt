@@ -17,7 +17,7 @@ set(EXTERNAL_LIBRARIES
         CACHE INTERNAL "List of external libraries")
 
 set(INTERNAL_LIBRARIES
-        cl_funcs 
+        # cl_funcs 
         computationGraph
         operations
         tensor

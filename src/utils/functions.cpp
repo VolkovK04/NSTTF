@@ -5,33 +5,33 @@
 namespace NSTTF
 {
 
-
   namespace functions
   {
 
-    ocl::Kernel subtraction(subtraction_kernel, subtraction_kernel_length,
-                            "subtraction");
-    ocl::Kernel multiplication(multiplication_kernel, multiplication_kernel_length,
-                               "multiplication");
+    std::vector<char> source_subtraction = clToCharVector("src/cl/subtraction.cl");
+    ocl::Kernel subtraction = ocl::Kernel(source_subtraction.data(), source_subtraction.size(), "subtraction");
 
-    auto source = clToCharVector("src/cl/sum.cl");
-    ocl::Kernel sum = ocl::Kernel(source.data(), source.size(), "sum");
+    std::vector<char> source_multiplication = clToCharVector("src/cl/multiplication.cl");
+    ocl::Kernel multiplication = ocl::Kernel(source_multiplication.data(), source_multiplication.size(), "multiplication");
 
-    ocl::Kernel matrix_multiplication(matrix_multiplication_kernel,
-                                      matrix_multiplication_kernel_length,
-                                      "matrix_multiplication_updated");
-    ocl::Kernel matrix_transpose(matrix_transpose_kernel,
-                                 matrix_transpose_kernel_length,
-                                 "matrix_transpose");
+    std::vector<char> source_sum = clToCharVector("src/cl/sum.cl");
+    ocl::Kernel sum = ocl::Kernel(source_sum.data(), source_sum.size(), "sum");
 
-void init() {
-  subtraction.compile();
-  sum.compile();
-  multiplication.compile();
-  matrix_multiplication.compile();
-  matrix_transpose.compile();
-}
-} // namespace functions
+    std::vector<char> source_matrix_multiplication = clToCharVector("src/cl/matrix_multiplication.cl");
+    ocl::Kernel matrix_multiplication = ocl::Kernel(source_matrix_multiplication.data(), source_matrix_multiplication.size(), "matrix_multiplication_updated");
+
+    std::vector<char> source_matrix_transpose = clToCharVector("src/cl/matrix_transpose.cl");
+    ocl::Kernel matrix_transpose = ocl::Kernel(source_matrix_transpose.data(), source_matrix_transpose.size(), "matrix_transpose");
+
+    void init()
+    {
+      subtraction.compile();
+      sum.compile();
+      multiplication.compile();
+      matrix_multiplication.compile();
+      matrix_transpose.compile();
+    }
+  } // namespace functions
 
   unsigned int workGroupSize = 128;
 
@@ -171,13 +171,17 @@ void init() {
     }
   }
 
-void checkNumOfTensors(const std::vector<Tensor> &tensors, size_t num) {
-  if (tensors.size() < num) {
-    throw std::runtime_error("Not enought tensors");
-  } else if (tensors.size() > num) {
-    throw std::runtime_error("Too many tensors");
+  void checkNumOfTensors(const std::vector<Tensor> &tensors, size_t num)
+  {
+    if (tensors.size() < num)
+    {
+      throw std::runtime_error("Not enought tensors");
+    }
+    else if (tensors.size() > num)
+    {
+      throw std::runtime_error("Too many tensors");
+    }
   }
-}
 
   Tensor callFunction(const std::string &name,
                       const std::vector<Tensor> &tensors)
@@ -208,7 +212,7 @@ void checkNumOfTensors(const std::vector<Tensor> &tensors, size_t num) {
     }
   }
 
-  std::vector<char> clToCharVector(const std::string& clFilename)
+  std::vector<char> clToCharVector(const std::string &clFilename)
   {
     std::filesystem::path sourcePath(_PROJECT_SOURCE_DIR);
     sourcePath.append(clFilename);

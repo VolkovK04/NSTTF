@@ -7,7 +7,10 @@
 #include <libutils/misc.h>
 #include <libutils/timer.h>
 
-#include <cl_functions/cl_functions.h>
+#include <utils/functions.h>
+// #include <cl_functions/cl_functions.h>
+
+using namespace NSTTF::functions;
 
 #define THREAD_WORK 4
 
@@ -73,8 +76,9 @@ TEST_F(GPUTests, multiplication_test) {
   as_gpu.writeN(as.data(), n);
   bs_gpu.writeN(bs.data(), n);
 
-  ocl::Kernel multiplication(multiplication_kernel,
-                             multiplication_kernel_length, "multiplication");
+  
+  // ocl::Kernel multiplication(multiplication_kernel,
+  //                            multiplication_kernel_length, "multiplication");
   multiplication.compile();
 
   unsigned int workGroupSize = 128;
@@ -110,7 +114,7 @@ TEST_F(GPUTests, sum_test) {
   as_gpu.writeN(as.data(), n);
   bs_gpu.writeN(bs.data(), n);
 
-  ocl::Kernel sum(sum_kernel, sum_kernel_length, "sum");
+  // ocl::Kernel sum(sum_kernel, sum_kernel_length, "sum");
   sum.compile();
 
   unsigned int workGroupSize = 128;
@@ -146,8 +150,8 @@ TEST_F(GPUTests, subtraction_test) {
   as_gpu.writeN(as.data(), n);
   bs_gpu.writeN(bs.data(), n);
 
-  ocl::Kernel subtraction(subtraction_kernel, subtraction_kernel_length,
-                          "subtraction");
+  // ocl::Kernel subtraction(subtraction_kernel, subtraction_kernel_length,
+                          // "subtraction");
   subtraction.compile();
 
   unsigned int workGroupSize = 128;
@@ -206,9 +210,9 @@ TEST_F(GPUTests, matrix_multiplication_updated_test) {
   as_gpu.writeN(as.data(), M * K);
   bs_gpu.writeN(bs.data(), K * N);
 
-  ocl::Kernel matrix_multiplication(matrix_multiplication_kernel,
-                                    matrix_multiplication_kernel_length,
-                                    "matrix_multiplication_updated");
+  // ocl::Kernel matrix_multiplication(matrix_multiplication_kernel,
+  //                                   matrix_multiplication_kernel_length,
+  //                                   "matrix_multiplication_updated");
   matrix_multiplication.compile();
 
   for (int iter = 0; iter < benchmarkingIters; ++iter) {
@@ -265,9 +269,9 @@ TEST_F(GPUTests, matrix_transposition_test) {
 
   as_gpu.writeN(as.data(), M * K);
 
-  ocl::Kernel matrix_transpose(matrix_transpose_kernel,
-                                      matrix_transpose_kernel_length,
-                                      "matrix_transpose");
+  // ocl::Kernel matrix_transpose(matrix_transpose_kernel,
+  //                                     matrix_transpose_kernel_length,
+  //                                     "matrix_transpose");
   matrix_transpose.compile();
 
   for (int iter = 0; iter < benchmarkingIters; ++iter) {
