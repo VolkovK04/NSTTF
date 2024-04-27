@@ -29,8 +29,6 @@ extern std::unordered_map<std::string, ocl::Kernel> kernels;
 class UnaryMinus : public Function {
   friend void init();
 
-// private:
-
 public:
   UnaryMinus() = default;
   std::vector<Tensor> compute(const std::vector<Tensor> &inputs) const override;
@@ -40,8 +38,6 @@ public:
 
 class Sum : public Function {
   friend void init();
-
-// private:
 
 public:
   Sum() = default;
@@ -53,8 +49,6 @@ public:
 class Subtration : public Function {
   friend void init();
 
-// private:
-
 public:
   Subtration() = default;
   std::vector<Tensor> compute(const std::vector<Tensor> &inputs) const override;
@@ -64,8 +58,6 @@ public:
 
 class Multiplication : public Function {
   friend void init();
-
-// private:
 
 public:
   Multiplication() = default;
@@ -77,8 +69,6 @@ public:
 class MatrixMultiplication : public Function {
   friend void init();
 
-// private:
-
 public:
   MatrixMultiplication() = default;
   std::vector<Tensor> compute(const std::vector<Tensor> &inputs) const override;
@@ -88,8 +78,6 @@ public:
 
 class MatrixTranspose : public Function {
   friend void init();
-
-// private:
 
 public:
   MatrixTranspose() = default;

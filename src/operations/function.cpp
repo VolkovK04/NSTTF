@@ -120,7 +120,10 @@ Tensor Subtration::derivative(const std::vector<Tensor> &inputs,
 
 ocl::Kernel prepareKernel(const std::string &clFilename) {
   std::vector<char> source = clToCharVector(clFilename);
-  return ocl::Kernel(source.data(), source.size(), clFilename);
+  ocl::Kernel kernel(source.data(), source.size(), clFilename);
+  kernel.compile();
+  
+  return kernel;
 }
 
 void init() {
@@ -207,7 +210,7 @@ Tensor MatrixMultiplication::derivative(const std::vector<Tensor> &inputs,
                                         size_t inputIndex, size_t outputIndex,
                                         Tensor grad) const {
   // TODO
-  // return grad;
+  // return ;
 }
 std::vector<Tensor>
 MatrixTranspose::compute(const std::vector<Tensor> &inputs) const {
