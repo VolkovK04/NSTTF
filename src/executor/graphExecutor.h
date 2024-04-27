@@ -1,7 +1,9 @@
 #pragma once
 
+#include <computationGraph/node.h>
 #include <map>
 #include <tensor/tensor.h>
+#include <unordered_set>
 #include <utils/functions.h>
 #include <utils/instruction.h>
 #include <vector>
@@ -10,11 +12,15 @@ namespace NSTTF {
 class GraphExecutor {
 private:
   std::vector<Instruction> instructions;
+  std::vector<AbstractNode *> outputs;
+  TensorMap gradient;
 
 public:
-  GraphExecutor(std::vector<Instruction> instructions);
+  GraphExecutor(std::vector<Instruction> instructions,
+                std::vector<AbstractNode *> outputs);
+  GraphExecutor(std::vector<Instruction> instrucitons, TensorMap gradient,
+                std::vector<AbstractNode *> outputs);
 
-  std::map<std::string, Tensor>
-  execute(const std::map<std::string, Tensor> &tensorsMap);
+  TensorMap execute(const TensorMap &tensorsMap);
 };
 } // namespace NSTTF

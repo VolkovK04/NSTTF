@@ -6,7 +6,7 @@ GraphExecutor Compiler::compile(const ComputationGraph &graph) {
   outputs = graph.getOutputNodes();
   std::vector<Instruction> instructions = getAllInstructions();
 
-  GraphExecutor executor(instructions);
+  GraphExecutor executor(instructions, outputs);
 
   return executor;
 }
