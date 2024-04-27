@@ -29,10 +29,10 @@ extern std::unordered_map<std::string, ocl::Kernel> kernels;
 class UnaryMinus : public Function {
   friend void init();
 
-private:
-  UnaryMinus() = default;
+// private:
 
 public:
+  UnaryMinus() = default;
   std::vector<Tensor> compute(const std::vector<Tensor> &inputs) const override;
   Tensor derivative(const std::vector<Tensor> &inputs, size_t inputIndex,
                     size_t outputIndex, Tensor grad) const override;
@@ -41,10 +41,10 @@ public:
 class Sum : public Function {
   friend void init();
 
-private:
-  Sum() = default;
+// private:
 
 public:
+  Sum() = default;
   std::vector<Tensor> compute(const std::vector<Tensor> &inputs) const override;
   Tensor derivative(const std::vector<Tensor> &inputs, size_t inputIndex,
                     size_t outputIndex, Tensor grad) const override;
@@ -53,10 +53,10 @@ public:
 class Subtration : public Function {
   friend void init();
 
-private:
-  Subtration() = default;
+// private:
 
 public:
+  Subtration() = default;
   std::vector<Tensor> compute(const std::vector<Tensor> &inputs) const override;
   Tensor derivative(const std::vector<Tensor> &inputs, size_t inputIndex,
                     size_t outputIndex, Tensor grad) const override;
@@ -65,10 +65,10 @@ public:
 class Multiplication : public Function {
   friend void init();
 
-private:
-  Multiplication() = default;
+// private:
 
 public:
+  Multiplication() = default;
   std::vector<Tensor> compute(const std::vector<Tensor> &inputs) const override;
   Tensor derivative(const std::vector<Tensor> &inputs, size_t inputIndex,
                     size_t outputIndex, Tensor grad) const override;
@@ -77,10 +77,10 @@ public:
 class MatrixMultiplication : public Function {
   friend void init();
 
-private:
-  MatrixMultiplication() = default;
+// private:
 
 public:
+  MatrixMultiplication() = default;
   std::vector<Tensor> compute(const std::vector<Tensor> &inputs) const override;
   Tensor derivative(const std::vector<Tensor> &inputs, size_t inputIndex,
                     size_t outputIndex, Tensor grad) const override;
@@ -89,10 +89,10 @@ public:
 class MatrixTranspose : public Function {
   friend void init();
 
-private:
-  MatrixTranspose() = default;
+// private:
 
 public:
+  MatrixTranspose() = default;
   std::vector<Tensor> compute(const std::vector<Tensor> &inputs) const override;
   Tensor derivative(const std::vector<Tensor> &inputs, size_t inputIndex,
                     size_t outputIndex, Tensor grad) const override;

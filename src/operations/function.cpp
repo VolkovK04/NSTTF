@@ -58,8 +58,8 @@ Multiplication::compute(const std::vector<Tensor> &inputs) const {
   unsigned int global_work_size =
       (n + workGroupSize_ - 1) / workGroupSize_ * workGroupSize_;
   kernels.at("multiplication")
-      .exec(gpu::WorkSize(workGroupSize_, global_work_size), arg1.getGPUBuffer(),
-            arg2.getGPUBuffer(), res.getGPUBuffer(), n);
+      .exec(gpu::WorkSize(workGroupSize_, global_work_size),
+            arg1.getGPUBuffer(), arg2.getGPUBuffer(), res.getGPUBuffer(), n);
 
   std::vector<Tensor> result{res};
   return std::move(result);
@@ -97,8 +97,8 @@ Subtration::compute(const std::vector<Tensor> &inputs) const {
   unsigned int global_work_size =
       (n + workGroupSize_ - 1) / workGroupSize_ * workGroupSize_;
   kernels.at("subtraction")
-      .exec(gpu::WorkSize(workGroupSize_, global_work_size), arg1.getGPUBuffer(),
-            arg2.getGPUBuffer(), res.getGPUBuffer(), n);
+      .exec(gpu::WorkSize(workGroupSize_, global_work_size),
+            arg1.getGPUBuffer(), arg2.getGPUBuffer(), res.getGPUBuffer(), n);
   std::vector<Tensor> result{res};
   return std::move(result);
 }
@@ -148,7 +148,13 @@ void init() {
   ocl::Kernel _matrix_transpose = prepareKernel("src/cl/matrix_transpose.cl");
   kernels.insert({"matrix_transpose", _matrix_transpose});
 
-  
+  functions_.insert({"unary_minus", std::make_shared<UnaryMinus>()});
+  functions_.insert({"subtraction", std::make_shared<Subtration>()});
+  functions_.insert({"multiplication", std::make_shared<Multiplication>()});
+  functions_.insert({"sum", std::make_shared<Sum>()});
+  functions_.insert(
+      {"matrix_multiplication", std::make_shared<MatrixMultiplication>()});
+  functions_.insert({"matrix_transpose", std::make_shared<MatrixTranspose>()});
 }
 
 std::vector<char> clToCharVector(const std::string &clFilename) {
@@ -177,8 +183,8 @@ UnaryMinus::compute(const std::vector<Tensor> &inputs) const {
   unsigned int global_work_size =
       (n + workGroupSize_ - 1) / workGroupSize_ * workGroupSize_;
   kernels.at("unary_minus")
-      .exec(gpu::WorkSize(workGroupSize_, global_work_size), arg1.getGPUBuffer(),
-            res.getGPUBuffer(), n);
+      .exec(gpu::WorkSize(workGroupSize_, global_work_size),
+            arg1.getGPUBuffer(), res.getGPUBuffer(), n);
   std::vector<Tensor> result{res};
   return std::move(result);
 }
@@ -232,9 +238,10 @@ MatrixTranspose::compute(const std::vector<Tensor> &inputs) const {
   std::vector<Tensor> result{res};
   return std::move(result);
 }
-Tensor MatrixTranspose::derivative(const std::vector<Tensor> &inputs, size_t inputIndex, size_t outputIndex, Tensor grad) const
-{
-    // TODO
-    // return Tensor();
+Tensor MatrixTranspose::derivative(const std::vector<Tensor> &inputs,
+                                   size_t inputIndex, size_t outputIndex,
+                                   Tensor grad) const {
+  // TODO
+  // return Tensor();
 }
 } // namespace NSTTF
