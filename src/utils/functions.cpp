@@ -25,6 +25,8 @@ namespace NSTTF
 
     void init()
     {
+
+      
       subtraction.compile();
       sum.compile();
       multiplication.compile();
@@ -163,26 +165,6 @@ namespace NSTTF
     return res;
   }
 
-  void checkShape(Tensor &arg1, Tensor &arg2)
-  {
-    if (arg1.getShape() != arg2.getShape())
-    {
-      throw std::runtime_error("Different shape");
-    }
-  }
-
-  void checkNumOfTensors(const std::vector<Tensor> &tensors, size_t num)
-  {
-    if (tensors.size() < num)
-    {
-      throw std::runtime_error("Not enought tensors");
-    }
-    else if (tensors.size() > num)
-    {
-      throw std::runtime_error("Too many tensors");
-    }
-  }
-
   Tensor callFunction(const std::string &name,
                       const std::vector<Tensor> &tensors)
   {
@@ -210,25 +192,6 @@ namespace NSTTF
     {
       throw std::runtime_error("Wrong operation name");
     }
-  }
-
-  std::vector<char> clToCharVector(const std::string &clFilename)
-  {
-    std::filesystem::path sourcePath(_PROJECT_SOURCE_DIR);
-    sourcePath.append(clFilename);
-    std::ifstream file(sourcePath, std::ios::binary);
-
-    if (!file.is_open())
-    {
-      throw std::runtime_error("Can't open cl file. Path: " + sourcePath.string());
-    }
-    file.seekg(0, std::ios::end);
-    size_t size = file.tellg();
-    std::vector<char> result(size);
-    file.seekg(0, std::ios::beg);
-    file.read(result.data(), size);
-    file.close();
-    return std::move(result);
   }
 
 } // namespace NSTTF

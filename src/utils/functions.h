@@ -1,9 +1,8 @@
 #pragma once
 
-// #include <cl_functions/cl_functions.h>
 #include <libutils/misc.h>
 #include <tensor/tensor.h>
-#include <fstream>
+#include <operations/function.h>
 
 namespace NSTTF
 {
@@ -25,7 +24,4 @@ namespace NSTTF
     Tensor callFunction(const std::string &name,
                         const std::vector<Tensor> &tensors);
 
-    void checkNumOfTensors(const std::vector<Tensor> &tensors, size_t num);
-    void checkShape(Tensor &arg1, Tensor &arg2);
-    std::vector<char> clToCharVector(const std::string& clFilename);
 } // namespace NSTTF
