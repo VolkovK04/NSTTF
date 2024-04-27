@@ -109,7 +109,6 @@ TEST_F(OperationTests, sumPositiveTest) {
     EXPECT_EQ(v[2], 9);
 }
 
-
 TEST_F(OperationTests, subtractionWrongSize1) {
     Tensor a(std::vector<float>{2, 3});
     Tensor b(std::vector<float>{2, 3, 4});
@@ -153,7 +152,6 @@ TEST_F(OperationTests, subtractionPositiveTest) {
     EXPECT_EQ(v[2], 5);
 }
 
-
 TEST_F(OperationTests, multiplicationWrongSize1) {
     Tensor a({2, 3, 3, 4}, {2, 2});
     Tensor b({2, 3, 4}, {1, 3});
@@ -194,7 +192,6 @@ TEST_F(OperationTests, multiplicationPositiveTest) {
     EXPECT_EQ(v[1], 10);
     EXPECT_EQ(v[2], 24);
 }
-
 
 TEST_F(OperationTests, matrix_multiplicationWrongSize1) {
     Tensor a({2, 3}, {1, 2});
@@ -277,7 +274,6 @@ TEST_F(OperationTests, matrix_transposePositiveTest1) {
     EXPECT_EQ(v[1], 3);
     EXPECT_EQ(v[2], 4);
 }
-
 
 TEST_F(OperationTests, matrix_transposePositiveTest2) {
     Tensor a({2, 3, 4, 5}, {2, 2});
