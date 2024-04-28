@@ -11,6 +11,7 @@ class GraphExecutor {
 protected:
   std::vector<Instruction> instructions;
   std::vector<AbstractNode *> outputs;
+  TensorMap calculated;
 
 public:
   GraphExecutor() = default;
@@ -23,9 +24,12 @@ public:
 
 class GraphExecutorWG : public GraphExecutor {
 private:
- T
+  std::vector<Instruction> gradient;
+
 public:
-  GraphExecutorWG(const std::vector<Instruction> &Instructions,
-                  const ComputationGraph &graph);
+  GraphExecutorWG(const std::vector<Instruction> &instructions,
+                  const std::vector<AbstractNode *> &outputs,
+                  const std::vector<Instruction> &gradient);
+  TensorMap executeGrads(const TensorMap &tensorsMap);
 };
 } // namespace NSTTF

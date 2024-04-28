@@ -32,7 +32,7 @@ class OperationTests : public ::testing::Test {
 
 TEST_F(OperationTests, sumEmptyTensors) {
     try {
-        functions_.at("sum")->compute({});
+        functions.at("sum")->compute({});
         FAIL() << "Dont get exception";
     } catch (std::runtime_error &err) {
         EXPECT_EQ(err.what(), std::string("Not enought tensors"));
@@ -46,7 +46,7 @@ TEST_F(OperationTests, sumWrongSize1) {
     Tensor b(std::vector<float>{4, 5, 6});
 
     try {
-        functions_.at("sum")->compute({a, b});
+        functions.at("sum")->compute({a, b});
         FAIL() << "Dont get exception";
     } catch (std::runtime_error &err) {
         EXPECT_EQ(err.what(), std::string("Different shape"));
@@ -61,7 +61,7 @@ TEST_F(OperationTests, sumWrongSize2) {
 
     try {
         // sum({a, b});
-        functions_.at("sum")->compute({a, b});
+        functions.at("sum")->compute({a, b});
         FAIL() << "Dont get exception";
     } catch (std::runtime_error &err) {
         EXPECT_EQ(err.what(), std::string("Different shape"));
@@ -75,7 +75,7 @@ TEST_F(OperationTests, sumWrongSize3) {
 
     try {
         // sum({a});
-        functions_.at("sum")->compute({a});
+        functions.at("sum")->compute({a});
         FAIL() << "Dont get exception";
     } catch (std::runtime_error &err) {
         EXPECT_EQ(err.what(), std::string("Not enought tensors"));
@@ -91,7 +91,7 @@ TEST_F(OperationTests, sumWrongSize4) {
 
     try {
         // sum({a, b, c});
-        functions_.at("sum")->compute({a, b, c});
+        functions.at("sum")->compute({a, b, c});
         FAIL() << "Dont get exception";
     } catch (std::runtime_error &err) {
         EXPECT_EQ(err.what(), std::string("Too many tensors"));
@@ -105,7 +105,7 @@ TEST_F(OperationTests, sumPositiveTest) {
     Tensor b(std::vector<float>{4, 5, 6});
     // Tensor c = sum({a, b});
 
-    Tensor c = functions_.at("sum")->compute({a, b})[0];
+    Tensor c = functions.at("sum")->compute({a, b})[0];
 
     gpu::gpu_mem_32f buff = c.getGPUBuffer();
     std::vector<float> v(c.getSize());
@@ -122,7 +122,7 @@ TEST_F(OperationTests, subtractionWrongSize1) {
 
     try {
         // subtraction({a, b});
-        functions_.at("subtraction")->compute({a, b});
+        functions.at("subtraction")->compute({a, b});
         FAIL() << "Dont get exception";
     } catch (std::runtime_error &err) {
         EXPECT_EQ(err.what(), std::string("Different shape"));
@@ -138,7 +138,7 @@ TEST_F(OperationTests, subtractionWrongSize2) {
 
     try {
         // subtraction({a, b, c});
-        functions_.at("subtraction")->compute({a, b, c});
+        functions.at("subtraction")->compute({a, b, c});
         FAIL() << "Dont get exception";
     } catch (std::runtime_error &err) {
         EXPECT_EQ(err.what(), std::string("Too many tensors"));
@@ -152,7 +152,7 @@ TEST_F(OperationTests, subtractionPositiveTest) {
     Tensor b(std::vector<float>{4, 5, 1});
     // Tensor c = subtraction({a, b});
 
-    Tensor c = functions_.at("subtraction")->compute({a, b})[0];
+    Tensor c = functions.at("subtraction")->compute({a, b})[0];
 
     gpu::gpu_mem_32f buff = c.getGPUBuffer();
     std::vector<float> v(c.getSize());
@@ -169,7 +169,7 @@ TEST_F(OperationTests, multiplicationWrongSize1) {
 
     try {
         // multiplication({a, b});
-        functions_.at("multiplication")->compute({a, b});
+        functions.at("multiplication")->compute({a, b});
         FAIL() << "Dont get exception";
     } catch (std::runtime_error &err) {
         EXPECT_EQ(err.what(), std::string("Different shape"));
@@ -183,7 +183,7 @@ TEST_F(OperationTests, multiplicationWrongSize2) {
 
     try {
         // multiplication({a});
-        functions_.at("multiplication")->compute({a});
+        functions.at("multiplication")->compute({a});
         FAIL() << "Dont get exception";
     } catch (std::runtime_error &err) {
         EXPECT_EQ(err.what(), std::string("Not enought tensors"));
@@ -197,7 +197,7 @@ TEST_F(OperationTests, multiplicationPositiveTest) {
     Tensor b(std::vector<float>{4, 5, 4});
     // Tensor c = multiplication({a, b});
 
-    Tensor c = functions_.at("multiplication")->compute({a, b})[0];
+    Tensor c = functions.at("multiplication")->compute({a, b})[0];
 
     gpu::gpu_mem_32f buff = c.getGPUBuffer();
     std::vector<float> v(c.getSize());
@@ -215,7 +215,7 @@ TEST_F(OperationTests, matrix_multiplicationWrongSize1) {
     try {
         // matrix_multiplication({a, b});
         
-        functions_.at("matrix_multiplication")->compute({a, b});
+        functions.at("matrix_multiplication")->compute({a, b});
         FAIL() << "Dont get exception";
     } catch (std::runtime_error &err) {
         EXPECT_EQ(err.what(), std::string("Wrong matrix shape"));
@@ -229,7 +229,7 @@ TEST_F(OperationTests, matrix_multiplicationWrongSize2) {
 
     try {
         // matrix_multiplication({a});
-        functions_.at("matrix_multiplication")->compute({a});
+        functions.at("matrix_multiplication")->compute({a});
         FAIL() << "Dont get exception";
     } catch (std::runtime_error &err) {
         EXPECT_EQ(err.what(), std::string("Not enought tensors"));
@@ -244,7 +244,7 @@ TEST_F(OperationTests, matrix_multiplicationWrongShape) {
 
     try {
         // matrix_multiplication({a, b});
-        functions_.at("matrix_multiplication")->compute({a, b});
+        functions.at("matrix_multiplication")->compute({a, b});
         FAIL() << "Dont get exception";
     } catch (std::runtime_error &err) {
         EXPECT_EQ(err.what(), std::string("Wrong matrix shape"));
@@ -258,7 +258,7 @@ TEST_F(OperationTests, matrix_multiplicationPositiveTest1) {
     Tensor b({4}, {1, 1});
     // Tensor c = matrix_multiplication({a, b});
 
-    Tensor c = functions_.at("matrix_multiplication")->compute({a, b})[0];
+    Tensor c = functions.at("matrix_multiplication")->compute({a, b})[0];
 
     gpu::gpu_mem_32f buff = c.getGPUBuffer();
     std::vector<float> v(c.getSize());
@@ -272,7 +272,7 @@ TEST_F(OperationTests, matrix_multiplicationPositiveTest2) {
     Tensor b({5, 1}, {2, 1});
     // Tensor c = matrix_multiplication({a, b});
 
-    Tensor c = functions_.at("matrix_multiplication")->compute({a, b})[0];
+    Tensor c = functions.at("matrix_multiplication")->compute({a, b})[0];
     std::vector<size_t> expected{1, 1};
 
     gpu::gpu_mem_32f buff = c.getGPUBuffer();
@@ -287,7 +287,7 @@ TEST_F(OperationTests, matrix_transposePositiveTest1) {
     Tensor a({2, 3, 4}, {1, 3});
     // Tensor c = matrix_transpose({a});
 
-    Tensor c = functions_.at("matrix_transpose")->compute({a})[0];
+    Tensor c = functions.at("matrix_transpose")->compute({a})[0];
     std::vector<size_t> expected{3, 1};
 
     gpu::gpu_mem_32f buff = c.getGPUBuffer();
@@ -304,7 +304,7 @@ TEST_F(OperationTests, matrix_transposePositiveTest2) {
     Tensor a({2, 3, 4, 5}, {2, 2});
     // Tensor c = matrix_transpose({a});
 
-    Tensor c = functions_.at("matrix_transpose")->compute({a})[0];
+    Tensor c = functions.at("matrix_transpose")->compute({a})[0];
     std::vector<size_t> expected{2, 2};
 
     gpu::gpu_mem_32f buff = c.getGPUBuffer();

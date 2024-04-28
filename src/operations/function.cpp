@@ -1,10 +1,12 @@
 #include "function.h"
+#include <filesystem>
+#include <fstream>
 
 namespace NSTTF {
 
-std::unordered_map<std::string, std::shared_ptr<Function>> functions_;
-std::unordered_map<std::string, ocl::Kernel> kernels;
-bool init_flag = false;
+std::unordered_map<std::string, std::shared_ptr<Function>> functions;
+std::unordered_map<std::string, ocl::Kernel> kernels; 
+
 unsigned int workGroupSize_ = 128;
 
 void checkShape(Tensor &arg1, Tensor &arg2) {
@@ -69,18 +71,13 @@ Tensor Multiplication::derivative(const std::vector<Tensor> &inputs,
                                   size_t inputIndex, size_t outputIndex,
                                   Tensor grad) const {
   if (inputIndex >= 2 || outputIndex >= 1) {
-    // exeption out of range
     throw std::out_of_range("inputIndex or outputIndex out of range");
   }
   if (inputIndex == 0) {
-    return functions_.at("multiplication")->compute({grad, inputs[1]})[0];
+    return functions.at("multiplication")->compute({grad, inputs[1]})[0]; // d(x*y)/dx * grad = y * grad
   }
-  // return functions["mult"].compute(
-  //     {grad, inputs[1]}); // d(x*y)/dx * grad = y * grad
   else {
-    return functions_.at("multiplication")->compute({inputs[0], grad})[0];
-    // return functions["mult"].compute(
-    //     {grad, inputs[0]}); // d(x*y)/dy * grad = x * grad
+    return functions.at("multiplication")->compute({inputs[0], grad})[0]; // d(x*y)/dy * grad = x * grad
   }
 }
 
@@ -108,13 +105,12 @@ Tensor Subtration::derivative(const std::vector<Tensor> &inputs,
                               size_t inputIndex, size_t outputIndex,
                               Tensor grad) const {
   if (inputIndex >= 2 || outputIndex >= 1) {
-    // exeption out of range
     throw std::out_of_range("inputIndex or outputIndex out of range");
   }
   if (inputIndex == 0)
     return grad; // d(x-y)/dx * grad = grad
   else {
-    return functions_.at("minus")->compute({grad})[0]; // function call
+    return functions.at("minus")->compute({grad})[0];
   }
 }
 
@@ -123,12 +119,10 @@ ocl::Kernel prepareKernel(const std::string &clFilename,
   std::vector<char> source = clToCharVector(clFilename);
   ocl::Kernel kernel(source.data(), source.size(), methodName);
   kernel.compile();
-
   return std::move(kernel);
 }
 
-bool init() {
-
+void init() {
   ocl::Kernel _unaryMinus =
       prepareKernel("src/cl/unary_minus.cl", "unary_minus");
   kernels.insert({"unary_minus", _unaryMinus});
@@ -152,17 +146,14 @@ bool init() {
       prepareKernel("src/cl/matrix_transpose.cl", "matrix_transpose");
   kernels.insert({"matrix_transpose", _matrix_transpose});
 
-  functions_.insert({"unary_minus", std::make_shared<UnaryMinus>()});
-  functions_.insert({"subtraction", std::make_shared<Subtration>()});
-  functions_.insert({"multiplication", std::make_shared<Multiplication>()});
-  functions_.insert({"sum", std::make_shared<Sum>()});
-  functions_.insert(
+  functions.insert({"unary_minus", std::make_shared<UnaryMinus>()});
+  functions.insert({"subtraction", std::make_shared<Subtration>()});
+  functions.insert({"multiplication", std::make_shared<Multiplication>()});
+  functions.insert({"sum", std::make_shared<Sum>()});
+  functions.insert(
       {"matrix_multiplication", std::make_shared<MatrixMultiplication>()});
-  functions_.insert({"matrix_transpose", std::make_shared<MatrixTranspose>()});
-  return true;
+  functions.insert({"matrix_transpose", std::make_shared<MatrixTranspose>()});
 }
-
-// bool t = init();
 
 std::vector<char> clToCharVector(const std::string &clFilename) {
   std::filesystem::path sourcePath(_PROJECT_SOURCE_DIR);
@@ -195,11 +186,12 @@ UnaryMinus::compute(const std::vector<Tensor> &inputs) const {
   std::vector<Tensor> result{res};
   return std::move(result);
 }
+
 Tensor UnaryMinus::derivative(const std::vector<Tensor> &inputs,
                               size_t inputIndex, size_t outputIndex,
                               Tensor grad) const {
   if (inputIndex == 0) {
-    return functions_.at("unary_minus")->compute({grad})[0];
+    return functions.at("unary_minus")->compute({grad})[0];
   }
 }
 std::vector<Tensor>
@@ -239,18 +231,19 @@ MatrixMultiplication::compute(const std::vector<Tensor> &inputs) const {
       arg1.getGPUBuffer(), arg2.getGPUBuffer(), res.getGPUBuffer(), M, K, N);
   return std::move(std::vector<Tensor>{res});
 }
+
 Tensor MatrixMultiplication::derivative(const std::vector<Tensor> &inputs,
                                         size_t inputIndex, size_t outputIndex,
                                         Tensor grad) const {
   if (inputIndex == 0) {
     Tensor newInput =
-        functions_.at("matrix_transpose")->compute({inputs[1]})[0];
-    return functions_.at("matrix_multiplication")
+        functions.at("matrix_transpose")->compute({inputs[1]})[0];
+    return functions.at("matrix_multiplication")
         ->compute({grad, newInput})[0]; // inputs[0].shape ={n, m}
   } else if (inputIndex == 1) {
     Tensor newInput =
-        functions_.at("matrix_transpose")->compute({inputs[0]})[0];
-    return functions_.at("matrix_multiplication")
+        functions.at("matrix_transpose")->compute({inputs[0]})[0];
+    return functions.at("matrix_multiplication")
         ->compute({newInput,
                    grad})[0]; // inputs[1].shape ={m, k}     grad.shape = {n, k}
   }

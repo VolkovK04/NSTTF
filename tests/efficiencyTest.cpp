@@ -18,7 +18,7 @@ using namespace NSTTF;
 
 // 0 - from CPU
 // 1 - from GPU
-const int firstDevice = 1;
+const int firstDevice = 0;
 
 template <class DT = std::chrono::milliseconds,
           class ClockT = std::chrono::steady_clock>
@@ -147,14 +147,14 @@ class EfficiencyTests : public ::testing::Test {
 
 TEST_F(EfficiencyTests, sum) {
     // std::cout << "AGA" << std::endl;
-    std::shared_ptr<NSTTF::Function> func = functions_.at("sum");
+    std::shared_ptr<NSTTF::Function> func = functions.at("sum");
     testVectorFunction(func, '+', 3);
 }
 TEST_F(EfficiencyTests, subtraction) {
-    testVectorFunction(functions_.at("subtraction"), '-', 3);
+    testVectorFunction(functions.at("subtraction"), '-', 3);
 }
 TEST_F(EfficiencyTests, multiplication) {
-    testVectorFunction(functions_.at("multiplication"), '*', 3);
+    testVectorFunction(functions.at("multiplication"), '*', 3);
 }
 
 TEST_F(EfficiencyTests, matrix_multiplication) {
@@ -204,7 +204,7 @@ TEST_F(EfficiencyTests, matrix_multiplication) {
             b.reshape({K, N});
 
             clock.start();
-            c = functions_.at("matrix_multiplication")->compute({a, b})[0];
+            c = functions.at("matrix_multiplication")->compute({a, b})[0];
             clock.end();
 
             std::cout << "Code run for " << clock.duration().count() << " ms"
@@ -266,7 +266,7 @@ TEST_F(EfficiencyTests, matrix_transpose) {
             a.reshape({M, N});
 
             clock.start();
-            c = functions_.at("matrix_transpose")->compute({a})[0];
+            c = functions.at("matrix_transpose")->compute({a})[0];
             clock.end();
 
             std::cout << "Code run for " << clock.duration().count() << " ms"

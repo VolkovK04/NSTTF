@@ -64,6 +64,8 @@ public:
 
   void reshape(const std::vector<size_t> &newShape);
 
+  Tensor copy() const;
+
   size_t getSize() const;
   ~Tensor() = default;
 };

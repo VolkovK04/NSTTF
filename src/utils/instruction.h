@@ -3,10 +3,12 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <operations/function.h>
 
 namespace NSTTF {
 class Instruction {
-private:
+protected:
+  // Function function;
   std::string name;
   std::vector<std::string> input;
   std::vector<std::string> output;
@@ -22,6 +24,19 @@ public:
   Instruction() = default;
 
   ~Instruction() = default;
+};
+
+class Constant : public Instruction {
+private:
+  double value;
+
+public:
+  Constant(const std::vector<std::string> &input,
+           const std::vector<std::string> &output, double value);
+
+  Constant() = default;
+
+  ~Constant() = default;
 };
 
 } // namespace NSTTF

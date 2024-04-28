@@ -28,11 +28,7 @@ size_t Tensor::getSize() const {
   if (shape.size() == 0) {
     return 0;
   }
-  size_t size = 1;
-  for (size_t dim : shape) {
-    size *= dim;
-  }
-  return size;
+  return getSize(shape);
 }
 
 size_t Tensor::getSize(const std::vector<size_t> &shape) {
@@ -56,5 +52,13 @@ void Tensor::reshape(const std::vector<size_t> &newShape) {
     throw std::invalid_argument("Incompatible shapes");
   }
   shape = newShape;
+}
+
+Tensor Tensor::copy() const {
+  gpu::gpu_mem_32f buffer = getGPUBuffer();
+  Tensor newTensor(shape);
+  gpu::gpu_mem_32f newbuffer = newTensor.getGPUBuffer();
+  buffer.copyTo(newbuffer, getSize());
+  return std::move(newTensor);
 }
 } // namespace NSTTF

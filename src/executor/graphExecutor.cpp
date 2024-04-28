@@ -13,29 +13,34 @@ GraphExecutor::GraphExecutor(const std::vector<Instruction> &instructions,
                              const std::vector<AbstractNode *> &outputs)
     : instructions(instructions), outputs(outputs) {}
 
+GraphExecutorWG::GraphExecutorWG(const std::vector<Instruction> &instructions,
+                                 const std::vector<AbstractNode *> &outputs,
+                                 const std::vector<Instruction> &gradient)
+    : GraphExecutor::GraphExecutor(instructions, outputs), gradient(gradient) {}
+
 TensorMap GraphExecutor::execute(const TensorMap &tensorsMap) {
-  TensorMap updatedMap = tensorsMap;
-  TensorMap outputMap;
+  calculated = tensorsMap;
+
   for (Instruction instruction : instructions) {
     std::vector<Tensor> tensors;
 
     std::vector<std::string> inputs = instruction.getInputs();
     for (std::string input : inputs) {
-      tensors.push_back(updatedMap[input]);
+      tensors.push_back(calculated[input]);
     }
+
+    std::vector<Tensor> result = functions.at(instruction.getName())->compute(tensors);
+
     std::vector<std::string> outputNames = instruction.getOutputs();
-    for (size_t i = 0; i < outputs.size(); i++) {
-      updatedMap[outputNames[i]] =
-          functions_.at(instruction.getName())->compute(tensors)[0];
+    for (size_t i = 0; i < outputs.size(); ++i) {
+      calculated[outputNames[i]] = result[i];
     }
-    // updatedMap[instruction.getOutputs()[0]] =
-    //     functions_.at(instruction.getName())->compute(tensors)[0]; // TODO
-    // callFunction(instruction.getName(), tensors);
   }
+  TensorMap outputMap;
   for (AbstractNode *output : outputs) {
     std::string name = output->getName();
-    outputMap[name] = updatedMap[name];
+    outputMap[name] = calculated[name];
   }
-  return outputMap;
+  return std::move(outputMap);
 }
 } // namespace NSTTF

@@ -1,13 +1,16 @@
 #pragma once
-#include <filesystem>
-#include <fstream>
-#include <libutils/misc.h>
 #include <string>
 #include <tensor/tensor.h>
 #include <unordered_map>
 #include <vector>
+#include <libutils/misc.h>
 
 namespace NSTTF {
+
+class Function;
+
+extern std::unordered_map<std::string, std::shared_ptr<Function>> functions;
+extern std::unordered_map<std::string, ocl::Kernel> kernels; 
 
 class Function {
 public:
@@ -26,16 +29,13 @@ public:
                             Tensor grad) const = 0;
 };
 
-bool init();
+void init();
 void checkNumOfTensors(const std::vector<Tensor> &tensors, size_t num);
 void checkShape(Tensor &arg1, Tensor &arg2);
 std::vector<char> clToCharVector(const std::string &clFilename);
 
-extern std::unordered_map<std::string, std::shared_ptr<Function>> functions_;
-extern std::unordered_map<std::string, ocl::Kernel> kernels;
-
 class UnaryMinus : public Function {
-  friend bool init();
+  friend void init();
 
 public:
   UnaryMinus() = default;
@@ -45,7 +45,7 @@ public:
 };
 
 class Sum : public Function {
-  friend bool init();
+  friend void init();
 
 public:
   Sum() = default;
@@ -55,7 +55,7 @@ public:
 };
 
 class Subtration : public Function {
-  friend bool init();
+  friend void init();
 
 public:
   Subtration() = default;
@@ -65,7 +65,7 @@ public:
 };
 
 class Multiplication : public Function {
-  friend bool init();
+  friend void init();
 
 public:
   Multiplication() = default;
@@ -75,7 +75,7 @@ public:
 };
 
 class MatrixMultiplication : public Function {
-  friend bool init();
+  friend void init();
 
 public:
   MatrixMultiplication() = default;
@@ -85,7 +85,7 @@ public:
 };
 
 class MatrixTranspose : public Function {
-  friend bool init();
+  friend void init();
 
 public:
   MatrixTranspose() = default;
