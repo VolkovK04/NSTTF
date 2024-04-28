@@ -10,7 +10,7 @@
 #include <libutils/misc.h>
 
 #include <tensor/tensor.h>
-#include <utils/functions.h>
+#include <operations/function.h>
 
 #include <vector>
 

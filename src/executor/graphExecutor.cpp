@@ -1,4 +1,5 @@
 #include "graphExecutor.h"
+#include <operations/function.h>
 
 namespace NSTTF {
 
@@ -23,8 +24,12 @@ TensorMap GraphExecutor::execute(const TensorMap &tensorsMap) {
     }
     std::vector<std::string> outputNames = instruction.getOutputs();
     for (size_t i = 0; i < outputs.size(); i++) {
-      updatedMap[outputNames[i]] = callFunction(instruction.getName(), tensors);
+      updatedMap[outputNames[i]] = functions_.at(instruction.getName())->compute(
+          tensors)[0];
     }
+    // updatedMap[instruction.getOutputs()[0]] =
+    //     functions_.at(instruction.getName())->compute(tensors)[0]; // TODO
+    // callFunction(instruction.getName(), tensors);
   }
   for (AbstractNode *output : outputs) {
     std::string name = output->getName();

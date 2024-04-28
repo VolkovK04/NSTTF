@@ -8,8 +8,8 @@
 
 #include <computationGraph/computationGraph.h>
 #include <executor/graphExecutor.h>
+#include <operations/function.h>
 #include <utils/compiler.h>
-
 
 #include <map>
 
@@ -22,12 +22,14 @@ protected:
     // Initialize OpenCL context, command queue, and other resources
     // This code is specific to your OpenCL setup and platform
 
+
     std::vector<gpu::Device> devices = gpu::enumDevices();
 
     gpu::Device device = devices[devices.size() - 1];
 
     context.init(device.device_id_opencl);
     context.activate();
+    NSTTF::init();
   }
 };
 

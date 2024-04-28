@@ -11,6 +11,14 @@ namespace NSTTF {
 
 class Function {
 public:
+  Function() = default;
+  Function(const Function &) = delete;
+  Function &operator=(const Function &) = delete;
+
+  Function(Function &&) = default;
+  Function &operator=(Function &&) = default;
+
+
   virtual std::vector<Tensor>
   compute(const std::vector<Tensor> &inputs) const = 0;
   virtual Tensor derivative(const std::vector<Tensor> &inputs,
@@ -18,7 +26,7 @@ public:
                             Tensor grad) const = 0;
 };
 
-void init();
+bool init();
 void checkNumOfTensors(const std::vector<Tensor> &tensors, size_t num);
 void checkShape(Tensor &arg1, Tensor &arg2);
 std::vector<char> clToCharVector(const std::string &clFilename);
@@ -27,7 +35,7 @@ extern std::unordered_map<std::string, std::shared_ptr<Function>> functions_;
 extern std::unordered_map<std::string, ocl::Kernel> kernels;
 
 class UnaryMinus : public Function {
-  friend void init();
+  friend bool init();
 
 public:
   UnaryMinus() = default;
@@ -37,7 +45,7 @@ public:
 };
 
 class Sum : public Function {
-  friend void init();
+  friend bool init();
 
 public:
   Sum() = default;
@@ -47,7 +55,7 @@ public:
 };
 
 class Subtration : public Function {
-  friend void init();
+  friend bool init();
 
 public:
   Subtration() = default;
@@ -57,7 +65,7 @@ public:
 };
 
 class Multiplication : public Function {
-  friend void init();
+  friend bool init();
 
 public:
   Multiplication() = default;
@@ -67,7 +75,7 @@ public:
 };
 
 class MatrixMultiplication : public Function {
-  friend void init();
+  friend bool init();
 
 public:
   MatrixMultiplication() = default;
@@ -77,7 +85,7 @@ public:
 };
 
 class MatrixTranspose : public Function {
-  friend void init();
+  friend bool init();
 
 public:
   MatrixTranspose() = default;
