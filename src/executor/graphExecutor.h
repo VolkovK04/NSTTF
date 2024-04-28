@@ -3,8 +3,6 @@
 #include <computationGraph/node.h>
 #include <map>
 #include <tensor/tensor.h>
-#include <unordered_set>
-#include <utils/functions.h>
 #include <utils/instruction.h>
 #include <vector>
 
