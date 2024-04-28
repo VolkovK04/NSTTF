@@ -9,6 +9,7 @@
 #include <computationGraph/computationGraph.h>
 #include <executor/graphExecutor.h>
 #include <operations/function.h>
+#include <utils/compiler.h>
 
 #include <map>
 

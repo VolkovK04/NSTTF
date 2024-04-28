@@ -10,7 +10,7 @@
 #include <libutils/misc.h>
 
 #include <tensor/tensor.h>
-#include <utils/functions.h>
+#include <operations/function.h>
 
 #include <vector>
 
@@ -92,14 +92,14 @@ TEST_F(EfficiencyTests, substruction) {
 
     for (unsigned int i = 0; i < numOfDevices; ++i) {
         setUpDevice(i);
-        functions::init();
+        init();
 
         Tensor a(v1);
         Tensor b(v2);
         Tensor c;
 
         clock.start();
-        c = sum({a, b});
+        c = functions_.at("subtraction")->compute({a, b})[0];
         clock.end();
 
         std::cout << "Code run for " << clock.duration().count() << " ms"
