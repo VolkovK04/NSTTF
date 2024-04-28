@@ -2,6 +2,11 @@
 
 namespace NSTTF {
 
+Instruction::Instruction(const std::string &name,
+                         const std::vector<std::string> &input,
+                         const std::vector<std::string> &output)
+    : name(name), input(input), output(output) {}
+
 GraphExecutor Compiler::compile(const ComputationGraph &graph) {
   outputs = graph.getOutputNodes();
   std::vector<Instruction> instructions = getAllInstructions();
@@ -11,18 +16,19 @@ GraphExecutor Compiler::compile(const ComputationGraph &graph) {
   return executor;
 }
 
-Instruction getDerivative(AbstractNode *node, const std::vector<std::string> differentiateBy) {
-  std::string name = node->getName();
-  for (std::string diffBy : differentiateBy) {
-    if (diffBy == name) {
-      return 
-    }
-  }
-  if (!dynamic_cast<OperationNode *>(node)){
+// Instruction getDerivative(AbstractNode *node, const std::vector<std::string>
+// differentiateBy) {
+//   std::string name = node->getName();
+//   for (std::string diffBy : differentiateBy) {
+//     if (diffBy == name) {
+//       return;
+//     }
+//   }
+//   if (!dynamic_cast<OperationNode *>(node)){
 
-  }
+//   }
 
-}
+// }
 
 void Compiler::getInstruction(AbstractNode *node,
                               std::vector<Instruction> &result) {
@@ -61,12 +67,12 @@ std::vector<Instruction> Compiler::getAllInstructions() {
   return result;
 }
 
-GraphExecutorWG Compiler::compile(const ComputationGraph &graph,
-                                  const std::vector<std::string> &inputs) {
-  if (inputs.empty()) {
-    return;
-  }
-  std::unordered_set<std::string> computedInputs;
-}
+// GraphExecutorWG Compiler::compile(const ComputationGraph &graph,
+//                                   const std::vector<std::string> &inputs) {
+//   if (inputs.empty()) {
+//     return;
+//   }
+//   std::unordered_set<std::string> computedInputs;
+// }
 
 } // namespace NSTTF

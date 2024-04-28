@@ -16,16 +16,17 @@ GraphExecutor::GraphExecutor(const std::vector<Instruction> &instructions,
 TensorMap GraphExecutor::execute(const TensorMap &tensorsMap) {
   TensorMap updatedMap = tensorsMap;
   TensorMap outputMap;
-  std::vector<Tensor> tensors;
   for (Instruction instruction : instructions) {
+    std::vector<Tensor> tensors;
+
     std::vector<std::string> inputs = instruction.getInputs();
     for (std::string input : inputs) {
       tensors.push_back(updatedMap[input]);
     }
     std::vector<std::string> outputNames = instruction.getOutputs();
     for (size_t i = 0; i < outputs.size(); i++) {
-      updatedMap[outputNames[i]] = functions_.at(instruction.getName())->compute(
-          tensors)[0];
+      updatedMap[outputNames[i]] =
+          functions_.at(instruction.getName())->compute(tensors)[0];
     }
     // updatedMap[instruction.getOutputs()[0]] =
     //     functions_.at(instruction.getName())->compute(tensors)[0]; // TODO

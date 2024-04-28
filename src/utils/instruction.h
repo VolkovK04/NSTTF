@@ -24,11 +24,4 @@ public:
   ~Instruction() = default;
 };
 
-class Constant : Instruction {
-private:
-  double value;
-
-public:
-  Instruction(const std::string &name,  );
-};
 } // namespace NSTTF
