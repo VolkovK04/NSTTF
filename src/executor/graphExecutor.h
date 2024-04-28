@@ -16,11 +16,14 @@ private:
   TensorMap gradient;
 
 public:
-  GraphExecutor(std::vector<Instruction> instructions,
-                std::vector<AbstractNode *> outputs);
-  GraphExecutor(std::vector<Instruction> instrucitons, TensorMap gradient,
-                std::vector<AbstractNode *> outputs);
+  GraphExecutor(const std::vector<Instruction> &instructions,
+                const std::vector<AbstractNode *> &outputs);
+  GraphExecutor(const std::vector<Instruction> &instrucitons,
+                const TensorMap &gradient,
+                const std::vector<AbstractNode *> &outputs);
 
   TensorMap execute(const TensorMap &tensorsMap);
 };
+
+class GraphExecutorWG : GraphExecutor {};
 } // namespace NSTTF

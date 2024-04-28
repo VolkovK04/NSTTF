@@ -20,5 +20,8 @@ public:
   Compiler() = default;
 
   GraphExecutor compile(const ComputationGraph &graph);
+
+  GraphExecutorWG compile(const ComputationGraph &graph,
+                          const std::vector<std::string> &inputs);
 };
 } // namespace NSTTF

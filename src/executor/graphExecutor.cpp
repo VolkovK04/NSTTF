@@ -8,8 +8,8 @@ std::vector<std::string> Instruction::getInputs() { return input; }
 
 std::vector<std::string> Instruction::getOutputs() { return output; }
 
-GraphExecutor::GraphExecutor(std::vector<Instruction> instructions,
-                             std::vector<AbstractNode *> outputs)
+GraphExecutor::GraphExecutor(const std::vector<Instruction> &instructions,
+                             const std::vector<AbstractNode *> &outputs)
     : instructions(instructions), outputs(outputs) {}
 
 TensorMap GraphExecutor::execute(const TensorMap &tensorsMap) {

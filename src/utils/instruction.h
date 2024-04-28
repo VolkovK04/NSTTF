@@ -17,11 +17,18 @@ public:
   std::vector<std::string> getOutputs();
 
   Instruction(const std::string &name, const std::vector<std::string> &input,
-              const std::vector<std::string> &output)
-      : name(name), output(output), input(input) {}
+              const std::vector<std::string> &output);
 
   Instruction() = default;
 
   ~Instruction() = default;
+};
+
+class Constant : Instruction {
+private:
+  double value;
+
+public:
+  Instruction(const std::string &name,  );
 };
 } // namespace NSTTF
