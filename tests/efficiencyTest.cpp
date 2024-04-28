@@ -9,12 +9,16 @@
 #include <libutils/fast_random.h>
 #include <libutils/misc.h>
 
-#include <tensor/tensor.h>
 #include <operations/function.h>
+#include <tensor/tensor.h>
 
 #include <vector>
 
 using namespace NSTTF;
+
+// 0 - from CPU
+// 1 - from GPU
+const int firstDevice = 2;
 
 template <class DT = std::chrono::milliseconds,
           class ClockT = std::chrono::steady_clock>
@@ -51,11 +55,12 @@ class EfficiencyTests : public ::testing::Test {
         context.activate();
 
         device.printInfo();
+
+        init();
     }
 
-    void testVectorFunction(
-        std::function<Tensor(const std::vector<Tensor> &tensors)> func,
-        const char &operation, const int &benchIters = 1) {
+    void testVectorFunction(std::shared_ptr<NSTTF::Function> func,
+                            const char &operation, const int &benchIters = 1) {
         std::cout << "CTEST_FULL_OUTPUT" << std::endl;
 
         int numOfDevices = gpu::enumDevices().size();
@@ -86,16 +91,15 @@ class EfficiencyTests : public ::testing::Test {
                 }
             }
 
-            for (unsigned int i = 1; i < numOfDevices; ++i) {
+            for (unsigned int i = firstDevice; i < numOfDevices; ++i) {
                 setUpDevice(i);
-                functions::init();
 
                 Tensor a(v1);
                 Tensor b(v2);
                 Tensor c;
 
                 clock.start();
-                c = func({a, b});
+                c = func->compute({a, b})[0];
                 clock.end();
 
                 std::cout << "Code run for " << clock.duration().count()
@@ -129,12 +133,15 @@ class EfficiencyTests : public ::testing::Test {
     }
 };
 
-TEST_F(EfficiencyTests, sum) { testVectorFunction(NSTTF::sum, '+', 3); }
+TEST_F(EfficiencyTests, sum) {
+    std::cout << "AGA" << std::endl;
+    testVectorFunction(functions_.at("sum"), '+', 3);
+}
 TEST_F(EfficiencyTests, subtraction) {
-    testVectorFunction(NSTTF::subtraction, '-', 3);
+    testVectorFunction(functions_.at("subtraction"), '-', 3);
 }
 TEST_F(EfficiencyTests, multiplication) {
-    testVectorFunction(NSTTF::multiplication, '*', 3);
+    testVectorFunction(functions_.at("multiplication"), '*', 3);
 }
 
 TEST_F(EfficiencyTests, matrix_multiplication) {
@@ -173,9 +180,8 @@ TEST_F(EfficiencyTests, matrix_multiplication) {
             }
         }
 
-        for (unsigned int i = 1; i < numOfDevices; ++i) {
+        for (unsigned int i = firstDevice; i < numOfDevices; ++i) {
             setUpDevice(i);
-            functions::init();
 
             Tensor a(v1);
             Tensor b(v2);
@@ -185,7 +191,7 @@ TEST_F(EfficiencyTests, matrix_multiplication) {
             b.reshape({K, N});
 
             clock.start();
-            c = matrix_multiplication({a, b});
+            c = functions_.at("matrix_multiplication")->compute({a, b})[0];
             clock.end();
 
             std::cout << "Code run for " << clock.duration().count() << " ms"
@@ -238,9 +244,8 @@ TEST_F(EfficiencyTests, matrix_transpose) {
             v1[i] = r.nextf();
         }
 
-        for (unsigned int i = 1; i < numOfDevices; ++i) {
+        for (unsigned int i = firstDevice; i < numOfDevices; ++i) {
             setUpDevice(i);
-            functions::init();
 
             Tensor a(v1);
             Tensor c;
@@ -248,7 +253,7 @@ TEST_F(EfficiencyTests, matrix_transpose) {
             a.reshape({M, N});
 
             clock.start();
-            c = matrix_transpose({a});
+            c = functions_.at("matrix_transpose")->compute({a})[0];
             clock.end();
 
             std::cout << "Code run for " << clock.duration().count() << " ms"
