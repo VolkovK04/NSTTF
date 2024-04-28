@@ -5,6 +5,8 @@
 #include <libgpu/shared_device_buffer.h>
 #include <unordered_map>
 #include <vector>
+#include <unordered_map>
+#include <string>
 
 namespace NSTTF {
 class AbstractDataPointer {
@@ -83,6 +85,20 @@ public:
 
   const Tensor &operator[](size_t index) const;
   // TODO iterators
+};
+
+class TensorMap_ {
+  private:
+    std::unordered_map<std::string, Tensor> data;
+  public:
+    TensorMap_() = default;
+    explicit TensorMap_(const std::unordered_map<std::string, Tensor>& data) : data(data) {}
+    void insert(std::string label, const Tensor& tensor);
+    void remove(std::string label);
+    
+    size_t count() const;
+
+    const Tensor& operator[](std::string label) const;
 };
 
 typedef std::unordered_map<std::string, Tensor> TensorMap;
