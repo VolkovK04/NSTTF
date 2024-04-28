@@ -18,7 +18,7 @@ using namespace NSTTF;
 
 // 0 - from CPU
 // 1 - from GPU
-const int firstDevice = 2;
+const int firstDevice = 1;
 
 template <class DT = std::chrono::milliseconds,
           class ClockT = std::chrono::steady_clock>
@@ -46,7 +46,19 @@ class Timer {
 class EfficiencyTests : public ::testing::Test {
   protected:
     gpu::Context context;
-    void setUpDevice(int i) {
+
+    virtual void SetUp(){
+        std::vector<gpu::Device> devices = gpu::enumDevices();
+
+        gpu::Device device = devices[devices.size() - 1];
+
+        context.init(device.device_id_opencl);
+        context.activate();
+
+        init();
+    }
+
+    virtual void SetUp(int i) {
         std::vector<gpu::Device> devices = gpu::enumDevices();
 
         gpu::Device device = devices[i];
@@ -56,7 +68,7 @@ class EfficiencyTests : public ::testing::Test {
 
         device.printInfo();
 
-        init();
+        // init();
     }
 
     void testVectorFunction(std::shared_ptr<NSTTF::Function> func,
@@ -92,7 +104,7 @@ class EfficiencyTests : public ::testing::Test {
             }
 
             for (unsigned int i = firstDevice; i < numOfDevices; ++i) {
-                setUpDevice(i);
+                SetUp(i);
 
                 Tensor a(v1);
                 Tensor b(v2);
@@ -134,8 +146,9 @@ class EfficiencyTests : public ::testing::Test {
 };
 
 TEST_F(EfficiencyTests, sum) {
-    std::cout << "AGA" << std::endl;
-    testVectorFunction(functions_.at("sum"), '+', 3);
+    // std::cout << "AGA" << std::endl;
+    std::shared_ptr<NSTTF::Function> func = functions_.at("sum");
+    testVectorFunction(func, '+', 3);
 }
 TEST_F(EfficiencyTests, subtraction) {
     testVectorFunction(functions_.at("subtraction"), '-', 3);
@@ -181,7 +194,7 @@ TEST_F(EfficiencyTests, matrix_multiplication) {
         }
 
         for (unsigned int i = firstDevice; i < numOfDevices; ++i) {
-            setUpDevice(i);
+            SetUp(i);
 
             Tensor a(v1);
             Tensor b(v2);
@@ -245,7 +258,7 @@ TEST_F(EfficiencyTests, matrix_transpose) {
         }
 
         for (unsigned int i = firstDevice; i < numOfDevices; ++i) {
-            setUpDevice(i);
+            SetUp(i);
 
             Tensor a(v1);
             Tensor c;
