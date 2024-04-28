@@ -7,9 +7,11 @@
 #include <libutils/misc.h>
 #include <libutils/timer.h>
 
-#include <cl_functions/cl_functions.h>
+// #include <utils/functions.h>
+#include <operations/function.h>
+// #include <cl_functions/cl_functions.h>
 
-#define THREAD_WORK 4
+// using namespace NSTTF::functions;
 
 class GPUTests : public ::testing::Test {
 protected:
@@ -34,6 +36,8 @@ protected:
 
     context.init(device.device_id_opencl);
     context.activate();
+
+    NSTTF::init();
   }
 
   virtual void TearDown() {
@@ -73,14 +77,15 @@ TEST_F(GPUTests, multiplication_test) {
   as_gpu.writeN(as.data(), n);
   bs_gpu.writeN(bs.data(), n);
 
-  ocl::Kernel multiplication(multiplication_kernel,
-                             multiplication_kernel_length, "multiplication");
-  multiplication.compile();
+  
+  // ocl::Kernel multiplication(multiplication_kernel,
+  //                            multiplication_kernel_length, "multiplication");
+  
 
   unsigned int workGroupSize = 128;
   unsigned int global_work_size =
       (n + workGroupSize - 1) / workGroupSize * workGroupSize;
-  multiplication.exec(gpu::WorkSize(workGroupSize, global_work_size), as_gpu,
+  NSTTF::kernels.at("multiplication").exec(gpu::WorkSize(workGroupSize, global_work_size), as_gpu,
                       bs_gpu, cs_gpu, n);
 
   cs_gpu.readN(cs.data(), n);
@@ -110,13 +115,12 @@ TEST_F(GPUTests, sum_test) {
   as_gpu.writeN(as.data(), n);
   bs_gpu.writeN(bs.data(), n);
 
-  ocl::Kernel sum(sum_kernel, sum_kernel_length, "sum");
-  sum.compile();
+  // ocl::Kernel sum(sum_kernel, sum_kernel_length, "sum");
 
   unsigned int workGroupSize = 128;
   unsigned int global_work_size =\
       (n + workGroupSize - 1) / workGroupSize * workGroupSize;
-  sum.exec(gpu::WorkSize(workGroupSize, global_work_size), as_gpu, bs_gpu,
+  NSTTF::kernels.at("sum").exec(gpu::WorkSize(workGroupSize, global_work_size), as_gpu, bs_gpu,
            cs_gpu, n);
 
   cs_gpu.readN(cs.data(), n);
@@ -146,14 +150,13 @@ TEST_F(GPUTests, subtraction_test) {
   as_gpu.writeN(as.data(), n);
   bs_gpu.writeN(bs.data(), n);
 
-  ocl::Kernel subtraction(subtraction_kernel, subtraction_kernel_length,
-                          "subtraction");
-  subtraction.compile();
+  // ocl::Kernel subtraction(subtraction_kernel, subtraction_kernel_length,
+                          // "subtraction");
 
   unsigned int workGroupSize = 128;
   unsigned int global_work_size =
       (n + workGroupSize - 1) / workGroupSize * workGroupSize;
-  subtraction.exec(gpu::WorkSize(workGroupSize, global_work_size), as_gpu,
+  NSTTF::kernels.at("subtraction").exec(gpu::WorkSize(workGroupSize, global_work_size), as_gpu,
                    bs_gpu, cs_gpu, n);
 
   cs_gpu.readN(cs.data(), n);
@@ -206,22 +209,19 @@ TEST_F(GPUTests, matrix_multiplication_updated_test) {
   as_gpu.writeN(as.data(), M * K);
   bs_gpu.writeN(bs.data(), K * N);
 
-  ocl::Kernel matrix_multiplication(matrix_multiplication_kernel,
-                                    matrix_multiplication_kernel_length,
-                                    "matrix_multiplication_updated");
-  matrix_multiplication.compile();
+  // ocl::Kernel matrix_multiplication(matrix_multiplication_kernel,
+  //                                   matrix_multiplication_kernel_length,
+  //                                   "matrix_multiplication_updated");
 
   for (int iter = 0; iter < benchmarkingIters; ++iter) {
     unsigned int x_work_group_size = 16;
-    unsigned int y_work_group_size = 4;
+    unsigned int y_work_group_size = 16;
     unsigned int x_work_size =
         (M + x_work_group_size - 1) / x_work_group_size * x_work_group_size;
     unsigned int y_work_size =
         (N + y_work_group_size - 1) / y_work_group_size * y_work_group_size;
-    // почему работает так?
 
-    y_work_size /= THREAD_WORK;
-    matrix_multiplication.exec(gpu::WorkSize(x_work_group_size,
+    NSTTF::kernels.at("matrix_multiplication").exec(gpu::WorkSize(x_work_group_size,
                                              y_work_group_size, x_work_size,
                                              y_work_size),
                                as_gpu, bs_gpu, cs_gpu, M, K, N);
@@ -265,10 +265,9 @@ TEST_F(GPUTests, matrix_transposition_test) {
 
   as_gpu.writeN(as.data(), M * K);
 
-  ocl::Kernel matrix_transpose(matrix_transpose_kernel,
-                                      matrix_transpose_kernel_length,
-                                      "matrix_transpose");
-  matrix_transpose.compile();
+  // ocl::Kernel matrix_transpose(matrix_transpose_kernel,
+  //                                     matrix_transpose_kernel_length,
+  //                                     "matrix_transpose");
 
   for (int iter = 0; iter < benchmarkingIters; ++iter) {
     unsigned int x_work_group_size = 16;
@@ -278,7 +277,7 @@ TEST_F(GPUTests, matrix_transposition_test) {
     unsigned int y_work_size =
         (K + y_work_group_size - 1) / y_work_group_size * y_work_group_size;
 
-    matrix_transpose.exec(gpu::WorkSize(x_work_group_size,
+    NSTTF::kernels.at("matrix_transpose").exec(gpu::WorkSize(x_work_group_size,
                                                y_work_group_size, x_work_size,
                                                y_work_size),
                                  as_gpu, bs_gpu, M, K);

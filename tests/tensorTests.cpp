@@ -8,6 +8,7 @@
 
 #include <tensor/tensor.h>
 #include <libgpu/shared_device_buffer.h>
+#include <operations/function.h>
 #include <vector>
 
 using namespace NSTTF;
@@ -24,6 +25,8 @@ protected:
 
     context.init(device.device_id_opencl);
     context.activate();
+
+    NSTTF::init();
   }
 };
 

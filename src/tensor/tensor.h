@@ -3,6 +3,7 @@
 #include <iostream>
 #include <libgpu/context.h>
 #include <libgpu/shared_device_buffer.h>
+#include <unordered_map>
 #include <vector>
 #include <unordered_map>
 #include <string>
@@ -68,29 +69,30 @@ public:
 };
 
 class TensorStack {
-  private:
-    std::vector<Tensor> tensors;
-  public:
-    TensorStack() = default;
-    explicit TensorStack(std::vector<Tensor> tensors);
+private:
+  std::vector<Tensor> tensors;
 
-    void append(const Tensor& tensor);
-    void insert(const Tensor& tensor);
-    void remove(size_t index);
-    
-    size_t count() const;
-    Tensor toTensor() const;
+public:
+  TensorStack() = default;
+  explicit TensorStack(std::vector<Tensor> tensors);
 
-    const Tensor& operator[](size_t index) const;
-    // TODO iterators
+  void append(const Tensor &tensor);
+  void insert(const Tensor &tensor);
+  void remove(size_t index);
+
+  size_t count() const;
+  Tensor toTensor() const;
+
+  const Tensor &operator[](size_t index) const;
+  // TODO iterators
 };
 
-class TensorMap {
+class TensorMap_ {
   private:
     std::unordered_map<std::string, Tensor> data;
   public:
-    TensorMap() = default;
-    explicit TensorMap(const std::unordered_map<std::string, Tensor>& data) : data(data) {}
+    TensorMap_() = default;
+    explicit TensorMap_(const std::unordered_map<std::string, Tensor>& data) : data(data) {}
     void insert(std::string label, const Tensor& tensor);
     void remove(std::string label);
     
@@ -99,4 +101,6 @@ class TensorMap {
     const Tensor& operator[](std::string label) const;
 };
 
+typedef std::unordered_map<std::string, Tensor> TensorMap;
+// TODO: overload sum for this map
 } // namespace NSTTF

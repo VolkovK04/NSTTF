@@ -1,19 +1,24 @@
 #pragma once
 
 #include <string>
-namespace NSTTF {
+#include <memory>
 
-class AbstractOperation {
+namespace NSTTF
+{
 
-private:
-  std::string name;
+  class AbstractOperation
+  {
 
-public:
-  const std::string getName();
+  protected:
+    std::string name;
 
-  AbstractOperation() = default;
-  AbstractOperation(std::string name);
-  virtual ~AbstractOperation() = default;
-};
+  public:
+    const std::string getName();
+
+    AbstractOperation() = default;
+    AbstractOperation(std::string name);
+
+    virtual ~AbstractOperation() = default;
+  };
 
 } // namespace NSTTF

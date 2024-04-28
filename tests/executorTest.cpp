@@ -7,8 +7,9 @@
 #include <libutils/misc.h>
 
 #include <computationGraph/computationGraph.h>
-#include <utils/compiler.h>
 #include <executor/graphExecutor.h>
+#include <operations/function.h>
+#include <utils/compiler.h>
 
 #include <map>
 
@@ -21,21 +22,22 @@ protected:
     // Initialize OpenCL context, command queue, and other resources
     // This code is specific to your OpenCL setup and platform
 
+
     std::vector<gpu::Device> devices = gpu::enumDevices();
 
     gpu::Device device = devices[devices.size() - 1];
 
     context.init(device.device_id_opencl);
     context.activate();
+    NSTTF::init();
   }
 };
 
 TEST_F(ExecutorTests, SumNode) {
   Compiler compiler;
   ComputationGraph g;
-  std::map<std::string, Tensor> tensorsMap = {
-      {"test1", Tensor{{1.f, 2.f, 3.f}, {1, 3}}},
-      {"test2", Tensor{{4.f, 5.f, 6.f}, {1, 3}}}};
+  TensorMap tensorsMap = {{"test1", Tensor{{1.f, 2.f, 3.f}, {1, 3}}},
+                          {"test2", Tensor{{4.f, 5.f, 6.f}, {1, 3}}}};
 
   NodeInterface nodeInterface1 = g.AddInputNode("test1");
   NodeInterface nodeInterface2 = g.AddInputNode("test2");
@@ -44,22 +46,13 @@ TEST_F(ExecutorTests, SumNode) {
   sumNode.setName("result");
 
   GraphExecutor executor = compiler.compile(g);
-  std::map<std::string, Tensor> actual = executor.execute(tensorsMap);
+  TensorMap actual = executor.execute(tensorsMap);
 
-  std::map<std::string, Tensor> expected = {
-      {"test1", Tensor{{1.f, 2.f, 3.f}, {1, 3}}},
-      {"test2", Tensor{{4.f, 5.f, 6.f}, {1, 3}}},
-      {"result", Tensor{{5.f, 7.f, 9.f}, {1, 3}}}};
+  TensorMap expected = {{"result", Tensor{{5.f, 7.f, 9.f}, {1, 3}}}};
 
-  Tensor actTest1 = actual["test1"];
-  Tensor actTest2 = actual["test2"];
   Tensor actRes = actual["result"];
 
-  Tensor expTest1 = expected["test1"];
-  Tensor expTest2 = expected["test2"];
   Tensor expRes = expected["result"];
 
-  EXPECT_EQ(actTest1.getData(), expTest1.getData());
-  EXPECT_EQ(actTest2.getData(), expTest2.getData());
   EXPECT_EQ(actRes.getData(), expRes.getData());
 }
