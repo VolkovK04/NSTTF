@@ -21,7 +21,7 @@ protected:
   std::vector<float> as, bs, cs;
   gpu::gpu_mem_32f as_gpu, bs_gpu, cs_gpu;
 
-  virtual void SetUp() {
+  virtual void SetUp_() {
     // Initialize OpenCL context, command queue, and other resources
     // This code is specific to your OpenCL setup and platform
 

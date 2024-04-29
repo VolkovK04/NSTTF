@@ -1,12 +1,18 @@
-set(BINARY ${PROJECT_NAME}_test)
+set(TEST_BINARY ${PROJECT_NAME}_test)
+set(EFFICIENCY_TEST_BINARY ${PROJECT_NAME}_efficiency_test)
 
-file(GLOB_RECURSE TEST_SOURCES LIST_DIRECTORIES true *.h *.cpp)
+set(TEST_SOURCES 
+  main.cpp 
+  gpuTests.cpp 
+  functionsTests.cpp 
+  graphTests.cpp 
+  tensorTests.cpp 
+  executorTest.cpp
+)
 
-# set(TEST_SOURCES main.cpp efficiencyTest.cpp)
-
-# set(TEST_SOURCES main.cpp functionsTests.cpp graphTests.cpp tensorTests.cpp executorTest.cpp)
-
-# set(TEST_SOURCES main.cpp gpuTests.cpp graphTests.cpp tensorTests.cpp executorTest.cpp)
+set(EFFICIENCY_TEST_SOURCES
+  efficiencyTest.cpp
+)
 
 # include_directories(libs)
 
@@ -22,12 +28,17 @@ FetchContent_MakeAvailable(googletest)
 
 find_package(GTest)
 
-add_executable(${BINARY} ${TEST_SOURCES}) # ${HEADERS} ${CPPERS})
+add_executable(${TEST_BINARY} ${TEST_SOURCES})
+add_executable(${EFFICIENCY_TEST_BINARY} ${EFFICIENCY_TEST_SOURCES})
 
-gtest_discover_tests(${BINARY})
+gtest_discover_tests(${TEST_BINARY})
 
-# target_include_directories(${BINARY} PUBLIC ../src ../libs/)
+# target_include_directories(${TEST_BINARY} PUBLIC ../src ../libs/)
 
-target_link_libraries(${BINARY} gtest gmock 
+target_link_libraries(${TEST_BINARY} gtest gmock 
+    ${EXTERNAL_LIBRARIES}
+    ${INTERNAL_LIBRARIES})
+
+target_link_libraries(${EFFICIENCY_TEST_BINARY} gtest gmock 
     ${EXTERNAL_LIBRARIES}
     ${INTERNAL_LIBRARIES})

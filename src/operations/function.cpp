@@ -4,10 +4,81 @@
 
 namespace NSTTF {
 
-std::unordered_map<std::string, std::shared_ptr<Function>> functions;
+std::unordered_map<std::string, std::shared_ptr<Function>> initFunctions();
+
+std::unordered_map<std::string, std::shared_ptr<Function>> functions = initFunctions();
 std::unordered_map<std::string, ocl::Kernel> kernels; 
 
 unsigned int workGroupSize_ = 128;
+
+ocl::Kernel prepareKernel(const std::string &clFilename,
+                          const std::string &methodName) {
+  std::vector<char> source = clToCharVector(clFilename);
+  ocl::Kernel kernel(source.data(), source.size(), methodName);
+  kernel.compile();
+  return std::move(kernel);
+}
+
+std::unordered_map<std::string, std::shared_ptr<Function>> initFunctions() {
+  std::unordered_map<std::string, std::shared_ptr<Function>> functions_;
+  functions_.insert({"unary_minus", std::make_shared<UnaryMinus>()});
+  functions_.insert({"subtraction", std::make_shared<Subtration>()});
+  functions_.insert({"multiplication", std::make_shared<Multiplication>()});
+  functions_.insert({"sum", std::make_shared<Sum>()});
+  functions_.insert(
+      {"matrix_multiplication", std::make_shared<MatrixMultiplication>()});
+  functions_.insert({"matrix_transpose", std::make_shared<MatrixTranspose>()});
+  return std::move(functions_);
+}
+
+bool initflag = false;
+void init() {
+  if (initflag){
+    return;
+  }
+  initflag = true;
+  
+  ocl::Kernel _unaryMinus =
+      prepareKernel("src/cl/unary_minus.cl", "unary_minus");
+  kernels.insert({"unary_minus", _unaryMinus});
+
+  ocl::Kernel _subtraction =
+      prepareKernel("src/cl/subtraction.cl", "subtraction");
+  kernels.insert({"subtraction", _subtraction});
+
+  ocl::Kernel _multiplication =
+      prepareKernel("src/cl/multiplication.cl", "multiplication");
+  kernels.insert({"multiplication", _multiplication});
+
+  ocl::Kernel _sum = prepareKernel("src/cl/sum.cl", "sum");
+  kernels.insert({"sum", _sum});
+
+  ocl::Kernel _matrix_multiplication = prepareKernel(
+      "src/cl/matrix_multiplication.cl", "matrix_multiplication_updated");
+  kernels.insert({"matrix_multiplication", _matrix_multiplication});
+
+  ocl::Kernel _matrix_transpose =
+      prepareKernel("src/cl/matrix_transpose.cl", "matrix_transpose");
+  kernels.insert({"matrix_transpose", _matrix_transpose});
+}
+
+std::vector<char> clToCharVector(const std::string &clFilename) {
+  std::filesystem::path sourcePath(_PROJECT_SOURCE_DIR);
+  sourcePath.append(clFilename);
+  std::ifstream file(sourcePath, std::ios::binary);
+
+  if (!file.is_open()) {
+    throw std::runtime_error("Can't open cl file. Path: " +
+                             sourcePath.string());
+  }
+  file.seekg(0, std::ios::end);
+  size_t size = file.tellg();
+  std::vector<char> result(size);
+  file.seekg(0, std::ios::beg);
+  file.read(result.data(), size);
+  file.close();
+  return std::move(result);
+}
 
 void checkShape(Tensor &arg1, Tensor &arg2) {
   if (arg1.getShape() != arg2.getShape()) {
@@ -114,64 +185,6 @@ Tensor Subtration::derivative(const std::vector<Tensor> &inputs,
   }
 }
 
-ocl::Kernel prepareKernel(const std::string &clFilename,
-                          const std::string &methodName) {
-  std::vector<char> source = clToCharVector(clFilename);
-  ocl::Kernel kernel(source.data(), source.size(), methodName);
-  kernel.compile();
-  return std::move(kernel);
-}
-
-void init() {
-  ocl::Kernel _unaryMinus =
-      prepareKernel("src/cl/unary_minus.cl", "unary_minus");
-  kernels.insert({"unary_minus", _unaryMinus});
-
-  ocl::Kernel _subtraction =
-      prepareKernel("src/cl/subtraction.cl", "subtraction");
-  kernels.insert({"subtraction", _subtraction});
-
-  ocl::Kernel _multiplication =
-      prepareKernel("src/cl/multiplication.cl", "multiplication");
-  kernels.insert({"multiplication", _multiplication});
-
-  ocl::Kernel _sum = prepareKernel("src/cl/sum.cl", "sum");
-  kernels.insert({"sum", _sum});
-
-  ocl::Kernel _matrix_multiplication = prepareKernel(
-      "src/cl/matrix_multiplication.cl", "matrix_multiplication_updated");
-  kernels.insert({"matrix_multiplication", _matrix_multiplication});
-
-  ocl::Kernel _matrix_transpose =
-      prepareKernel("src/cl/matrix_transpose.cl", "matrix_transpose");
-  kernels.insert({"matrix_transpose", _matrix_transpose});
-
-  functions.insert({"unary_minus", std::make_shared<UnaryMinus>()});
-  functions.insert({"subtraction", std::make_shared<Subtration>()});
-  functions.insert({"multiplication", std::make_shared<Multiplication>()});
-  functions.insert({"sum", std::make_shared<Sum>()});
-  functions.insert(
-      {"matrix_multiplication", std::make_shared<MatrixMultiplication>()});
-  functions.insert({"matrix_transpose", std::make_shared<MatrixTranspose>()});
-}
-
-std::vector<char> clToCharVector(const std::string &clFilename) {
-  std::filesystem::path sourcePath(_PROJECT_SOURCE_DIR);
-  sourcePath.append(clFilename);
-  std::ifstream file(sourcePath, std::ios::binary);
-
-  if (!file.is_open()) {
-    throw std::runtime_error("Can't open cl file. Path: " +
-                             sourcePath.string());
-  }
-  file.seekg(0, std::ios::end);
-  size_t size = file.tellg();
-  std::vector<char> result(size);
-  file.seekg(0, std::ios::beg);
-  file.read(result.data(), size);
-  file.close();
-  return std::move(result);
-}
 std::vector<Tensor>
 UnaryMinus::compute(const std::vector<Tensor> &inputs) const {
   checkNumOfTensors(inputs, 1);

@@ -18,7 +18,7 @@ using namespace NSTTF;
 class ExecutorTests : public ::testing::Test {
 protected:
   gpu::Context context;
-  virtual void SetUp() {
+  virtual void SetUp_() {
     // Initialize OpenCL context, command queue, and other resources
     // This code is specific to your OpenCL setup and platform
 
