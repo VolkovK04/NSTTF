@@ -29,7 +29,8 @@ TensorMap GraphExecutor::execute(const TensorMap &tensorsMap) {
       tensors.push_back(calculated[input]);
     }
 
-    std::vector<Tensor> result = functions.at(instruction.getName())->compute(tensors);
+    std::vector<Tensor> result =
+        functions.at(instruction.getName())->compute(tensors);
 
     std::vector<std::string> outputNames = instruction.getOutputs();
     for (size_t i = 0; i < outputs.size(); ++i) {

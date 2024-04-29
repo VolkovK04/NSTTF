@@ -1,9 +1,9 @@
 #pragma once
 
 #include <iostream>
+#include <operations/function.h>
 #include <string>
 #include <vector>
-#include <operations/function.h>
 
 namespace NSTTF {
 class Instruction {

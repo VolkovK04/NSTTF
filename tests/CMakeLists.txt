@@ -32,6 +32,7 @@ add_executable(${TEST_BINARY} ${TEST_SOURCES})
 add_executable(${EFFICIENCY_TEST_BINARY} ${EFFICIENCY_TEST_SOURCES})
 
 gtest_discover_tests(${TEST_BINARY})
+gtest_discover_tests(${EFFICIENCY_TEST_BINARY})
 
 # target_include_directories(${TEST_BINARY} PUBLIC ../src ../libs/)
 

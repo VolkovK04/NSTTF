@@ -6,8 +6,9 @@ namespace NSTTF {
 
 std::unordered_map<std::string, std::shared_ptr<Function>> initFunctions();
 
-std::unordered_map<std::string, std::shared_ptr<Function>> functions = initFunctions();
-std::unordered_map<std::string, ocl::Kernel> kernels; 
+std::unordered_map<std::string, std::shared_ptr<Function>> functions =
+    initFunctions();
+std::unordered_map<std::string, ocl::Kernel> kernels;
 
 unsigned int workGroupSize_ = 128;
 
@@ -33,11 +34,11 @@ std::unordered_map<std::string, std::shared_ptr<Function>> initFunctions() {
 
 bool initflag = false;
 void init() {
-  if (initflag){
+  if (initflag) {
     return;
   }
   initflag = true;
-  
+
   ocl::Kernel _unaryMinus =
       prepareKernel("src/cl/unary_minus.cl", "unary_minus");
   kernels.insert({"unary_minus", _unaryMinus});
@@ -145,10 +146,11 @@ Tensor Multiplication::derivative(const std::vector<Tensor> &inputs,
     throw std::out_of_range("inputIndex or outputIndex out of range");
   }
   if (inputIndex == 0) {
-    return functions.at("multiplication")->compute({grad, inputs[1]})[0]; // d(x*y)/dx * grad = y * grad
-  }
-  else {
-    return functions.at("multiplication")->compute({inputs[0], grad})[0]; // d(x*y)/dy * grad = x * grad
+    return functions.at("multiplication")
+        ->compute({grad, inputs[1]})[0]; // d(x*y)/dx * grad = y * grad
+  } else {
+    return functions.at("multiplication")
+        ->compute({inputs[0], grad})[0]; // d(x*y)/dy * grad = x * grad
   }
 }
 
@@ -238,10 +240,11 @@ MatrixMultiplication::compute(const std::vector<Tensor> &inputs) const {
       (M + x_work_group_size - 1) / x_work_group_size * x_work_group_size;
   unsigned int y_work_size =
       (N + y_work_group_size - 1) / y_work_group_size * y_work_group_size;
-  kernels.at("matrix_multiplication").exec(
-      gpu::WorkSize(gpu::WorkSize(x_work_group_size, y_work_group_size,
-                                  x_work_size, y_work_size)),
-      arg1.getGPUBuffer(), arg2.getGPUBuffer(), res.getGPUBuffer(), M, K, N);
+  kernels.at("matrix_multiplication")
+      .exec(gpu::WorkSize(gpu::WorkSize(x_work_group_size, y_work_group_size,
+                                        x_work_size, y_work_size)),
+            arg1.getGPUBuffer(), arg2.getGPUBuffer(), res.getGPUBuffer(), M, K,
+            N);
   return std::move(std::vector<Tensor>{res});
 }
 
@@ -249,13 +252,11 @@ Tensor MatrixMultiplication::derivative(const std::vector<Tensor> &inputs,
                                         size_t inputIndex, size_t outputIndex,
                                         Tensor grad) const {
   if (inputIndex == 0) {
-    Tensor newInput =
-        functions.at("matrix_transpose")->compute({inputs[1]})[0];
+    Tensor newInput = functions.at("matrix_transpose")->compute({inputs[1]})[0];
     return functions.at("matrix_multiplication")
         ->compute({grad, newInput})[0]; // inputs[0].shape ={n, m}
   } else if (inputIndex == 1) {
-    Tensor newInput =
-        functions.at("matrix_transpose")->compute({inputs[0]})[0];
+    Tensor newInput = functions.at("matrix_transpose")->compute({inputs[0]})[0];
     return functions.at("matrix_multiplication")
         ->compute({newInput,
                    grad})[0]; // inputs[1].shape ={m, k}     grad.shape = {n, k}

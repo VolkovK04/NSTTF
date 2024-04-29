@@ -1,16 +1,16 @@
 #pragma once
+#include <libutils/misc.h>
 #include <string>
 #include <tensor/tensor.h>
 #include <unordered_map>
 #include <vector>
-#include <libutils/misc.h>
 
 namespace NSTTF {
 
 class Function;
 
 extern std::unordered_map<std::string, std::shared_ptr<Function>> functions;
-extern std::unordered_map<std::string, ocl::Kernel> kernels; 
+extern std::unordered_map<std::string, ocl::Kernel> kernels;
 
 class Function {
 public:
@@ -20,7 +20,6 @@ public:
 
   Function(Function &&) = default;
   Function &operator=(Function &&) = default;
-
 
   virtual std::vector<Tensor>
   compute(const std::vector<Tensor> &inputs) const = 0;

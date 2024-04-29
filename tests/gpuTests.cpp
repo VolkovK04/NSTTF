@@ -7,11 +7,8 @@
 #include <libutils/misc.h>
 #include <libutils/timer.h>
 
-// #include <utils/functions.h>
 #include <operations/function.h>
-// #include <cl_functions/cl_functions.h>
 
-// using namespace NSTTF::functions;
 
 class GPUTests : public ::testing::Test {
 protected:
@@ -21,7 +18,7 @@ protected:
   std::vector<float> as, bs, cs;
   gpu::gpu_mem_32f as_gpu, bs_gpu, cs_gpu;
 
-  virtual void SetUp_() {
+  virtual void SetUp() {
     // Initialize OpenCL context, command queue, and other resources
     // This code is specific to your OpenCL setup and platform
 

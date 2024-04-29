@@ -4,4 +4,4 @@ add_library(executor ${SOURCES})
 
 target_include_directories(executor PUBLIC ../)
 
-target_link_libraries(executor PUBLIC utils tensor)
+target_link_libraries(executor PUBLIC compiler tensor)

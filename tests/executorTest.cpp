@@ -1,27 +1,23 @@
 #include "gtest/gtest.h"
 
 #include <CL/cl.h>
-
+#include <compiler/compiler.h>
+#include <computationGraph/computationGraph.h>
+#include <executor/graphExecutor.h>
 #include <libgpu/context.h>
 #include <libgpu/shared_device_buffer.h>
 #include <libutils/misc.h>
-
-#include <computationGraph/computationGraph.h>
-#include <executor/graphExecutor.h>
-#include <operations/function.h>
-#include <utils/compiler.h>
-
 #include <map>
+#include <operations/function.h>
 
 using namespace NSTTF;
 
 class ExecutorTests : public ::testing::Test {
 protected:
   gpu::Context context;
-  virtual void SetUp_() {
+  virtual void SetUp() {
     // Initialize OpenCL context, command queue, and other resources
     // This code is specific to your OpenCL setup and platform
-
 
     std::vector<gpu::Device> devices = gpu::enumDevices();
 

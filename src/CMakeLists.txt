@@ -1,6 +1,5 @@
 add_subdirectory(computationGraph)
 add_subdirectory(operations)
 add_subdirectory(tensor)
-add_subdirectory(utils)
-# add_subdirectory(cl_functions)
+add_subdirectory(compiler)
 add_subdirectory(executor)

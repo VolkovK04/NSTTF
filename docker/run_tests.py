@@ -142,30 +142,35 @@ def _make_testing_configurations() -> List[TestingConfiguration]:
                     san=san,
                     std_lib=std_lib,
                 )
-
-            rv += [
-                TestingConfiguration(
-                    build_dir=make_build_dir("orig"),
-                    toolset=toolset,
-                    std_cpp_lib=std_lib,
-                    build_type=build_type,
-                    cpp_flags=_get_cpp_flags(build_type),
-                ),
-                # TestingConfiguration(
-                #     build_dir=make_build_dir("asan"),
-                #     toolset=toolset,
-                #     std_cpp_lib=std_lib,
-                #     build_type=build_type,
-                #     cpp_flags=_get_cpp_flags_asan(toolset, build_type),
-                # ),
-                # TestingConfiguration(
-                #     build_dir=make_build_dir("usan"),
-                #     toolset=toolset,
-                #     std_cpp_lib=std_lib,
-                #     build_type=build_type,
-                #     cpp_flags=_get_cpp_flags_usan(toolset, build_type),
-                # ),
-            ]
+            if len(sys.argv) > 2:
+                if sys.argv[1] == '-san':
+                    rv += [
+                        TestingConfiguration(
+                        build_dir=make_build_dir("asan"),
+                        toolset=toolset,
+                        std_cpp_lib=std_lib,
+                        build_type=build_type,
+                        cpp_flags=_get_cpp_flags_asan(toolset, build_type),
+                    )]
+                else:
+                    raise Exception('unexpected flag: ' + sys.argv[1])
+            else:
+                rv += [
+                    TestingConfiguration(
+                        build_dir=make_build_dir("orig"),
+                        toolset=toolset,
+                        std_cpp_lib=std_lib,
+                        build_type=build_type,
+                        cpp_flags=_get_cpp_flags(build_type),
+                    )]
+            # TestingConfiguration(
+            #     build_dir=make_build_dir("usan"),
+            #     toolset=toolset,
+            #     std_cpp_lib=std_lib,
+            #     build_type=build_type,
+            #     cpp_flags=_get_cpp_flags_usan(toolset, build_type),
+            # )
+            
 
     # Ensure that each test configuration build directory is unique.
     if len(set(cfg.build_dir for cfg in rv)) != len(rv):
@@ -216,6 +221,9 @@ def _run_unit_tests(cfg: TestingConfiguration):
     if subprocess.run(["./tests/NSTTF_test"]).returncode:
         _report_fatal_error(f"Unit tests failed for {cfg.build_dir}")
 
+    # if subprocess.run(["./tests/NSTTF_efficiency_test"]).returncode:
+    #     _report_fatal_error(f"Efficiency tests failed for {cfg.build_dir}")
+
 
 @dataclass(frozen=True)
 class IntegrationTestCase:
@@ -261,7 +269,7 @@ def _cleanup(cfg: TestingConfiguration) -> None:
 
 
 def _main():
-    # _check_format()
+    _check_format()
 
     configurations = _make_testing_configurations()
 

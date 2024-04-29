@@ -17,12 +17,10 @@ set(EXTERNAL_LIBRARIES
         CACHE INTERNAL "List of external libraries")
 
 set(INTERNAL_LIBRARIES
-        # cl_funcs 
         computationGraph
         operations
         tensor
-        utils
-        
+        compiler
         CACHE INTERNAL "list of internal libraries")
 
 include_directories(src, libs)

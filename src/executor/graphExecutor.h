@@ -1,9 +1,9 @@
 #pragma once
 
+#include <compiler/instruction.h>
 #include <computationGraph/node.h>
 #include <map>
 #include <tensor/tensor.h>
-#include <utils/instruction.h>
 #include <vector>
 
 namespace NSTTF {

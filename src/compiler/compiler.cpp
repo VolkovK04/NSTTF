@@ -52,9 +52,10 @@ Instruction getDerivative(AbstractNode *node,
     }
   } else if (opName == "multiplication") {
     if (prevNodes[0] == differentiateBy) {
-      return Instruction();
+      return Instruction(); // TODO
     }
   }
+  return Instruction(); // TODO
 }
 
 void Compiler::getInstruction(AbstractNode *node,

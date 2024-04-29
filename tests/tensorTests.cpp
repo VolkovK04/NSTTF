@@ -15,7 +15,7 @@ using namespace NSTTF;
 class TensorTests : public ::testing::Test {
 protected:
   gpu::Context context;
-  virtual void SetUp_() {
+  virtual void SetUp() {
     // Initialize OpenCL context, command queue, and other resources
     // This code is specific to your OpenCL setup and platform
 

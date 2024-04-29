@@ -10,12 +10,11 @@ using namespace NSTTF;
 gpu::Context context;
 gpu::Device device;
 
-int main() 
-{
+int main() {
 
   std::vector<gpu::Device> devices = gpu::enumDevices();
   std::cout << devices.size() << " devices" << std::endl;
-  for (auto device: devices) {
+  for (auto device : devices) {
     device.printInfo();
   }
   return 0;
