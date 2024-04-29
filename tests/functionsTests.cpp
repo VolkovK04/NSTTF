@@ -121,7 +121,6 @@ TEST_F(OperationTests, subtractionWrongSize1) {
     Tensor b(std::vector<float>{2, 3, 4});
 
     try {
-        // subtraction({a, b});
         functions.at("subtraction")->compute({a, b});
         FAIL() << "Dont get exception";
     } catch (std::runtime_error &err) {
@@ -150,7 +149,6 @@ TEST_F(OperationTests, subtractionWrongSize2) {
 TEST_F(OperationTests, subtractionPositiveTest) {
     Tensor a(std::vector<float>{1, 2, 6});
     Tensor b(std::vector<float>{4, 5, 1});
-    // Tensor c = subtraction({a, b});
 
     Tensor c = functions.at("subtraction")->compute({a, b})[0];
 
@@ -182,7 +180,6 @@ TEST_F(OperationTests, multiplicationWrongSize2) {
     Tensor a(std::vector<float>{2, 3});
 
     try {
-        // multiplication({a});
         functions.at("multiplication")->compute({a});
         FAIL() << "Dont get exception";
     } catch (std::runtime_error &err) {
@@ -195,7 +192,6 @@ TEST_F(OperationTests, multiplicationWrongSize2) {
 TEST_F(OperationTests, multiplicationPositiveTest) {
     Tensor a(std::vector<float>{1, 2, 6});
     Tensor b(std::vector<float>{4, 5, 4});
-    // Tensor c = multiplication({a, b});
 
     Tensor c = functions.at("multiplication")->compute({a, b})[0];
 
@@ -212,9 +208,7 @@ TEST_F(OperationTests, matrix_multiplicationWrongSize1) {
     Tensor a({2, 3}, {1, 2});
     Tensor b({2, 3, 4}, {1, 3});
 
-    try {
-        // matrix_multiplication({a, b});
-        
+    try {      
         functions.at("matrix_multiplication")->compute({a, b});
         FAIL() << "Dont get exception";
     } catch (std::runtime_error &err) {
@@ -256,7 +250,6 @@ TEST_F(OperationTests, matrix_multiplicationWrongShape) {
 TEST_F(OperationTests, matrix_multiplicationPositiveTest1) {
     Tensor a({2}, {1, 1});
     Tensor b({4}, {1, 1});
-    // Tensor c = matrix_multiplication({a, b});
 
     Tensor c = functions.at("matrix_multiplication")->compute({a, b})[0];
 
@@ -270,7 +263,6 @@ TEST_F(OperationTests, matrix_multiplicationPositiveTest1) {
 TEST_F(OperationTests, matrix_multiplicationPositiveTest2) {
     Tensor a({1, 4}, {1, 2});
     Tensor b({5, 1}, {2, 1});
-    // Tensor c = matrix_multiplication({a, b});
 
     Tensor c = functions.at("matrix_multiplication")->compute({a, b})[0];
     std::vector<size_t> expected{1, 1};
@@ -285,7 +277,6 @@ TEST_F(OperationTests, matrix_multiplicationPositiveTest2) {
 
 TEST_F(OperationTests, matrix_transposePositiveTest1) {
     Tensor a({2, 3, 4}, {1, 3});
-    // Tensor c = matrix_transpose({a});
 
     Tensor c = functions.at("matrix_transpose")->compute({a})[0];
     std::vector<size_t> expected{3, 1};

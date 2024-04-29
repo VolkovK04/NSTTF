@@ -142,7 +142,7 @@ def _make_testing_configurations() -> List[TestingConfiguration]:
                     san=san,
                     std_lib=std_lib,
                 )
-            if len(sys.argv) > 2:
+            if len(sys.argv) == 2:
                 if sys.argv[1] == '-san':
                     rv += [
                         TestingConfiguration(
