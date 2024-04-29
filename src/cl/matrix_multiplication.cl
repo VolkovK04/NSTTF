@@ -13,9 +13,10 @@ __kernel void zero_local_memory(__local float local_a[TILE_SIZE][TILE_SIZE]) {
   barrier(CLK_LOCAL_MEM_FENCE);
 }
 
-__kernel void matrix_multiplication_updated(
-    __global const float *a, __global const float *b, __global float *c,
-    const unsigned int M, const unsigned int K, const unsigned int N) {
+__kernel void
+matrix_multiplication_updated(__global const float *a, __global const float *b,
+                              __global float *c, const unsigned int M,
+                              const unsigned int K, const unsigned int N) {
   int i = get_global_id(1);
   int j = get_global_id(0);
 
@@ -30,8 +31,18 @@ __kernel void matrix_multiplication_updated(
 
   float sum = 0;
   for (size_t step = 0; step * TILE_SIZE < K; step++) {
-    local_a[local_i][local_j] = a[i * K + local_j + step * TILE_SIZE];
-    local_b[local_i][local_j] = b[(local_i + step * TILE_SIZE) * N + j];
+    if (i < M && j < N) {
+      local_a[local_i][local_j] = a[i * K + local_j + step * TILE_SIZE];
+      local_b[local_i][local_j] = b[(local_i + step * TILE_SIZE) * N + j];
+    }
+    if (a[i * K + local_j + step * TILE_SIZE]) {
+      printf("local_a[%d][%d] = %f\n", local_i, local_j,
+             a[i * K + local_j + step * TILE_SIZE]);
+    }
+    if (b[(local_i + step * TILE_SIZE) * N + j]) {
+      printf("local_b[%d][%d] = %f\n", local_i, local_j,
+             b[(local_i + step * TILE_SIZE) * N + j]);
+    }
     barrier(CLK_LOCAL_MEM_FENCE);
 
     for (size_t index = 0; index < TILE_SIZE; index++) {
@@ -46,11 +57,10 @@ __kernel void matrix_multiplication_updated(
   }
 }
 
-
-
 // #define THREAD_WORK 4
 // __kernel void
-// matrix_multiplication_updated(__global const float *a, __global const float *b,
+// matrix_multiplication_updated(__global const float *a, __global const float
+// *b,
 //                               __global float *c, const unsigned int M,
 //                               const unsigned int K, const unsigned int N) {
 //   const size_t local_i = get_local_id(1); // 0..THREAD_WORK
@@ -64,7 +74,6 @@ __kernel void matrix_multiplication_updated(
 
 //   __local float local_b[TILE_SIZE][TILE_SIZE];
 //   zero_local_memory(local_b);
-
 
 //   float sum[THREAD_WORK];
 //   for (size_t w = 0; w < THREAD_WORK; w++) {
