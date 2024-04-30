@@ -11,7 +11,7 @@ protected:
   // Function function;
   std::string name;
   std::vector<std::string> inputNodeNames;
-  std::vector<std::string> output;
+  std::vector<std::string> outputNodeNames;
 
 public:
   std::string getName();

@@ -248,8 +248,8 @@ TEST_F(OperationTests, matrix_multiplicationWrongShape) {
 }
 
 TEST_F(OperationTests, matrix_multiplicationPositiveTest1) {
-    Tensor a({2}, {1, 1});
-    Tensor b({4}, {1, 1});
+    Tensor a({2.f}, {1, 1});
+    Tensor b({4.f}, {1, 1});
 
     Tensor c = functions.at("matrix_multiplication")->compute({a, b})[0];
 

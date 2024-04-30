@@ -5,9 +5,9 @@ namespace NSTTF {
 
 std::string Instruction::getName() { return name; }
 
-std::vector<std::string> Instruction::getInputs() { return input; }
+std::vector<std::string> Instruction::getInputs() { return inputNodeNames; }
 
-std::vector<std::string> Instruction::getOutputs() { return output; }
+std::vector<std::string> Instruction::getOutputs() { return outputNodeNames; }
 
 GraphExecutor::GraphExecutor(const std::vector<Instruction> &instructions,
                              const std::vector<AbstractNode *> &outputs)
