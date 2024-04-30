@@ -63,6 +63,8 @@ public:
 
   void reshape(const std::vector<size_t> &newShape);
 
+  static std::vector<size_t> broadcast(const std::vector<size_t> &shape1, const std::vector<size_t> &shape2);
+
   Tensor copy() const;
 
   size_t getSize() const;
