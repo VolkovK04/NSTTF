@@ -29,6 +29,7 @@ NodeInterface::NodeInterface(AbstractNode *node, ComputationGraph &g)
 
 std::string NodeInterface::createName() {
   return "~" + std::to_string(UID_Counter);
+  ++UID_Counter;
 }
 
 NodeInterface
@@ -78,8 +79,8 @@ void NodeInterface::checkSameGraph(NodeInterface i1, NodeInterface i2) {
   }
 }
 
-ConstNode::ConstNode(Tensor tensor) : data(tensor) {}
+// ConstNode::ConstNode(Tensor tensor) : data(tensor) {}
 
-Tensor ConstNode::getData() const { return data; }
+// Tensor ConstNode::getData() const { return data; }
 
 } // namespace NSTTF

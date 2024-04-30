@@ -10,7 +10,7 @@ class Instruction {
 protected:
   // Function function;
   std::string name;
-  std::vector<std::string> input;
+  std::vector<std::string> inputNodeNames;
   std::vector<std::string> output;
 
 public:

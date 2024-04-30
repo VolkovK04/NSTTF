@@ -83,8 +83,8 @@ private:
 
 public:
   ConstNode() = default;
-  ConstNode(Tensor tensor);
-  Tensor getData() const;
+  ConstNode(Tensor tensor) : data(tensor) {}
+  Tensor getData() const { return data; }
 };
 
 } // namespace NSTTF

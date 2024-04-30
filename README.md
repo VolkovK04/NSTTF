@@ -33,7 +33,7 @@ By the third phase:
    - Most operations with such stacks will be just as efficient
    - During computations, it can be converted into a regular tensor
    - It should be possible to add and remove tensors from the stack without additional memory allocations
-6. (?) Function class that contains: -> Novikov Serega
+6. Function class that contains: -> Novikov Serega
    - The name of the function
    - The algorithm for its computation
    - The algorithm for its differentiation (which may differ for various arguments)

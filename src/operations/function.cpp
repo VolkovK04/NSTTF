@@ -252,6 +252,10 @@ Tensor MatrixMultiplication::derivative(const std::vector<Tensor> &inputs,
                                         size_t inputIndex, size_t outputIndex,
                                         Tensor grad) const {
   if (inputIndex == 0) {
+    std::vector<Instruction> instructions;
+    instructions.push_back(Instruction("matrix_transpose"), {inputs[1].getName()}, {"tmp"});
+    instructions.push_back(Instruction("matrix_multiplication"), {inputs[0].getName(), "tmp"}, {output[0].getName()});
+    return instructions;
     Tensor newInput = functions.at("matrix_transpose")->compute({inputs[1]})[0];
     return functions.at("matrix_multiplication")
         ->compute({grad, newInput})[0]; // inputs[0].shape ={n, m}
@@ -259,7 +263,7 @@ Tensor MatrixMultiplication::derivative(const std::vector<Tensor> &inputs,
     Tensor newInput = functions.at("matrix_transpose")->compute({inputs[0]})[0];
     return functions.at("matrix_multiplication")
         ->compute({newInput,
-                   grad})[0]; // inputs[1].shape ={m, k}     grad.shape = {n, k}
+                   grad})[0]; // inputs[1].shape = {m, k}     grad.shape = {n, k}
   }
 }
 std::vector<Tensor>

@@ -4,9 +4,9 @@
 namespace NSTTF {
 
 Instruction::Instruction(const std::string &name,
-                         const std::vector<std::string> &input,
-                         const std::vector<std::string> &output)
-    : name(name), input(input), output(output) {}
+                         const std::vector<std::string> &inputNodeNames,
+                         const std::vector<std::string> &outputNodeNames)
+    : name(name), inputNodeNames(inputNodeNames), output(outputNodeNames) {}
 
 Constant::Constant(const std::vector<std::string> &input,
                    const std::vector<std::string> &output, double value)

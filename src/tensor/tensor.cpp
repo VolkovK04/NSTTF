@@ -61,4 +61,24 @@ Tensor Tensor::copy() const {
   buffer.copyTo(newbuffer, getSize());
   return std::move(newTensor);
 }
+
+Tensor concat(const std::vector<Tensor>& tensors) {
+  if (!tensors.size()) {
+    throw std::invalid_argument("Tensors is empty!");
+  }
+  std::vector<size_t> shape = tensors[0].getShape();
+  for (size_t i = 1; i < tensors.size(); ++i) {
+    if (tensors[i].getShape() != shape) {
+      throw std::invalid_argument("Tensors have different shape!");
+    }
+  }
+  shape.insert(shape.begin(), tensors.size());
+  Tensor result(shape);
+  gpu::gpu_mem_32f buffer = result.getGPUBuffer();
+  size_t tensorSize = tensors[0].getSize();
+  for (size_t i = 0; i < tensors.size(); ++i) {
+    tensors[i].getGPUBuffer().copyToN(buffer, tensorSize);
+    
+  }
+}
 } // namespace NSTTF
