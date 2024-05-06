@@ -18,7 +18,7 @@ using namespace NSTTF;
 
 // 0 - from CPU
 // 1 - from GPU
-const int firstDevice = 0;
+const int firstDevice = 2;
 
 template <class DT = std::chrono::milliseconds,
           class ClockT = std::chrono::steady_clock>

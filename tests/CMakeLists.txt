@@ -8,6 +8,7 @@ set(TEST_SOURCES
   graphTests.cpp 
   tensorTests.cpp 
   executorTest.cpp
+  functionalTests.cpp
 )
 
 set(EFFICIENCY_TEST_SOURCES
