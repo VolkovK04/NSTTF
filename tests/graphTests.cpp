@@ -36,7 +36,7 @@ TEST(GraphTests, SumNode) {
     EXPECT_EQ(g.getInputNodes().size(), 2);
     EXPECT_EQ(g.getOutputNodes().size(), 1);
     const OperationNode* node = static_cast<const OperationNode*>(&sumNode.getNode());
-    EXPECT_EQ(node->getOperation().getName(), "sum");    
+    EXPECT_EQ(node->getOperation(), "sum");    
 }
 
 TEST(GraphTests, SubNode) {
@@ -45,7 +45,7 @@ TEST(GraphTests, SubNode) {
     NodeInterface nodeInterface2 = g.AddInputNode("test2");
     NodeInterface sumNode = nodeInterface1 - nodeInterface2;
     const OperationNode* node = static_cast<const OperationNode*>(&sumNode.getNode());
-    EXPECT_EQ(node->getOperation().getName(), "subtraction");    
+    EXPECT_EQ(node->getOperation(), "subtraction");    
 }
 
 TEST(GraphTests, MultNode) {
@@ -54,7 +54,7 @@ TEST(GraphTests, MultNode) {
     NodeInterface nodeInterface2 = g.AddInputNode("test2");
     NodeInterface sumNode = nodeInterface1 * nodeInterface2;
     const OperationNode* node = static_cast<const OperationNode*>(&sumNode.getNode());
-    EXPECT_EQ(node->getOperation().getName(), "multiplication");    
+    EXPECT_EQ(node->getOperation(), "multiplication");    
 }
 
 TEST(GraphTests, MatrixMultNode) {
@@ -63,7 +63,7 @@ TEST(GraphTests, MatrixMultNode) {
     NodeInterface nodeInterface2 = g.AddInputNode("test2");
     NodeInterface multNode = NodeInterface::MatrixMult(nodeInterface1, nodeInterface2);
     const OperationNode* node = static_cast<const OperationNode*>(&multNode.getNode());
-    EXPECT_EQ(node->getOperation().getName(), "matrix_multiplication");    
+    EXPECT_EQ(node->getOperation(), "matrix_multiplication");    
 }
 
 TEST(GraphTests, MatrixTranspose) {
@@ -71,7 +71,7 @@ TEST(GraphTests, MatrixTranspose) {
     NodeInterface nodeInterface = g.AddInputNode("test");
     NodeInterface trNode = NodeInterface::MatrixTranspose(nodeInterface);
     const OperationNode* node = static_cast<const OperationNode*>(&trNode.getNode());
-    EXPECT_EQ(node->getOperation().getName(), "matrix_transpose");    
+    EXPECT_EQ(node->getOperation(), "matrix_transpose");    
 }
 
 TEST(GraphTests, NodesFromDifferentGraphs) {

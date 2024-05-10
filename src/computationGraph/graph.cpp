@@ -6,17 +6,16 @@ NodeInterface ComputationGraph::AddInputNode(const std::string &name) {
   InputNode *node = new InputNode();
   node->name = name;
   this->input.push_back(node);
+  nodeMap.insert({name, node});
   return NodeInterface(node, *this);
 }
 
-NodeInterface
-ComputationGraph::AddOperationNode(const AbstractOperation &operation,
-                                   const std::vector<AbstractNode *> &nodes,
-                                   const std::string &name,
-                                   bool output = false) {
+NodeInterface ComputationGraph::AddOperationNode(
+    const std::string &operationName, const std::vector<AbstractNode *> &nodes,
+    const std::string &name, bool output = false) {
   OperationNode *node = new OperationNode();
   node->prevs = nodes;
-  node->operation = operation;
+  node->operationName = operationName;
 
   for (AbstractNode *prev : nodes) {
     prev->nexts.push_back(node);
@@ -24,6 +23,7 @@ ComputationGraph::AddOperationNode(const AbstractOperation &operation,
   if (output) {
     setOutputNode(node);
   }
+  nodeMap.insert({name, node});
   return NodeInterface(node, *this);
 }
 

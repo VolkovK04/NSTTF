@@ -23,7 +23,7 @@ ocl::Kernel prepareKernel(const std::string &clFilename,
 std::unordered_map<std::string, std::shared_ptr<Function>> initFunctions() {
   std::unordered_map<std::string, std::shared_ptr<Function>> functions_;
   functions_.insert({"unary_minus", std::make_shared<UnaryMinus>()});
-  functions_.insert({"subtraction", std::make_shared<Subtration>()});
+  functions_.insert({"subtraction", std::make_shared<Subtraction>()});
   functions_.insert({"multiplication", std::make_shared<Multiplication>()});
   functions_.insert({"sum", std::make_shared<Sum>()});
   functions_.insert(
@@ -95,7 +95,7 @@ void checkNumOfTensors(const std::vector<Tensor> &tensors, size_t num) {
   }
 }
 
-std::vector<Tensor> Sum::compute(const std::vector<Tensor> &inputs) const {
+Tensor Sum::compute(const std::vector<Tensor> &inputs) const {
   checkNumOfTensors(inputs, 2);
 
   Tensor arg1 = inputs[0];
@@ -109,17 +109,22 @@ std::vector<Tensor> Sum::compute(const std::vector<Tensor> &inputs) const {
   kernels.at("sum").exec(gpu::WorkSize(workGroupSize_, global_work_size),
                          arg1.getGPUBuffer(), arg2.getGPUBuffer(),
                          res.getGPUBuffer(), n);
-  std::vector<Tensor> result{res};
+  return res;
+}
+
+std::vector<AbstractInstruction *>
+Sum::derivative(const std::vector<std::string> &inputs, size_t inputIndex,
+                const std::string &grad, const std::string &resultName) const {
+  if (inputIndex > 2) {
+    throw std::out_of_range("inputIndex out of range");
+  }
+  Instruction *inst =
+      new Instruction("copy", {grad}, resultName); // d(x+y)/dx * grad = grad
+  std::vector<AbstractInstruction *> result = {inst};
   return std::move(result);
 }
 
-Tensor Sum::derivative(const std::vector<Tensor> &inputs, size_t inputIndex,
-                       size_t outputIndex, Tensor grad) const {
-  return grad; // d(x+y)/dx * grad = grad
-}
-
-std::vector<Tensor>
-Multiplication::compute(const std::vector<Tensor> &inputs) const {
+Tensor Multiplication::compute(const std::vector<Tensor> &inputs) const {
   checkNumOfTensors(inputs, 2);
 
   Tensor arg1 = inputs[0];
@@ -134,28 +139,31 @@ Multiplication::compute(const std::vector<Tensor> &inputs) const {
   kernels.at("multiplication")
       .exec(gpu::WorkSize(workGroupSize_, global_work_size),
             arg1.getGPUBuffer(), arg2.getGPUBuffer(), res.getGPUBuffer(), n);
+  return res;
+}
 
-  std::vector<Tensor> result{res};
+std::vector<AbstractInstruction *>
+Multiplication::derivative(const std::vector<std::string> &inputs,
+                           size_t inputIndex, const std::string &grad,
+                           const std::string &resultName) const {
+  if (inputIndex >= 2) {
+    throw std::out_of_range("inputIndex or out of range");
+  }
+  std::vector<AbstractInstruction *> result;
+  if (inputIndex == 0) {
+    result.push_back(
+        new Instruction("multiplication", {grad, inputs[1]},
+                        resultName)); // d(x*y)/dx * grad = y * grad
+  } else {
+    result.push_back(
+        new Instruction("multiplication", {grad, inputs[0]},
+                        resultName)); // d(x*y)/dy * grad = x * grad
+  }
+
   return std::move(result);
 }
 
-Tensor Multiplication::derivative(const std::vector<Tensor> &inputs,
-                                  size_t inputIndex, size_t outputIndex,
-                                  Tensor grad) const {
-  if (inputIndex >= 2 || outputIndex >= 1) {
-    throw std::out_of_range("inputIndex or outputIndex out of range");
-  }
-  if (inputIndex == 0) {
-    return functions.at("multiplication")
-        ->compute({grad, inputs[1]})[0]; // d(x*y)/dx * grad = y * grad
-  } else {
-    return functions.at("multiplication")
-        ->compute({inputs[0], grad})[0]; // d(x*y)/dy * grad = x * grad
-  }
-}
-
-std::vector<Tensor>
-Subtration::compute(const std::vector<Tensor> &inputs) const {
+Tensor Subtraction::compute(const std::vector<Tensor> &inputs) const {
   checkNumOfTensors(inputs, 2);
 
   Tensor arg1 = inputs[0];
@@ -170,25 +178,28 @@ Subtration::compute(const std::vector<Tensor> &inputs) const {
   kernels.at("subtraction")
       .exec(gpu::WorkSize(workGroupSize_, global_work_size),
             arg1.getGPUBuffer(), arg2.getGPUBuffer(), res.getGPUBuffer(), n);
-  std::vector<Tensor> result{res};
-  return std::move(result);
+  return res;
 }
 
-Tensor Subtration::derivative(const std::vector<Tensor> &inputs,
-                              size_t inputIndex, size_t outputIndex,
-                              Tensor grad) const {
-  if (inputIndex >= 2 || outputIndex >= 1) {
-    throw std::out_of_range("inputIndex or outputIndex out of range");
+std::vector<AbstractInstruction *>
+Subtraction::derivative(const std::vector<std::string> &inputs,
+                        size_t inputIndex, const std::string &grad,
+                        const std::string &resultName) const {
+  if (inputIndex >= 2) {
+    throw std::out_of_range("input index out of range");
   }
-  if (inputIndex == 0)
-    return grad; // d(x-y)/dx * grad = grad
-  else {
-    return functions.at("minus")->compute({grad})[0];
+
+  std::vector<AbstractInstruction *> res;
+
+  if (inputIndex == 0) {
+    res.push_back(new Instruction("copy", {grad}, resultName));
+  } else {
+    res.push_back(new Instruction("unary_minus", {grad}, resultName));
   }
+  return std::move(res);
 }
 
-std::vector<Tensor>
-UnaryMinus::compute(const std::vector<Tensor> &inputs) const {
+Tensor UnaryMinus::compute(const std::vector<Tensor> &inputs) const {
   checkNumOfTensors(inputs, 1);
   Tensor arg1 = inputs[0];
   Tensor res(arg1.getShape());
@@ -198,19 +209,21 @@ UnaryMinus::compute(const std::vector<Tensor> &inputs) const {
   kernels.at("unary_minus")
       .exec(gpu::WorkSize(workGroupSize_, global_work_size),
             arg1.getGPUBuffer(), res.getGPUBuffer(), n);
-  std::vector<Tensor> result{res};
-  return std::move(result);
+  return res;
 }
 
-Tensor UnaryMinus::derivative(const std::vector<Tensor> &inputs,
-                              size_t inputIndex, size_t outputIndex,
-                              Tensor grad) const {
-  if (inputIndex == 0) {
-    return functions.at("unary_minus")->compute({grad})[0];
+std::vector<AbstractInstruction *>
+UnaryMinus::derivative(const std::vector<std::string> &inputs,
+                       size_t inputIndex, const std::string &grad,
+                       const std::string &resultName) const {
+  if (inputIndex != 0) {
+    throw std::out_of_range("input index out of range");
   }
+  std::vector<AbstractInstruction *> res;
+  res.push_back(new Instruction("unary_minus", {grad}, resultName));
+  return std::move(res);
 }
-std::vector<Tensor>
-MatrixMultiplication::compute(const std::vector<Tensor> &inputs) const {
+Tensor MatrixMultiplication::compute(const std::vector<Tensor> &inputs) const {
   checkNumOfTensors(inputs, 2);
 
   Tensor arg1 = inputs[0];
@@ -245,29 +258,31 @@ MatrixMultiplication::compute(const std::vector<Tensor> &inputs) const {
                                         x_work_size, y_work_size)),
             arg1.getGPUBuffer(), arg2.getGPUBuffer(), res.getGPUBuffer(), M, K,
             N);
-  return std::move(std::vector<Tensor>{res});
+  return res;
 }
 
-Tensor MatrixMultiplication::derivative(const std::vector<Tensor> &inputs,
-                                        size_t inputIndex, size_t outputIndex,
-                                        Tensor grad) const {
-  if (inputIndex == 0) {
-    // std::vector<Instruction> instructions;
-    // instructions.push_back(Instruction("matrix_transpose"), {inputs[1].getName()}, {"tmp"});
-    // instructions.push_back(Instruction("matrix_multiplication"), {inputs[0].getName(), "tmp"}, {output[0].getName()});
-    // return instructions;
-    Tensor newInput = functions.at("matrix_transpose")->compute({inputs[1]})[0];
-    return functions.at("matrix_multiplication")
-        ->compute({grad, newInput})[0]; // inputs[0].shape ={n, m}
-  } else if (inputIndex == 1) {
-    Tensor newInput = functions.at("matrix_transpose")->compute({inputs[0]})[0];
-    return functions.at("matrix_multiplication")
-        ->compute({newInput,
-                   grad})[0]; // inputs[1].shape = {m, k}     grad.shape = {n, k}
+std::vector<AbstractInstruction *>
+MatrixMultiplication::derivative(const std::vector<std::string> &inputs,
+                                 size_t inputIndex, const std::string &grad,
+                                 const std::string &resultName) const {
+  if (inputIndex >= 2) {
+    throw std::out_of_range("input index out of range");
   }
+  std::vector<AbstractInstruction *> result;
+  if (inputIndex == 0) {
+    result.push_back(new Instruction("matrix_transpose", {inputs[1]}, "~tmp"));
+    result.push_back(
+        new Instruction("matrix_multiplication", {grad, "~tmp"}, resultName));
+    // inputs[0].shape ={n, m}
+  } else if (inputIndex == 1) {
+    result.push_back(new Instruction("matrix_transpose", {inputs[0]}, "~tmp"));
+    result.push_back(
+        new Instruction("matrix_multiplication", {"~tmp", grad}, resultName));
+    // inputs[1].shape = {m, k}     grad.shape = {n, k}
+  }
+  return std::move(result);
 }
-std::vector<Tensor>
-MatrixTranspose::compute(const std::vector<Tensor> &inputs) const {
+Tensor MatrixTranspose::compute(const std::vector<Tensor> &inputs) const {
   checkNumOfTensors(inputs, 1);
 
   Tensor arg = inputs[0];
@@ -292,14 +307,17 @@ MatrixTranspose::compute(const std::vector<Tensor> &inputs) const {
       .exec(gpu::WorkSize(x_work_group_size, y_work_group_size, x_work_size,
                           y_work_size),
             arg.getGPUBuffer(), res.getGPUBuffer(), M, K);
-  std::vector<Tensor> result{res};
-  return std::move(result);
+  return res;
 }
-Tensor MatrixTranspose::derivative(const std::vector<Tensor> &inputs,
-                                   size_t inputIndex, size_t outputIndex,
-                                   Tensor grad) const {
-  // TODO
-  // return Tensor();
-  throw std::runtime_error("Not implemented yet");
+std::vector<AbstractInstruction *>
+MatrixTranspose::derivative(const std::vector<std::string> &inputs,
+                            size_t inputIndex, const std::string &grad,
+                            const std::string &resultName) const {
+  if (inputIndex != 0) {
+    throw std::out_of_range("input index out of range");
+  }
+  std::vector<AbstractInstruction *> res;
+  res.push_back(new Instruction("matrix_transpose", {grad}, resultName));
+  return std::move(res);
 }
 } // namespace NSTTF

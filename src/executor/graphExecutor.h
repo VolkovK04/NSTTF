@@ -9,27 +9,29 @@
 namespace NSTTF {
 class GraphExecutor {
 protected:
-  std::vector<Instruction> instructions;
+  std::vector<AbstractInstruction *> instructions;
   std::vector<AbstractNode *> outputs;
   TensorMap calculated;
 
 public:
   GraphExecutor() = default;
 
-  GraphExecutor(const std::vector<Instruction> &instructions,
+  GraphExecutor(const std::vector<AbstractInstruction *> &instructions,
                 const std::vector<AbstractNode *> &outputs);
 
   TensorMap execute(const TensorMap &tensorsMap);
+
+  ~GraphExecutor();
 };
 
 class GraphExecutorWG : public GraphExecutor {
 private:
-  std::vector<Instruction> gradient;
+  std::vector<AbstractInstruction *> gradient;
 
 public:
-  GraphExecutorWG(const std::vector<Instruction> &instructions,
+  GraphExecutorWG(const std::vector<AbstractInstruction *> &instructions,
                   const std::vector<AbstractNode *> &outputs,
-                  const std::vector<Instruction> &gradient);
+                  const std::vector<AbstractInstruction *> &gradient);
   TensorMap executeGrads(const TensorMap &tensorsMap);
 };
 } // namespace NSTTF

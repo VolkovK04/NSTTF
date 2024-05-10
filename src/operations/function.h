@@ -1,4 +1,5 @@
 #pragma once
+#include <compiler/instruction.h>
 #include <libutils/misc.h>
 #include <string>
 #include <tensor/tensor.h>
@@ -21,11 +22,10 @@ public:
   Function(Function &&) = default;
   Function &operator=(Function &&) = default;
 
-  virtual std::vector<Tensor>
-  compute(const std::vector<Tensor> &inputs) const = 0;
-  virtual Tensor derivative(const std::vector<Tensor> &inputs,
-                            size_t inputIndex, size_t outputIndex,
-                            Tensor grad) const = 0;
+  virtual Tensor compute(const std::vector<Tensor> &inputs) const = 0;
+  virtual std::vector<AbstractInstruction *>
+  derivative(const std::vector<std::string> &inputs, size_t inputIndex,
+             const std::string &grad, const std::string &resultName) const = 0;
 };
 
 void init();
@@ -38,9 +38,11 @@ class UnaryMinus : public Function {
 
 public:
   UnaryMinus() = default;
-  std::vector<Tensor> compute(const std::vector<Tensor> &inputs) const override;
-  Tensor derivative(const std::vector<Tensor> &inputs, size_t inputIndex,
-                    size_t outputIndex, Tensor grad) const override;
+  Tensor compute(const std::vector<Tensor> &inputs) const override;
+  std::vector<AbstractInstruction *>
+  derivative(const std::vector<std::string> &inputs, size_t inputIndex,
+             const std::string &grad,
+             const std::string &resultName) const override;
 };
 
 class Sum : public Function {
@@ -48,19 +50,23 @@ class Sum : public Function {
 
 public:
   Sum() = default;
-  std::vector<Tensor> compute(const std::vector<Tensor> &inputs) const override;
-  Tensor derivative(const std::vector<Tensor> &inputs, size_t inputIndex,
-                    size_t outputIndex, Tensor grad) const override;
+  Tensor compute(const std::vector<Tensor> &inputs) const override;
+  std::vector<AbstractInstruction *>
+  derivative(const std::vector<std::string> &inputs, size_t inputIndex,
+             const std::string &grad,
+             const std::string &resultName) const override;
 };
 
-class Subtration : public Function {
+class Subtraction : public Function {
   friend void init();
 
 public:
-  Subtration() = default;
-  std::vector<Tensor> compute(const std::vector<Tensor> &inputs) const override;
-  Tensor derivative(const std::vector<Tensor> &inputs, size_t inputIndex,
-                    size_t outputIndex, Tensor grad) const override;
+  Subtraction() = default;
+  Tensor compute(const std::vector<Tensor> &inputs) const override;
+  std::vector<AbstractInstruction *>
+  derivative(const std::vector<std::string> &inputs, size_t inputIndex,
+             const std::string &grad,
+             const std::string &resultName) const override;
 };
 
 class Multiplication : public Function {
@@ -68,9 +74,11 @@ class Multiplication : public Function {
 
 public:
   Multiplication() = default;
-  std::vector<Tensor> compute(const std::vector<Tensor> &inputs) const override;
-  Tensor derivative(const std::vector<Tensor> &inputs, size_t inputIndex,
-                    size_t outputIndex, Tensor grad) const override;
+  Tensor compute(const std::vector<Tensor> &inputs) const override;
+  std::vector<AbstractInstruction *>
+  derivative(const std::vector<std::string> &inputs, size_t inputIndex,
+             const std::string &grad,
+             const std::string &resultName) const override;
 };
 
 class MatrixMultiplication : public Function {
@@ -78,9 +86,11 @@ class MatrixMultiplication : public Function {
 
 public:
   MatrixMultiplication() = default;
-  std::vector<Tensor> compute(const std::vector<Tensor> &inputs) const override;
-  Tensor derivative(const std::vector<Tensor> &inputs, size_t inputIndex,
-                    size_t outputIndex, Tensor grad) const override;
+  Tensor compute(const std::vector<Tensor> &inputs) const override;
+  std::vector<AbstractInstruction *>
+  derivative(const std::vector<std::string> &inputs, size_t inputIndex,
+             const std::string &grad,
+             const std::string &resultName) const override;
 };
 
 class MatrixTranspose : public Function {
@@ -88,9 +98,11 @@ class MatrixTranspose : public Function {
 
 public:
   MatrixTranspose() = default;
-  std::vector<Tensor> compute(const std::vector<Tensor> &inputs) const override;
-  Tensor derivative(const std::vector<Tensor> &inputs, size_t inputIndex,
-                    size_t outputIndex, Tensor grad) const override;
+  Tensor compute(const std::vector<Tensor> &inputs) const override;
+  std::vector<AbstractInstruction *>
+  derivative(const std::vector<std::string> &inputs, size_t inputIndex,
+             const std::string &grad,
+             const std::string &resultName) const override;
 };
 
 } // namespace NSTTF

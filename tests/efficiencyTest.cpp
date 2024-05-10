@@ -18,29 +18,29 @@ using namespace NSTTF;
 
 // 0 - from CPU
 // 1 - from GPU
-const int firstDevice = 2;
+const int firstDevice = 1;
 
 template <class DT = std::chrono::milliseconds,
           class ClockT = std::chrono::steady_clock>
 class Timer {
-    using timep_t = decltype(ClockT::now());
+  using timep_t = decltype(ClockT::now());
 
-    timep_t _start = ClockT::now();
-    timep_t _end = {};
+  timep_t _start = ClockT::now();
+  timep_t _end = {};
 
-  public:
-    void start() {
-        _end = timep_t{};
-        _start = ClockT::now();
-    }
+public:
+  void start() {
+    _end = timep_t{};
+    _start = ClockT::now();
+  }
 
-    void end() { _end = ClockT::now(); }
+  void end() { _end = ClockT::now(); }
 
-    template <class duration_t = DT> auto duration() const {
-        // Use gsl_Expects if your project supports it.
-        assert(_end != timep_t{} && "Timer must toc before reading the time");
-        return std::chrono::duration_cast<duration_t>(_end - _start);
-    }
+  template <class duration_t = DT> auto duration() const {
+    // Use gsl_Expects if your project supports it.
+    assert(_end != timep_t{} && "Timer must toc before reading the time");
+    return std::chrono::duration_cast<duration_t>(_end - _start);
+  }
 };
 
 int main(int argc, char **argv) {
@@ -49,206 +49,207 @@ int main(int argc, char **argv) {
 }
 
 class EfficiencyTests : public ::testing::Test {
-  protected:
-    gpu::Context context;
-    std::vector<gpu::Device> devices = gpu::enumDevices();
+protected:
+  gpu::Context context;
+  std::vector<gpu::Device> devices = gpu::enumDevices();
 
-    void SetUp_(int deviceId) {
-        gpu::Device device = devices[deviceId];
+  void SetUp_(int deviceId) {
+    gpu::Device device = devices[deviceId];
 
-        context.init(device.device_id_opencl);
-        context.activate();
+    context.init(device.device_id_opencl);
+    context.activate();
 
-        device.printInfo();
+    device.printInfo();
 
-        init();
-    }
+    init();
+  }
 
-    void testVectorFunction(std::shared_ptr<NSTTF::Function> func,
-                            const char &operation, const int &benchIters = 1) {
-        std::cout << "CTEST_FULL_OUTPUT" << std::endl;
+  void testVectorFunction(std::shared_ptr<NSTTF::Function> func,
+                          const char &operation, const int &benchIters = 1) {
+    std::cout << "CTEST_FULL_OUTPUT" << std::endl;
 
-        int vectorSize = 100'000'000;
-        Timer clock;
+    int vectorSize = 100'000'000;
+    Timer clock;
 
-        for (unsigned int iter = 0; iter < benchIters; ++iter) {
-            std::vector<float> v1, v2, v3;
-            int seed = 0;
-            FastRandom r(seed);
-            for (size_t i = 0; i < vectorSize; ++i) {
-                float x1 = r.nextf();
-                float x2 = r.nextf();
+    for (unsigned int iter = 0; iter < benchIters; ++iter) {
+      std::vector<float> v1, v2, v3;
+      int seed = 0;
+      FastRandom r(seed);
+      for (size_t i = 0; i < vectorSize; ++i) {
+        float x1 = r.nextf();
+        float x2 = r.nextf();
 
-                v1.push_back(x1);
-                v2.push_back(x2);
-                
-                switch (operation) {
-                case '+':
-                    v3.push_back(x1 + x2);
-                    break;
-                case '-':
-                    v3.push_back(x1 - x2);
-                    break;
-                case '*':
-                    v3.push_back(x1 * x2);
-                    break;
-                }
-            }
+        v1.push_back(x1);
+        v2.push_back(x2);
 
-            for (size_t deviceId = firstDevice; deviceId < devices.size(); ++deviceId) {
-                SetUp_(deviceId);
-
-                Tensor a(v1);
-                Tensor b(v2);
-
-                clock.start();
-                Tensor c = func->compute({a, b})[0];
-                clock.end();
-
-                std::cout << "Code run for " << clock.duration().count()
-                          << " ms" << std::endl
-                          << std::endl;
-
-                std::vector<float> result = c.getData();
-
-                double diff_sum = 0;
-                for (int i = 0; i < vectorSize; ++i) {
-                    double f = result[i];
-                    double s = v3[i];
-                    if (f != 0.0 || s != 0.0) {
-                        double diff = fabs(f - s) / std::max(fabs(f), fabs(s));
-                        diff_sum += diff;
-                    }
-                }
-
-                double diff_avg = diff_sum / (vectorSize);
-
-                if (diff_avg > 0.01) {
-                    FAIL() << "diff_avg = " << diff_avg;
-                }
-            }
+        switch (operation) {
+        case '+':
+          v3.push_back(x1 + x2);
+          break;
+        case '-':
+          v3.push_back(x1 - x2);
+          break;
+        case '*':
+          v3.push_back(x1 * x2);
+          break;
         }
+      }
+
+      for (size_t deviceId = firstDevice; deviceId < devices.size();
+           ++deviceId) {
+        SetUp_(deviceId);
+
+        Tensor a(v1);
+        Tensor b(v2);
+
+        clock.start();
+        Tensor c = func->compute({a, b});
+        clock.end();
+
+        std::cout << "Code run for " << clock.duration().count() << " ms"
+                  << std::endl
+                  << std::endl;
+
+        std::vector<float> result = c.getData();
+
+        double diff_sum = 0;
+        for (int i = 0; i < vectorSize; ++i) {
+          double f = result[i];
+          double s = v3[i];
+          if (f != 0.0 || s != 0.0) {
+            double diff = fabs(f - s) / std::max(fabs(f), fabs(s));
+            diff_sum += diff;
+          }
+        }
+
+        double diff_avg = diff_sum / (vectorSize);
+
+        if (diff_avg > 0.01) {
+          FAIL() << "diff_avg = " << diff_avg;
+        }
+      }
     }
+  }
 };
 
 TEST_F(EfficiencyTests, sum) {
-    testVectorFunction(functions.at("sum"), '+', 3);
+  testVectorFunction(functions.at("sum"), '+', 3);
 }
 TEST_F(EfficiencyTests, subtraction) {
-    testVectorFunction(functions.at("subtraction"), '-', 3);
+  testVectorFunction(functions.at("subtraction"), '-', 3);
 }
 TEST_F(EfficiencyTests, multiplication) {
-    testVectorFunction(functions.at("multiplication"), '*', 3);
+  testVectorFunction(functions.at("multiplication"), '*', 3);
 }
 
 TEST_F(EfficiencyTests, matrix_multiplication) {
-    std::cout << "CTEST_FULL_OUTPUT" << std::endl;
+  std::cout << "CTEST_FULL_OUTPUT" << std::endl;
 
-    unsigned int M = 2048;
-    unsigned int K = 2048;
-    unsigned int N = 2048;
-    unsigned int benchIters = 1;
-    Timer clock;
+  unsigned int M = 2048;
+  unsigned int K = 2048;
+  unsigned int N = 2048;
+  unsigned int benchIters = 1;
+  Timer clock;
 
-    for (unsigned int iter = 0; iter < benchIters; ++iter) {
-        std::vector<float> v1(M * K), v2(K * N), v3(M * N);
+  for (unsigned int iter = 0; iter < benchIters; ++iter) {
+    std::vector<float> v1(M * K), v2(K * N), v3(M * N);
 
-        int seed = 0;
-        FastRandom r(seed);
-        for (size_t i = 0; i < M * K; ++i) {
-            v1[i] = r.nextf();
-        }
-        for (size_t i = 0; i < K * N; ++i) {
-            v2[i] = r.nextf();
-        }
-
-        // Compute matrix product
-        for (size_t j = 0; j < M; ++j) {
-            for (size_t i = 0; i < N; ++i) {
-                float sum = 0.0f;
-                for (size_t k = 0; k < K; ++k) {
-                    sum += v1[j * K + k] * v2[k * N + i];
-                }
-                v3[j * N + i] = sum;
-            }
-        }
-
-        for (size_t deviceId = firstDevice; deviceId < devices.size(); ++deviceId) {
-            SetUp_(deviceId);
-
-            Tensor a(v1, {M, K});
-            Tensor b(v2, {K, N});
-
-            clock.start();
-            Tensor c = functions.at("matrix_multiplication")->compute({a, b})[0];
-            clock.end();
-
-            std::cout << "Code run for " << clock.duration().count() << " ms"
-                      << std::endl
-                      << std::endl;
-
-            std::vector<float> result = c.getData();
-
-            double diff_sum = 0;
-            for (int i = 0; i < M * N; ++i) {
-                double f = result[i];
-                double s = v3[i];
-                if (f != 0.0 || s != 0.0) {
-                    double diff = fabs(f - s) / std::max(fabs(f), fabs(s));
-                    diff_sum += diff;
-                }
-            }
-
-            double diff_avg = diff_sum / (M * N);
-
-            if (diff_avg > 0.01) {
-                FAIL() << "diff_avg = " << diff_avg;
-            }
-        }
+    int seed = 0;
+    FastRandom r(seed);
+    for (size_t i = 0; i < M * K; ++i) {
+      v1[i] = r.nextf();
     }
+    for (size_t i = 0; i < K * N; ++i) {
+      v2[i] = r.nextf();
+    }
+
+    // Compute matrix product
+    for (size_t j = 0; j < M; ++j) {
+      for (size_t i = 0; i < N; ++i) {
+        float sum = 0.0f;
+        for (size_t k = 0; k < K; ++k) {
+          sum += v1[j * K + k] * v2[k * N + i];
+        }
+        v3[j * N + i] = sum;
+      }
+    }
+
+    for (size_t deviceId = firstDevice; deviceId < devices.size(); ++deviceId) {
+      SetUp_(deviceId);
+
+      Tensor a(v1, {M, K});
+      Tensor b(v2, {K, N});
+
+      clock.start();
+      Tensor c = functions.at("matrix_multiplication")->compute({a, b});
+      clock.end();
+
+      std::cout << "Code run for " << clock.duration().count() << " ms"
+                << std::endl
+                << std::endl;
+
+      std::vector<float> result = c.getData();
+
+      double diff_sum = 0;
+      for (int i = 0; i < M * N; ++i) {
+        double f = result[i];
+        double s = v3[i];
+        if (f != 0.0 || s != 0.0) {
+          double diff = fabs(f - s) / std::max(fabs(f), fabs(s));
+          diff_sum += diff;
+        }
+      }
+
+      double diff_avg = diff_sum / (M * N);
+
+      if (diff_avg > 0.01) {
+        FAIL() << "diff_avg = " << diff_avg;
+      }
+    }
+  }
 }
 
 TEST_F(EfficiencyTests, matrix_transpose) {
-    std::cout << "CTEST_FULL_OUTPUT" << std::endl;
+  std::cout << "CTEST_FULL_OUTPUT" << std::endl;
 
-    unsigned int M = 4096;
-    unsigned int N = 4096;
-    unsigned int benchIters = 1;
-    Timer clock;
+  unsigned int M = 4096;
+  unsigned int N = 4096;
+  unsigned int benchIters = 1;
+  Timer clock;
 
-    for (unsigned int iter = 0; iter < benchIters; ++iter) {
-        std::vector<float> v1(M * N), v2(N * M);
+  for (unsigned int iter = 0; iter < benchIters; ++iter) {
+    std::vector<float> v1(M * N), v2(N * M);
 
-        int seed = 0;
-        FastRandom r(seed);
-        for (size_t i = 0; i < v1.size(); ++i) {
-            v1[i] = r.nextf();
-        }
-
-        for (size_t deviceId = firstDevice; deviceId < devices.size(); ++deviceId) {
-            SetUp_(deviceId);
-
-            Tensor a(v1, {M, N});
-
-            clock.start();
-            Tensor c = functions.at("matrix_transpose")->compute({a})[0];
-            clock.end();
-
-            std::cout << "Code run for " << clock.duration().count() << " ms"
-                      << std::endl
-                      << std::endl;
-
-            std::vector<float> result = c.getData();
-
-            for (int j = 0; j < M; ++j) {
-                for (int i = 0; i < N; ++i) {
-                    float f = result[j * N + i];
-                    float s = v1[i * M + j];
-                    if (f != s) {
-                        FAIL() << "f = " << f << ", s = " << s;
-                    }
-                }
-            }
-        }
+    int seed = 0;
+    FastRandom r(seed);
+    for (size_t i = 0; i < v1.size(); ++i) {
+      v1[i] = r.nextf();
     }
+
+    for (size_t deviceId = firstDevice; deviceId < devices.size(); ++deviceId) {
+      SetUp_(deviceId);
+
+      Tensor a(v1, {M, N});
+
+      clock.start();
+      Tensor c = functions.at("matrix_transpose")->compute({a});
+      clock.end();
+
+      std::cout << "Code run for " << clock.duration().count() << " ms"
+                << std::endl
+                << std::endl;
+
+      std::vector<float> result = c.getData();
+
+      for (int j = 0; j < M; ++j) {
+        for (int i = 0; i < N; ++i) {
+          float f = result[j * N + i];
+          float s = v1[i * M + j];
+          if (f != s) {
+            FAIL() << "f = " << f << ", s = " << s;
+          }
+        }
+      }
+    }
+  }
 }

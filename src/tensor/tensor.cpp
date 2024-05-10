@@ -62,36 +62,37 @@ Tensor Tensor::copy() const {
   return std::move(newTensor);
 }
 
-std::vector<size_t> Tensor::broadcast(const std::vector<size_t> &shape1, const std::vector<size_t> &shape2) {
+std::vector<size_t> Tensor::broadcast(const std::vector<size_t> &shape1,
+                                      const std::vector<size_t> &shape2) {
   std::vector<size_t> a;
   std::vector<size_t> b;
-  if (shape1.size() >= shape2.size()){
+  if (shape1.size() >= shape2.size()) {
     a = shape1;
     b = shape2;
-  } else{
+  } else {
     a = shape2;
     b = shape1;
   }
 
-  while (b.size() < a.size()){
+  while (b.size() < a.size()) {
     // this is really bad
     b.insert(b.begin(), 1);
   }
 
-  for (size_t i = 0; i < b.size(); ++i){
-    if(b[i] == 1){
+  for (size_t i = 0; i < b.size(); ++i) {
+    if (b[i] == 1) {
       b[i] = a[i];
     }
   }
 
-  for (size_t i = 0; i < a.size(); ++i){
-    if(a[i] == 1){
+  for (size_t i = 0; i < a.size(); ++i) {
+    if (a[i] == 1) {
       a[i] = b[i];
     }
   }
 
-  for (size_t i = 0; i < a.size(); ++i){
-    if (a[i] != b[i]){
+  for (size_t i = 0; i < a.size(); ++i) {
+    if (a[i] != b[i]) {
       throw std::runtime_error("Can't broadcats this vectors");
     }
   }
@@ -99,8 +100,7 @@ std::vector<size_t> Tensor::broadcast(const std::vector<size_t> &shape1, const s
   return (a);
 }
 
-
-Tensor concat(const std::vector<Tensor>& tensors) {
+Tensor concat(const std::vector<Tensor> &tensors) {
   if (!tensors.size()) {
     throw std::invalid_argument("Tensors is empty!");
   }
@@ -116,7 +116,6 @@ Tensor concat(const std::vector<Tensor>& tensors) {
   size_t tensorSize = tensors[0].getSize();
   for (size_t i = 0; i < tensors.size(); ++i) {
     tensors[i].getGPUBuffer().copyToN(buffer, tensorSize);
-    
   }
 }
 } // namespace NSTTF

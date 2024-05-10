@@ -1,65 +1,26 @@
 #include "compiler.h"
 #include "../operations/function.h"
+#include <algorithm>
 
 namespace NSTTF {
 
 Instruction::Instruction(const std::string &name,
                          const std::vector<std::string> &inputNodeNames,
-                         const std::vector<std::string> &outputNodeNames)
-    : name(name), inputNodeNames(inputNodeNames), outputNodeNames(outputNodeNames) {}
-
-Constant::Constant(const std::vector<std::string> &input,
-                   const std::vector<std::string> &output, double value)
-    : Instruction("constant", input, output), value(value) {}
+                         const std::string &outputNodeName)
+    : AbstractInstruction(name), inputNodeNames(inputNodeNames),
+      outputNodeName(outputNodeName) {}
 
 GraphExecutor Compiler::compile(const ComputationGraph &graph) {
   outputs = graph.getOutputNodes();
-  std::vector<Instruction> instructions = getAllInstructions();
+  std::vector<AbstractInstruction *> instructions = getAllInstructions();
 
   GraphExecutor executor(instructions, outputs);
 
   return executor;
 }
 
-Instruction getDerivative(AbstractNode *node,
-                          const std::string differentiateBy) {
-  std::string name = node->getName();
-  std::vector<std::string> prevNodes;
-  std::vector<std::string> nextNodes;
-  for (auto prev : node->getPreviousNodes()) {
-    prevNodes.push_back(prev->getName());
-  }
-
-  for (auto next : node->getNextNodes()) {
-    nextNodes.push_back(next->getName());
-  }
-
-  if (differentiateBy == name) {
-    return Constant(std::move(prevNodes), {name}, 1);
-  }
-  OperationNode *opNode = dynamic_cast<OperationNode *>(node);
-  if (!opNode) {
-    return Constant(std::move(prevNodes), {name}, 0);
-  }
-  std::string opName = opNode->getOperation().getName();
-  // functions.at(opName)->derivative();
-  if (opName == "sum") {
-    for (auto prevNode : prevNodes) {
-      if (prevNode == differentiateBy) {
-        return Constant(std::move(prevNodes), {name}, 1);
-      }
-      return Constant(std::move(prevNodes), {name}, 0);
-    }
-  } else if (opName == "multiplication") {
-    if (prevNodes[0] == differentiateBy) {
-      return Instruction(); // TODO
-    }
-  }
-  return Instruction(); // TODO
-}
-
 void Compiler::getInstruction(AbstractNode *node,
-                              std::vector<Instruction> &result) {
+                              std::vector<AbstractInstruction *> &result) {
   if (computed.count(node)) {
     return;
   }
@@ -70,23 +31,19 @@ void Compiler::getInstruction(AbstractNode *node,
   }
 
   std::vector<std::string> prevNodes;
-  std::vector<std::string> nextNodes;
 
   for (auto prev : operationNode->getPreviousNodes()) {
     prevNodes.push_back(prev->getName());
   }
 
-  for (auto next : operationNode->getNextNodes()) {
-    nextNodes.push_back(next->getName());
-  }
-  Instruction instruction(operationNode->getOperation().getName(),
-                          std::move(prevNodes), {node->getName()});
+  Instruction *instruction = new Instruction(
+      operationNode->getOperation(), std::move(prevNodes), node->getName());
   result.push_back(instruction);
   computed.insert(operationNode);
 }
 
-std::vector<Instruction> Compiler::getAllInstructions() {
-  std::vector<Instruction> result;
+std::vector<AbstractInstruction *> Compiler::getAllInstructions() {
+  std::vector<AbstractInstruction *> result;
 
   for (AbstractNode *out : outputs) {
     getInstruction(out, result);
@@ -95,12 +52,67 @@ std::vector<Instruction> Compiler::getAllInstructions() {
   return result;
 }
 
-// GraphExecutorWG Compiler::compile(const ComputationGraph &graph,
-//                                   const std::vector<std::string> &inputs) {
-//   if (inputs.empty()) {
-//     return;
-//   }
-//   std::unordered_set<std::string> computedInputs;
-// }
+void getGrads(AbstractNode *node, std::vector<AbstractInstruction *> &result) {
+  // it's a HUGE piece of shit xDDDDDDD
+  std::vector<AbstractNode *> nextNodes = node->getNextNodes();
+  std::string resultName = "~grad_" + node->getName();
+
+  for (auto nextNode : nextNodes) {
+    getGrads(nextNode, result);
+  }
+
+  for (size_t i = 0; i < nextNodes.size(); ++i) {
+    AbstractNode *nextNode = nextNodes[i];
+    std::vector<AbstractNode *> nextPrevNodes = nextNode->getPreviousNodes();
+    size_t index = std::find(nextPrevNodes.begin(), nextPrevNodes.end(), node) -
+                   nextPrevNodes.begin();
+    OperationNode *opNode = dynamic_cast<OperationNode *>(node);
+    if (!opNode) {
+      throw std::runtime_error("Unlucky ;(");
+    }
+    std::vector<std::string> prevNodes;
+
+    for (auto prev : opNode->getPreviousNodes()) {
+      prevNodes.push_back(prev->getName());
+    }
+
+    std::string gradName = "~grad_" + nextNode->getName();
+    std::vector<AbstractInstruction *> inst =
+        functions.at(opNode->getOperation())
+            ->derivative(prevNodes, index, gradName, "tmp");
+    result.insert(result.end(), inst.begin(), inst.end());
+    if (i == 0) {
+      result.push_back(new Instruction("copy", {"tmp"}, resultName));
+    } else {
+      result.push_back(new Instruction("sum", {"tmp", resultName}, resultName));
+    }
+  }
+}
+
+std::vector<AbstractInstruction *>
+getAllGrads(const ComputationGraph &graph,
+            const std::vector<std::string> &inputs) {
+  std::unordered_map<std::string, AbstractNode *> nodeMap = graph.getNodeMap();
+  std::vector<AbstractInstruction *> instructions;
+
+  instructions.push_back(new ConstInstruction(
+      "const", Tensor(std::vector<float>{1.f}), "~grad_loss"));
+  for (std::string input : inputs) {
+    AbstractNode *node = nodeMap.at(input);
+    getGrads(node, instructions);
+  }
+
+  for (InputNode *inputNode : graph.getInputNodes()) {
+    inputNode->getName();
+  }
+}
+
+GraphExecutorWG
+Compiler::compileWithGrads(const ComputationGraph &graph,
+                           const std::vector<std::string> &inputs) {
+  std::unordered_set<std::string> computedInputs;
+
+  std::vector<AbstractInstruction *> instructions = getAllInstructions();
+}
 
 } // namespace NSTTF

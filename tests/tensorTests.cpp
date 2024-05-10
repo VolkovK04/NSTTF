@@ -96,7 +96,7 @@ TEST_F(TensorTests, impossibleReshape) {
 
 TEST_F(TensorTests, possibleBroadcast) {
   std::vector<size_t> a{2, 3, 4, 5, 1, 1, 1};
-  std::vector<size_t> b{4, 1, 6, 7, 8};
+  std::vector<size_t> b{      4, 1, 6, 7, 8};
   
   std::vector<size_t> c = Tensor::broadcast(a, b);
   std::vector<size_t> expectedShape{2, 3, 4, 5, 6, 7, 8};

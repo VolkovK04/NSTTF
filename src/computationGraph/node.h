@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-#include <operations/abstractOperation.h>
+#include <string>
 #include <tensor/tensor.h>
 #include <vector>
 
@@ -34,15 +34,15 @@ class OperationNode : public AbstractNode {
   friend class ComputationGraph;
 
 private:
-  AbstractOperation operation;
+  std::string operationName;
 
 public:
   OperationNode() = default;
-  OperationNode(const AbstractOperation operation,
+  OperationNode(const std::string &operationName,
                 const std::vector<AbstractNode *> &nodes);
   ~OperationNode() = default;
 
-  AbstractOperation getOperation() const;
+  const std::string &getOperation() const { return operationName; }
 };
 
 class InputNode : public AbstractNode {

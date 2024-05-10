@@ -1,42 +1,57 @@
 #pragma once
 
-#include <iostream>
-#include <operations/function.h>
 #include <string>
+#include <tensor/tensor.h>
 #include <vector>
 
 namespace NSTTF {
-class Instruction {
+
+class AbstractInstruction {
 protected:
-  // Function function;
   std::string name;
-  std::vector<std::string> inputNodeNames;
-  std::vector<std::string> outputNodeNames;
 
 public:
-  std::string getName();
-  std::vector<std::string> getInputs();
-  std::vector<std::string> getOutputs();
+  AbstractInstruction() = default;
+  AbstractInstruction(const std::string &name) : name(name) {}
+  const std::string &getName() const;
+  virtual ~AbstractInstruction() = default;
+};
 
+class Instruction : public AbstractInstruction {
+protected:
+  std::vector<std::string> inputNodeNames;
+  std::string outputNodeName;
+
+public:
+  const std::vector<std::string> &getInputs() const;
+  const std::string &getOutput() const;
+
+  ///
+  /// args:
+  ///   name - operation that we should execute (THE ONLY ONE!)
+  ///   input - input arguments
+  ///   output - output argument (THE ONLY ONE!)
+  ///
   Instruction(const std::string &name, const std::vector<std::string> &input,
-              const std::vector<std::string> &output);
+              const std::string &output);
 
   Instruction() = default;
 
   ~Instruction() = default;
 };
 
-class Constant : public Instruction {
-private:
-  double value;
+class ConstInstruction : public AbstractInstruction {
+protected:
+  std::string outputNodeName;
+  Tensor tensor;
 
 public:
-  Constant(const std::vector<std::string> &input,
-           const std::vector<std::string> &output, double value);
-
-  Constant() = default;
-
-  ~Constant() = default;
+  ConstInstruction() = default;
+  ConstInstruction(const std::string &name, Tensor tensor,
+                   const std::string &outputNodeName)
+      : AbstractInstruction(name), tensor(tensor),
+        outputNodeName(outputNodeName) {}
+  ~ConstInstruction() = default;
 };
 
 } // namespace NSTTF

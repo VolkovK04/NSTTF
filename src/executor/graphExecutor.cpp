@@ -3,39 +3,44 @@
 
 namespace NSTTF {
 
-std::string Instruction::getName() { return name; }
-
-std::vector<std::string> Instruction::getInputs() { return inputNodeNames; }
-
-std::vector<std::string> Instruction::getOutputs() { return outputNodeNames; }
-
-GraphExecutor::GraphExecutor(const std::vector<Instruction> &instructions,
-                             const std::vector<AbstractNode *> &outputs)
+GraphExecutor::GraphExecutor(
+    const std::vector<AbstractInstruction *> &instructions,
+    const std::vector<AbstractNode *> &outputs)
     : instructions(instructions), outputs(outputs) {}
 
-GraphExecutorWG::GraphExecutorWG(const std::vector<Instruction> &instructions,
-                                 const std::vector<AbstractNode *> &outputs,
-                                 const std::vector<Instruction> &gradient)
+GraphExecutor::~GraphExecutor() {
+  for (auto instruction : instructions) {
+    delete instruction;
+  }
+}
+
+GraphExecutorWG::GraphExecutorWG(
+    const std::vector<AbstractInstruction *> &instructions,
+    const std::vector<AbstractNode *> &outputs,
+    const std::vector<AbstractInstruction *> &gradient)
     : GraphExecutor::GraphExecutor(instructions, outputs), gradient(gradient) {}
 
 TensorMap GraphExecutor::execute(const TensorMap &tensorsMap) {
   calculated = tensorsMap;
 
-  for (Instruction instruction : instructions) {
+  for (AbstractInstruction *abstractInstruction : instructions) {
+    Instruction *instruction = dynamic_cast<Instruction *>(abstractInstruction);
+    std::string instructionName = instruction->getName();
+    if (instructionName == "copy") {
+      std::string outputName = instruction->getOutput();
+      calculated[outputName] = calculated[instruction->getInputs()[0]];
+      continue;
+    }
+
     std::vector<Tensor> tensors;
 
-    std::vector<std::string> inputs = instruction.getInputs();
+    std::vector<std::string> inputs = instruction->getInputs();
     for (std::string input : inputs) {
       tensors.push_back(calculated[input]);
     }
-
-    std::vector<Tensor> result =
-        functions.at(instruction.getName())->compute(tensors);
-
-    std::vector<std::string> outputNames = instruction.getOutputs();
-    for (size_t i = 0; i < outputs.size(); ++i) {
-      calculated[outputNames[i]] = result[i];
-    }
+    Tensor result = functions.at(instructionName)->compute(tensors);
+    std::string outputName = instruction->getOutput();
+    calculated[outputName] = result;
   }
   TensorMap outputMap;
   for (AbstractNode *output : outputs) {

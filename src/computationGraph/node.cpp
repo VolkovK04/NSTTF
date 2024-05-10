@@ -14,8 +14,6 @@ std::vector<AbstractNode *> AbstractNode::getNextNodes() const { return nexts; }
 
 const std::string &AbstractNode::getName() const { return name; }
 
-AbstractOperation OperationNode::getOperation() const { return operation; }
-
 const AbstractNode &NodeInterface::getNode() const { return *node; }
 
 void NodeInterface::setOutput() { graph.setOutputNode(node); }
@@ -35,42 +33,38 @@ std::string NodeInterface::createName() {
 NodeInterface
 NodeInterface::operator+(const NodeInterface &nodeInterface) const {
   checkSameGraph(*this, nodeInterface);
-  AbstractOperation sum("sum");
   std::string name = createName();
-  return graph.AddOperationNode(sum, {node, nodeInterface.node}, name, false);
+  return graph.AddOperationNode("sum", {node, nodeInterface.node}, name, false);
 }
 
 NodeInterface
 NodeInterface::operator-(const NodeInterface &nodeInterface) const {
   checkSameGraph(*this, nodeInterface);
-  AbstractOperation subtraction("subtraction");
   std::string name = createName();
-  return graph.AddOperationNode(subtraction, {node, nodeInterface.node}, name,
+  return graph.AddOperationNode("subtraction", {node, nodeInterface.node}, name,
                                 false);
 }
 
 NodeInterface
 NodeInterface::operator*(const NodeInterface &nodeInterface) const {
   checkSameGraph(*this, nodeInterface);
-  AbstractOperation multiplication("multiplication");
   std::string name = createName();
-  return graph.AddOperationNode(multiplication, {node, nodeInterface.node},
+  return graph.AddOperationNode("multiplication", {node, nodeInterface.node},
                                 name, false);
 }
 
 NodeInterface NodeInterface::MatrixMult(const NodeInterface &left,
                                         const NodeInterface &right) {
   checkSameGraph(left, right);
-  AbstractOperation multiplication("matrix_multiplication");
   std::string name = createName();
-  return left.graph.AddOperationNode(multiplication, {left.node, right.node},
-                                     name, false);
+  return left.graph.AddOperationNode("matrix_multiplication",
+                                     {left.node, right.node}, name, false);
 }
 
 NodeInterface NodeInterface::MatrixTranspose(const NodeInterface &node) {
-  AbstractOperation multiplication("matrix_transpose");
   std::string name = createName();
-  return node.graph.AddOperationNode(multiplication, {node.node}, name, false);
+  return node.graph.AddOperationNode("matrix_transpose", {node.node}, name,
+                                     false);
 }
 
 void NodeInterface::checkSameGraph(NodeInterface i1, NodeInterface i2) {

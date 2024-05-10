@@ -13,15 +13,16 @@ private:
   std::unordered_set<AbstractNode *> computed;
   std::vector<AbstractNode *> outputs;
 
-  void getInstruction(AbstractNode *node, std::vector<Instruction> &result);
-  std::vector<Instruction> getAllInstructions();
+  void getInstruction(AbstractNode *node,
+                      std::vector<AbstractInstruction *> &result);
+  std::vector<AbstractInstruction *> getAllInstructions();
 
 public:
   Compiler() = default;
 
   GraphExecutor compile(const ComputationGraph &graph);
 
-  GraphExecutorWG compile(const ComputationGraph &graph,
-                          const std::vector<std::string> &inputs);
+  GraphExecutorWG compileWithGrads(const ComputationGraph &graph,
+                                   const std::vector<std::string> &inputs);
 };
 } // namespace NSTTF
