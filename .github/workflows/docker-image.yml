@@ -22,7 +22,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Run the Docker container
-      run: docker run -it --rm --name=nsttf --mount type=bind,source="${PWD}/..",target=/src nsttf/nsttf:$(date +%s) bash 
+      run: docker run --rm --name=nsttf --mount type=bind,source="${PWD}/..",target=/src nsttf/nsttf:$(date +%s) bash 
   tests:
     needs: start
     runs-on: ubuntu-latest
