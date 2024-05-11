@@ -1,0 +1,33 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Build the Docker image
+      run: docker build -t nsttf/nsttf:$(date +%s) -f Dockerfile .
+  start:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Run the Docker container
+      run: docker run -it --rm --name=nsttf --mount type=bind,source="${PWD}/..",target=/src nsttf/nsttf:$(date +%s) bash 
+  tests:
+    needs: start
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Run the run_tests.py
+      run: |
+        cd src/docker
+        python3 run_tests.py
+    
