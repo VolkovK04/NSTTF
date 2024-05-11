@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: CI
 
 on:
   push:
@@ -12,10 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - name: Build the Docker image
+    - name: Run tests
       run: |
         cd docker
-        docker build -t nsttf/nsttf:1.0 -f Dockerfile .
-    - name: run_tests.py
-      run: docker run --rm --name=nsttf --mount type=bind,source="${PWD}/..",target=/src nsttf/nsttf:1.0 python3 src/docker/run_tests.py
-    
+        python3 run_tests.py
