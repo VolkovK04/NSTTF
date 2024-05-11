@@ -16,8 +16,6 @@ jobs:
       run: |
         cd docker
         docker build -t nsttf/nsttf:1.0 -f Dockerfile .
-    - name: Run the Docker container
-      run: docker run --rm --name=nsttf --mount type=bind,source="${PWD}/..",target=/src nsttf/nsttf:1.0 bash 
     - name: run_tests.py
-      run: docker exec nsttf/nsttf:1.0 python3 src/docker/run_tests.py
+      run: docker run --rm --name=nsttf --mount type=bind,source="${PWD}/..",target=/src nsttf/nsttf:1.0 python3 src/docker/run_tests.py
     
