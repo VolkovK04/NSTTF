@@ -30,8 +30,7 @@ protected:
   }
 };
 
-TEST_F(DerivativeTests, sumTest) 
-{
+TEST_F(DerivativeTests, sumTest) {
   Compiler compiler;
   ComputationGraph g;
   Tensor test1({1.f}, {1});
