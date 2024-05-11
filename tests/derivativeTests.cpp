@@ -75,9 +75,14 @@ TEST_F(DerivativeTests, hellTest) {
   NodeInterface c = a * b;
   c.setName("c");
 
+  // NodeInterface fake = a * a;
+  // fake.setOutput();
+
   NodeInterface d = a + c;
   d.setOutput();
   d.setName("loss");
+
+
 
   GraphExecutorWG gewg = compiler.compileWithGrads(g);
   TensorMap actualForward = gewg.execute(tensorsMap);
