@@ -35,8 +35,8 @@ private:
 
 public:
   explicit RAMPointer(std::vector<float> &pointer);
-  std::vector<float> toVector();
-  gpu::gpu_mem_32f toGPUBuffer();
+  std::vector<float> toVector() const override;
+  gpu::gpu_mem_32f toGPUBuffer() const override;
 };
 
 class Tensor {

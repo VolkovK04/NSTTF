@@ -82,8 +82,6 @@ TEST_F(DerivativeTests, hellTest) {
   d.setOutput();
   d.setName("loss");
 
-
-
   GraphExecutorWG gewg = compiler.compileWithGrads(g);
   TensorMap actualForward = gewg.execute(tensorsMap);
 
@@ -92,4 +90,9 @@ TEST_F(DerivativeTests, hellTest) {
   std::vector test2_data = actualDerivative.at("~grad_test2").getData(); // 2
   std::vector test3_data = actualDerivative.at("~grad_test3").getData(); // 5
   std::vector test4_data = actualDerivative.at("~grad_test4").getData(); // -5
+
+  EXPECT_EQ(test1_data, std::vector<float>{2.f});
+  EXPECT_EQ(test2_data, std::vector<float>{2.f});
+  EXPECT_EQ(test3_data, std::vector<float>{5.f});
+  EXPECT_EQ(test4_data, std::vector<float>{-5.f});
 }

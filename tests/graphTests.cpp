@@ -21,8 +21,8 @@ TEST(GraphTests, CreateInputNode1) {
 
 TEST(GraphTests, CreateInputNode2) {
     ComputationGraph g;
-    NodeInterface nodeInterface1 = g.AddInputNode("test1");
-    NodeInterface nodeInterface2 = g.AddInputNode("test2");
+    g.AddInputNode("test1");
+    g.AddInputNode("test2");
     EXPECT_EQ(g.getInputNodes().size(), 2);
 }
 
@@ -80,7 +80,7 @@ TEST(GraphTests, NodesFromDifferentGraphs) {
     NodeInterface node1 = g1.AddInputNode("node1");
     ComputationGraph g2;
     NodeInterface node2 = g2.AddInputNode("node2");
-    NodeInterface node3 = node1 + node2;
+    node1 + node2;
 
     FAIL() << "No exception";
   } catch (std::runtime_error &err) {

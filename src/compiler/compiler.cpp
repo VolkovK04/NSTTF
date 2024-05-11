@@ -2,6 +2,9 @@
 #include "../operations/function.h"
 #include <algorithm>
 
+#define LOSS_NAME std::string("loss")
+#define GRAD_PREFIX std::string("~grad_")
+
 namespace NSTTF {
 
 void getInstruction(AbstractNode *node,
@@ -45,13 +48,13 @@ getAllInstructions(std::vector<AbstractNode *> outputs) {
 void computeGrads(AbstractNode *node,
                   std::vector<AbstractInstruction *> &result,
                   std::unordered_set<AbstractNode *> &computed) {
-  // it's a HUGE piece of shit xDDDDDDD
+
   if (computed.count(node)) {
     return;
   }
 
   std::vector<AbstractNode *> nextNodes = node->getNextNodes();
-  std::string resultName = "~grad_" + node->getName();
+  std::string resultName = GRAD_PREFIX + node->getName();
 
   for (auto nextNode : nextNodes) {
     computeGrads(nextNode, result, computed);
@@ -71,12 +74,14 @@ void computeGrads(AbstractNode *node,
     size_t index = std::find(nextPrevNodes.begin(), nextPrevNodes.end(), node) -
                    nextPrevNodes.begin();
 
-    std::vector<std::string> prevNodes;
+    std::vector<AbstractNode *> previousNodes = nextNode->getPreviousNodes();
+    std::vector<std::string> prevNodesNames(previousNodes.size());
 
-    for (auto prev : nextNode->getPreviousNodes()) {
-      prevNodes.push_back(prev->getName());
+    for (size_t i = 0; i < previousNodes.size(); ++i) {
+      prevNodesNames[i] = previousNodes[i]->getName();
     }
-    std::string gradName = "~grad_" + nextNode->getName();
+
+    std::string gradName = GRAD_PREFIX + nextNode->getName();
 
     std::vector<AbstractInstruction *> inst;
 
@@ -90,7 +95,7 @@ void computeGrads(AbstractNode *node,
       }
 
       inst = functions.at(opNode->getOperation())
-                 ->derivative(prevNodes, index, gradName, "tmp");
+                 ->derivative(prevNodesNames, index, gradName, "tmp");
     }
     result.insert(result.end(), inst.begin(), inst.end());
     if (first) {
@@ -113,7 +118,7 @@ computeAllGrads(const ComputationGraph &graph,
   std::vector<AbstractInstruction *> instructions;
 
   instructions.push_back(new ConstInstruction(
-      "const", Tensor(std::vector<float>{1.f}), "~grad_loss"));
+      "const", Tensor(std::vector<float>{1.f}), GRAD_PREFIX + LOSS_NAME));
 
   std::unordered_set<AbstractNode *> computed;
   computed.insert(nodeMap.at("loss"));
@@ -126,7 +131,7 @@ computeAllGrads(const ComputationGraph &graph,
   for (InputNode *inputNode : graph.getInputNodes()) {
     inputNode->getName();
   }
-  return std::move(instructions);
+  return instructions;
 }
 
 Instruction::Instruction(const std::string &name,

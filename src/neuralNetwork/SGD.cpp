@@ -3,11 +3,15 @@
 #include <operations/function.h>
 
 namespace NSTTF {
-void GD(ComputationGraph& g, TensorMap data, float learningRate,
+
+TensorMap scalarMult(TensorMap a, float k);
+TensorMap sum(TensorMap a, TensorMap b);
+
+void GD(ComputationGraph &g, TensorMap data, float learningRate,
         const std::vector<std::string> &inputs) {
   Compiler compiler;
   GraphExecutorWG executor = compiler.compileWithGrads(g, inputs);
-  float loss = executor.execute(data)["loss"].getData()[0];
+  // float loss = executor.execute(data)["loss"].getData()[0];
   TensorMap grads = executor.executeGrads();
   data = sum(data, scalarMult(data, -learningRate));
 }

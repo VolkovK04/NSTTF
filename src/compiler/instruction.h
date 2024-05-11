@@ -42,8 +42,8 @@ public:
 
 class ConstInstruction : public AbstractInstruction {
 protected:
-  std::string outputNodeName;
   Tensor tensor;
+  std::string outputNodeName;
 
 public:
   ConstInstruction() = default;

@@ -4,7 +4,7 @@ namespace NSTTF {
 gpu::gpu_mem_32f Tensor::getGPUBuffer() const { return pointer.toGPUBuffer(); }
 
 Tensor::Tensor(const std::vector<float> &data, const std::vector<size_t> &shape)
-    : shape(shape), pointer(data) {
+    : pointer(data), shape(shape) {
   size_t size = getSize();
   if (size == 0) {
     throw std::invalid_argument("Invalid shape");
@@ -15,7 +15,7 @@ Tensor::Tensor(const std::vector<float> &data, const std::vector<size_t> &shape)
 }
 
 Tensor::Tensor(const std::vector<size_t> &shape)
-    : shape(shape), pointer(getSize(shape)) {
+    : pointer(getSize(shape)), shape(shape) {
   if (getSize() == 0) {
     throw std::invalid_argument("Invalid shape");
   }
@@ -59,7 +59,7 @@ Tensor Tensor::copy() const {
   Tensor newTensor(shape);
   gpu::gpu_mem_32f newbuffer = newTensor.getGPUBuffer();
   buffer.copyTo(newbuffer, getSize());
-  return std::move(newTensor);
+  return newTensor;
 }
 
 std::vector<size_t> Tensor::broadcast(const std::vector<size_t> &shape1,
@@ -97,7 +97,7 @@ std::vector<size_t> Tensor::broadcast(const std::vector<size_t> &shape1,
     }
   }
 
-  return (a);
+  return a;
 }
 
 Tensor concat(const std::vector<Tensor> &tensors) {
@@ -117,5 +117,7 @@ Tensor concat(const std::vector<Tensor> &tensors) {
   for (size_t i = 0; i < tensors.size(); ++i) {
     tensors[i].getGPUBuffer().copyToN(buffer, tensorSize);
   }
+
+  throw std::runtime_error("not imlpemented");
 }
 } // namespace NSTTF

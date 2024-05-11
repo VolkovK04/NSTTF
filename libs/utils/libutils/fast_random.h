@@ -30,7 +30,7 @@ public:
     }
 
     float nextf() {
-        return (next() * 2000.0f / std::numeric_limits<int>::max()) - 1000.0f;
+        return (next() * 2000.0f / (float)std::numeric_limits<int>::max()) - 1000.0f;
     }
 
 private:

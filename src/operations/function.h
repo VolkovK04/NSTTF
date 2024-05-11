@@ -16,6 +16,8 @@ extern std::unordered_map<std::string, ocl::Kernel> kernels;
 class Function {
 public:
   Function() = default;
+  virtual ~Function() = default;
+  // why??
   Function(const Function &) = delete;
   Function &operator=(const Function &) = delete;
 
@@ -98,6 +100,7 @@ class MatrixTranspose : public Function {
 
 public:
   MatrixTranspose() = default;
+  // ~MatrixTranspose() noexcept = default;
   Tensor compute(const std::vector<Tensor> &inputs) const override;
   std::vector<AbstractInstruction *>
   derivative(const std::vector<std::string> &inputs, size_t inputIndex,

@@ -110,7 +110,7 @@ TEST_F(GPUTests, sum_test) {
   cs_gpu.readN(cs.data(), n);
 
   // Проверяем корректность результатов
-  for (int i = 0; i < n; ++i) {
+  for (size_t i = 0; i < n; ++i) {
     EXPECT_EQ(cs[i], as[i] + bs[i]);
   }
 }
@@ -169,7 +169,7 @@ TEST_F(GPUTests, matrix_multiplication_updated_test) {
   for (size_t j = 0; j < M; ++j) {
     for (size_t i = 0; i < N; ++i) {
       float sum = 0.0f;
-      for (int k = 0; k < K; ++k) {
+      for (size_t k = 0; k < K; ++k) {
         sum += as.data()[j * K + k] * bs.data()[k * N + i];
       }
       cs.data()[j * N + i] = sum;

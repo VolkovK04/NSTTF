@@ -55,7 +55,7 @@ TensorMap GraphExecutor::execute(const TensorMap &tensorsMap) {
     std::string name = output;
     outputMap[name] = calculated[name];
   }
-  return std::move(outputMap);
+  return outputMap;
 }
 
 TensorMap GraphExecutorWG::executeGrads() {
@@ -95,7 +95,7 @@ TensorMap GraphExecutorWG::executeGrads() {
     std::string name = "~grad_" + input;
     resultMap[name] = grads[name];
   }
-  return std::move(resultMap);
+  return resultMap;
 }
 
 } // namespace NSTTF

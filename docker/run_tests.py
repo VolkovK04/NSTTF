@@ -54,7 +54,7 @@ __TOOL_SETS = [
 
 def _get_cpp_flags(build_type: str) -> str:
     flags = []
-    # flags = ["-Wall", "-Werror"]
+    # flags = ["-isystem libs", "-Wall", "-Werror"]
 
     if build_type == "Debug":
         flags += ["-O0", "-g"]
