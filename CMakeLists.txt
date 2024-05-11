@@ -41,4 +41,6 @@ target_link_libraries(${BINARY}
         ${INTERNAL_LIBRARIES}
 )
 
-add_dependencies(${BINARY} clang-format) # run format before build main
+if(CLANG_FORMAT)
+        add_dependencies(${BINARY} clang-format) # run format before build main
+endif()

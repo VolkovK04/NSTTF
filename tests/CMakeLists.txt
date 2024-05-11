@@ -44,4 +44,6 @@ target_link_libraries(${EFFICIENCY_TEST_BINARY} gtest gmock
     ${EXTERNAL_LIBRARIES}
     ${INTERNAL_LIBRARIES})
 
-add_dependencies(${TEST_BINARY} clang-format)
+if(CLANG_FORMAT)
+  add_dependencies(${TEST_BINARY} clang-format)
+endif()
