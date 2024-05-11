@@ -142,18 +142,15 @@ def _make_testing_configurations() -> List[TestingConfiguration]:
                     san=san,
                     std_lib=std_lib,
                 )
-            if len(sys.argv) == 2:
-                if sys.argv[1] == '-san':
-                    rv += [
-                        TestingConfiguration(
-                        build_dir=make_build_dir("asan"),
-                        toolset=toolset,
-                        std_cpp_lib=std_lib,
-                        build_type=build_type,
-                        cpp_flags=_get_cpp_flags_asan(toolset, build_type),
-                    )]
-                else:
-                    raise Exception('unexpected flag: ' + sys.argv[1])
+            if "-san" in sys.argv:
+                rv += [
+                    TestingConfiguration(
+                    build_dir=make_build_dir("asan"),
+                    toolset=toolset,
+                    std_cpp_lib=std_lib,
+                    build_type=build_type,
+                    cpp_flags=_get_cpp_flags_asan(toolset, build_type),
+                )]
             else:
                 rv += [
                     TestingConfiguration(
@@ -278,13 +275,14 @@ def _main():
 
     _run_static_analyzers(configurations)
 
-    for cfg in configurations[:1]:
-        _run_unit_tests(cfg)
+    if not ("-notests" in sys.argv):
+        for cfg in configurations[:1]:
+            _run_unit_tests(cfg)
 
-    # TODO: launch valgrind
+        # TODO: launch valgrind
 
-    for cfg in configurations[:1]:
-        _cleanup(cfg)
+        for cfg in configurations[:1]:
+            _cleanup(cfg)
 
     print("\nSuccess")
 
