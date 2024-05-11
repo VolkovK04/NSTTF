@@ -36,8 +36,6 @@ add_executable(${EFFICIENCY_TEST_BINARY} ${EFFICIENCY_TEST_SOURCES})
 gtest_discover_tests(${TEST_BINARY})
 gtest_discover_tests(${EFFICIENCY_TEST_BINARY})
 
-# target_include_directories(${TEST_BINARY} PUBLIC ../src ../libs/)
-
 target_link_libraries(${TEST_BINARY} gtest gmock 
     ${EXTERNAL_LIBRARIES}
     ${INTERNAL_LIBRARIES})
@@ -45,3 +43,5 @@ target_link_libraries(${TEST_BINARY} gtest gmock
 target_link_libraries(${EFFICIENCY_TEST_BINARY} gtest gmock 
     ${EXTERNAL_LIBRARIES}
     ${INTERNAL_LIBRARIES})
+
+add_dependencies(${TEST_BINARY} clang-format)

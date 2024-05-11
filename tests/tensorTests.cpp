@@ -6,9 +6,9 @@
 #include <libgpu/shared_device_buffer.h>
 #include <libutils/misc.h>
 
-#include <tensor/tensor.h>
 #include <libgpu/shared_device_buffer.h>
 #include <operations/function.h>
+#include <tensor/tensor.h>
 #include <vector>
 
 using namespace NSTTF;
@@ -96,8 +96,8 @@ TEST_F(TensorTests, impossibleReshape) {
 
 TEST_F(TensorTests, possibleBroadcast) {
   std::vector<size_t> a{2, 3, 4, 5, 1, 1, 1};
-  std::vector<size_t> b{      4, 1, 6, 7, 8};
-  
+  std::vector<size_t> b{4, 1, 6, 7, 8};
+
   std::vector<size_t> c = Tensor::broadcast(a, b);
   std::vector<size_t> expectedShape{2, 3, 4, 5, 6, 7, 8};
   EXPECT_EQ(expectedShape, c);
@@ -107,11 +107,11 @@ TEST_F(TensorTests, impossibleBroadcast) {
   std::vector<size_t> a{2, 3, 5};
   std::vector<size_t> b{1, 2, 1};
   try {
-  std::vector<size_t> c = Tensor::broadcast(a, b);
-  FAIL() << "No exception";
-  } catch (std::runtime_error &err){
+    std::vector<size_t> c = Tensor::broadcast(a, b);
+    FAIL() << "No exception";
+  } catch (std::runtime_error &err) {
     EXPECT_EQ(err.what(), std::string("Can't broadcats this vectors"));
-  } catch (...){
+  } catch (...) {
     FAIL() << "Expected std::runtime_error";
   }
 }

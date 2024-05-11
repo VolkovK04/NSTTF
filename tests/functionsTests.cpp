@@ -9,7 +9,6 @@
 #include <operations/function.h>
 #include <tensor/tensor.h>
 
-
 #include <vector>
 
 using namespace NSTTF;
