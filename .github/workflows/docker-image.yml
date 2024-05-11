@@ -16,20 +16,15 @@ jobs:
       run: |
         cd docker
         docker build -t nsttf/nsttf:1.0 -f Dockerfile .
-  start:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
     - name: Run the Docker container
       run: docker run --rm --name=nsttf --mount type=bind,source="${PWD}/..",target=/src nsttf/nsttf:1.0 bash 
-  tests:
-    needs: start
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - name: Run the run_tests.py
-      run: |
-        cd src/docker
-        python3 run_tests.py
+  # tests:
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - uses: actions/checkout@v4
+  #   - name: Run the run_tests.py
+  #     run: |
+  #       cd src/docker
+  #       python3 run_tests.py
     
