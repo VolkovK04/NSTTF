@@ -9,14 +9,6 @@
 
 namespace NSTTF {
 class Compiler {
-private:
-  std::unordered_set<AbstractNode *> computed;
-  std::vector<AbstractNode *> outputs;
-
-  void getInstruction(AbstractNode *node,
-                      std::vector<AbstractInstruction *> &result);
-  std::vector<AbstractInstruction *> getAllInstructions();
-
 public:
   Compiler() = default;
 
@@ -24,5 +16,7 @@ public:
 
   GraphExecutorWG compileWithGrads(const ComputationGraph &graph,
                                    const std::vector<std::string> &inputs);
+
+  GraphExecutorWG compileWithGrads(const ComputationGraph &graph);
 };
 } // namespace NSTTF

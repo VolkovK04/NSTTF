@@ -51,6 +51,9 @@ public:
                    const std::string &outputNodeName)
       : AbstractInstruction(name), tensor(tensor),
         outputNodeName(outputNodeName) {}
+
+  const std::string &getOutput() const { return outputNodeName; }
+  Tensor getTensor() const { return tensor; }
   ~ConstInstruction() = default;
 };
 

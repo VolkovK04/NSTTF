@@ -16,6 +16,7 @@ NodeInterface ComputationGraph::AddOperationNode(
   OperationNode *node = new OperationNode();
   node->prevs = nodes;
   node->operationName = operationName;
+  node->name = name;
 
   for (AbstractNode *prev : nodes) {
     prev->nexts.push_back(node);
@@ -25,6 +26,14 @@ NodeInterface ComputationGraph::AddOperationNode(
   }
   nodeMap.insert({name, node});
   return NodeInterface(node, *this);
+}
+
+void ComputationGraph::renameNode(const std::string &oldName,
+                                  const std::string &newName) {
+  auto node = nodeMap.at(oldName);
+  nodeMap.erase(oldName);
+  node->name = newName;
+  nodeMap.insert({newName, node});
 }
 
 void ComputationGraph::setOutputNode(AbstractNode *node) {

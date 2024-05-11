@@ -30,6 +30,8 @@ public:
 
   const std::vector<AbstractNode *> getOutputNodes() const;
 
+  void renameNode(const std::string &oldName, const std::string &newName);
+
   NodeInterface AddInputNode(const std::string &name);
   NodeInterface AddOperationNode(const std::string &operationName,
                                  const std::vector<AbstractNode *> &nodes,

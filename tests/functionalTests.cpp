@@ -12,7 +12,6 @@
 #include <operations/function.h>
 #include <tensor/tensor.h>
 
-
 #include <vector>
 
 using namespace NSTTF;
@@ -118,7 +117,7 @@ TEST(FunctionalTest, multiplyNodes) {
   GraphExecutor executor = compiler.compile(g);
   TensorMap actual = executor.execute(tensorsMap);
 
-  // task^;
+  // task6:
   TensorMap expected = {{"result", Tensor{{4.f, 0.f, -3.f}, {1, 3}}}};
 
   Tensor actRes = actual["result"];

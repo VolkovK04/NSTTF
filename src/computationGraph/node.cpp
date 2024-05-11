@@ -19,8 +19,8 @@ const AbstractNode &NodeInterface::getNode() const { return *node; }
 void NodeInterface::setOutput() { graph.setOutputNode(node); }
 
 void NodeInterface::setName(const std::string &name) {
-  node->name = name;
-} // TODO check that node this current name is not already exist
+  graph.renameNode(node->getName(), name);
+}
 
 NodeInterface::NodeInterface(AbstractNode *node, ComputationGraph &g)
     : graph(g), node(node) {}
