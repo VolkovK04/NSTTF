@@ -55,11 +55,11 @@ public:
 
   explicit Tensor(const std::vector<float> &vector);
 
-  gpu::gpu_mem_32f getGPUBuffer() const;
+  gpu::gpu_mem_32f getGPUBuffer() const noexcept;
 
-  std::vector<size_t> getShape() const;
+  std::vector<size_t> getShape() const noexcept;
 
-  std::vector<float> getData() const;
+  std::vector<float> getData() const noexcept;
 
   void reshape(const std::vector<size_t> &newShape);
 
@@ -69,8 +69,11 @@ public:
   Tensor copy() const;
 
   size_t getSize() const;
+
   ~Tensor() = default;
 };
+
+std::ostream &operator<<(std::ostream &stream, const Tensor &tensor);
 
 class TensorStack {
 private:

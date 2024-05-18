@@ -86,10 +86,13 @@ TEST_F(DerivativeTests, hellTest) {
   TensorMap actualForward = gewg.execute(tensorsMap);
 
   TensorMap actualDerivative = gewg.executeGrads();
-  std::vector test1_data = actualDerivative.at("~grad_test1").getData(); // 2
-  std::vector test2_data = actualDerivative.at("~grad_test2").getData(); // 2
-  std::vector test3_data = actualDerivative.at("~grad_test3").getData(); // 5
-  std::vector test4_data = actualDerivative.at("~grad_test4").getData(); // -5
+
+  gewg.printGradInstructions(std::cout);
+
+  std::vector<float> test1_data = actualDerivative.at("~grad_test1").getData();
+  std::vector<float> test2_data = actualDerivative.at("~grad_test2").getData();
+  std::vector<float> test3_data = actualDerivative.at("~grad_test3").getData();
+  std::vector<float> test4_data = actualDerivative.at("~grad_test4").getData();
 
   EXPECT_EQ(test1_data, std::vector<float>{2.f});
   EXPECT_EQ(test2_data, std::vector<float>{2.f});

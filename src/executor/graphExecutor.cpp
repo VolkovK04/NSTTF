@@ -98,4 +98,15 @@ TensorMap GraphExecutorWG::executeGrads() {
   return resultMap;
 }
 
+void GraphExecutorWG::printGradInstructions(std::ostream &stream) const {
+  for (auto instruction : gradInstructions) {
+    instruction->printInfo(stream);
+  }
+}
+
+const std::vector<AbstractInstruction *> &
+GraphExecutorWG::getGradInstructions() const {
+  return gradInstructions;
+}
+
 } // namespace NSTTF

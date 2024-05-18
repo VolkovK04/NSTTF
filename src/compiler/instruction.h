@@ -14,6 +14,7 @@ public:
   AbstractInstruction() = default;
   AbstractInstruction(const std::string &name) : name(name) {}
   const std::string &getName() const;
+  virtual void printInfo(std::ostream &stream) const;
   virtual ~AbstractInstruction() = default;
 };
 
@@ -26,6 +27,8 @@ public:
   const std::vector<std::string> &getInputs() const;
   const std::string &getOutput() const;
 
+  Instruction() = default;
+
   ///
   /// args:
   ///   name - operation that we should execute (THE ONLY ONE!)
@@ -35,7 +38,7 @@ public:
   Instruction(const std::string &name, const std::vector<std::string> &input,
               const std::string &output);
 
-  Instruction() = default;
+  void printInfo(std::ostream &stream) const override;
 
   ~Instruction() = default;
 };
@@ -54,6 +57,7 @@ public:
 
   const std::string &getOutput() const { return outputNodeName; }
   Tensor getTensor() const { return tensor; }
+  void printInfo(std::ostream &stream) const override;
   ~ConstInstruction() = default;
 };
 

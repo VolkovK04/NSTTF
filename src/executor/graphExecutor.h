@@ -37,6 +37,12 @@ public:
                   const std::vector<AbstractInstruction *> &gradient);
   TensorMap executeGrads();
 
+  void printGradInstructions(std::ostream &stream) const;
+
+  void printGradInstructions() const;
+
+  const std::vector<AbstractInstruction *> &getGradInstructions() const;
+
   ~GraphExecutorWG() override;
 };
 } // namespace NSTTF

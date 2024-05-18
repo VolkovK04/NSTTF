@@ -1,7 +1,9 @@
 #include "tensor.h"
 
 namespace NSTTF {
-gpu::gpu_mem_32f Tensor::getGPUBuffer() const { return pointer.toGPUBuffer(); }
+gpu::gpu_mem_32f Tensor::getGPUBuffer() const noexcept {
+  return pointer.toGPUBuffer();
+}
 
 Tensor::Tensor(const std::vector<float> &data, const std::vector<size_t> &shape)
     : pointer(data), shape(shape) {
@@ -20,7 +22,7 @@ Tensor::Tensor(const std::vector<size_t> &shape)
     throw std::invalid_argument("Invalid shape");
   }
 }
-std::vector<size_t> Tensor::getShape() const { return shape; }
+std::vector<size_t> Tensor::getShape() const noexcept { return shape; }
 Tensor::Tensor(const std::vector<float> &data)
     : Tensor(data, std::vector<size_t>(1, data.size())) {}
 
@@ -39,7 +41,7 @@ size_t Tensor::getSize(const std::vector<size_t> &shape) {
   return size;
 }
 
-std::vector<float> Tensor::getData() const {
+std::vector<float> Tensor::getData() const noexcept {
   size_t size = getSize(getShape());
   gpu::gpu_mem_32f buffer = getGPUBuffer();
   std::vector<float> data(size);
@@ -88,11 +90,7 @@ std::vector<size_t> Tensor::broadcast(const std::vector<size_t> &shape1,
   for (size_t i = 0; i < a.size(); ++i) {
     if (a[i] == 1) {
       a[i] = b[i];
-    }
-  }
-
-  for (size_t i = 0; i < a.size(); ++i) {
-    if (a[i] != b[i]) {
+    } else if (a[i] != b[i]) {
       throw std::runtime_error("Can't broadcats this vectors");
     }
   }
@@ -120,4 +118,33 @@ Tensor concat(const std::vector<Tensor> &tensors) {
 
   throw std::runtime_error("not imlpemented");
 }
+
+void printTensorPart(std::ostream &stream, float *data, size_t dataLen,
+                     size_t *shape, size_t shapeLen);
+
+std::ostream &operator<<(std::ostream &stream, const Tensor &tensor) {
+  // TODO fix this
+  std::vector<float> data = tensor.getData();
+  std::vector<size_t> shape = tensor.getShape();
+  printTensorPart(stream, data.data(), data.size(), shape.data(), shape.size());
+  return stream;
+}
+
+void printTensorPart(std::ostream &stream, float *data, size_t dataLen,
+                     size_t *shape, size_t shapeLen) {
+  if (shapeLen == 0) {
+    stream << data[0];
+    return;
+  }
+  stream << "[";
+  for (size_t i = 0; i < shape[0]; ++i) {
+    printTensorPart(stream, data + i, i * dataLen / shape[0], shape + 1,
+                    shapeLen - 1);
+    if (i < shape[0] - 1) {
+      stream << ", ";
+    }
+  }
+  stream << "]" << std::endl;
+}
+
 } // namespace NSTTF
