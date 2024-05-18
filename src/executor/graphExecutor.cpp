@@ -58,6 +58,12 @@ TensorMap GraphExecutor::execute(const TensorMap &tensorsMap) {
   return outputMap;
 }
 
+void GraphExecutor::printInstructions(std::ostream &stream) const {
+  for (auto instruction : instructions) {
+    instruction->printInfo(stream);
+  }
+}
+
 TensorMap GraphExecutorWG::executeGrads() {
   grads = calculated;
   for (AbstractInstruction *abstractInstruction : gradInstructions) {

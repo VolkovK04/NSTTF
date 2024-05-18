@@ -75,8 +75,8 @@ TEST_F(DerivativeTests, hellTest) {
   NodeInterface c = a * b;
   c.setName("c");
 
-  // NodeInterface fake = a * a;
-  // fake.setOutput();
+  NodeInterface fake = a * a;
+  fake.setOutput();
 
   NodeInterface d = a + c;
   d.setOutput();
@@ -87,7 +87,8 @@ TEST_F(DerivativeTests, hellTest) {
 
   TensorMap actualDerivative = gewg.executeGrads();
 
-  gewg.printGradInstructions(std::cout);
+  gewg.printGradInstructions(std::cout); // for debug
+  // gewg.printInstructions(std::cout);
 
   std::vector<float> test1_data = actualDerivative.at("~grad_test1").getData();
   std::vector<float> test2_data = actualDerivative.at("~grad_test2").getData();

@@ -37,7 +37,6 @@ void ComputationGraph::renameNode(const std::string &oldName,
 }
 
 void ComputationGraph::setOutputNode(AbstractNode *node) {
-  // TODO check if output nodes also contains this node
   node->output = true;
   output.push_back(node);
 }

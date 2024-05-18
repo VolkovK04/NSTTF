@@ -21,6 +21,8 @@ public:
 
   TensorMap execute(const TensorMap &tensorsMap);
 
+  void printInstructions(std::ostream &stream) const;
+
   virtual ~GraphExecutor();
 };
 
@@ -38,8 +40,6 @@ public:
   TensorMap executeGrads();
 
   void printGradInstructions(std::ostream &stream) const;
-
-  void printGradInstructions() const;
 
   const std::vector<AbstractInstruction *> &getGradInstructions() const;
 

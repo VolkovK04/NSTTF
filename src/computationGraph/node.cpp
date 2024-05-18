@@ -26,8 +26,7 @@ NodeInterface::NodeInterface(AbstractNode *node, ComputationGraph &g)
     : node(node), graph(g) {}
 
 std::string NodeInterface::createName() {
-  return "~" + std::to_string(UID_Counter);
-  ++UID_Counter;
+  return "~" + std::to_string(UID_Counter++);
 }
 
 NodeInterface
