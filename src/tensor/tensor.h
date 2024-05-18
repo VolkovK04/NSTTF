@@ -73,6 +73,10 @@ public:
   size_t getSize() const;
 
   ~Tensor() = default;
+
+  Tensor operator+(const Tensor &tensor) const;
+  Tensor operator-(const Tensor &tensor) const;
+  Tensor operator*(const Tensor &tensor) const;
 };
 
 std::ostream &operator<<(std::ostream &stream, const Tensor &tensor);

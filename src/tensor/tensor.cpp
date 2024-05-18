@@ -1,4 +1,5 @@
 #include "tensor.h"
+#include <operations/function.h>
 
 namespace NSTTF {
 gpu::gpu_mem_32f Tensor::getGPUBuffer() const noexcept {
@@ -33,6 +34,18 @@ size_t Tensor::getSize() const {
     return 0;
   }
   return getSize(shape);
+}
+
+Tensor Tensor::operator+(const Tensor &tensor) const {
+  return functions.at("sum")->compute({*this, tensor});
+}
+
+Tensor Tensor::operator-(const Tensor &tensor) const {
+  return functions.at("subtraction")->compute({*this, tensor});
+}
+
+Tensor Tensor::operator*(const Tensor &tensor) const {
+  return functions.at("multiplication")->compute({*this, tensor});
 }
 
 size_t Tensor::getSize(const std::vector<size_t> &shape) {

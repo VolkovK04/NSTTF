@@ -4,4 +4,4 @@ add_library(tensor ${SOURCES})
 
 target_include_directories(tensor PUBLIC SYSTEM ../../libs/)
 
-target_link_libraries(tensor PUBLIC libgpu)
+target_link_libraries(tensor PUBLIC libgpu operations)
