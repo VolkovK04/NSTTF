@@ -55,7 +55,7 @@ public:
 
   explicit Tensor(const std::vector<float> &vector);
 
-  explicit Tensor(float number);
+  Tensor(float number);
 
   gpu::gpu_mem_32f getGPUBuffer() const noexcept;
 

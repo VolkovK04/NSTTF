@@ -31,27 +31,28 @@ protected:
 };
 
 TEST_F(DerivativeTests, sumTest) {
-  Compiler compiler;
   ComputationGraph g;
-  Tensor test1({1.f}, {1});
-  Tensor test2({4.f}, {1});
-  TensorMap tensorsMap = {{"test1", test1}, {"test2", test2}};
-
   NodeInterface nodeInterface1 = g.AddInputNode("test1");
   NodeInterface nodeInterface2 = g.AddInputNode("test2");
   NodeInterface sumNode = nodeInterface1 + nodeInterface2;
   sumNode.setOutput();
   sumNode.setName("loss");
 
+  Compiler compiler;
   GraphExecutorWG gewg = compiler.compileWithGrads(g);
+
+  TensorMap tensorsMap = {{"test1", 1.f}, {"test2", 4.f}};
   TensorMap actualForward = gewg.execute(tensorsMap);
+  EXPECT_EQ(actualForward.at("loss").getData(), std::vector<float>{5.f});
 
   TensorMap actualDerivative = gewg.executeGrads();
-  std::vector test1_data = actualDerivative.at("~grad_test1").getData();
-  std::vector test2_data = actualDerivative.at("~grad_test2").getData();
+  EXPECT_EQ(actualDerivative.at("~grad_test1").getData(),
+            std::vector<float>{1.f});
+  EXPECT_EQ(actualDerivative.at("~grad_test2").getData(),
+            std::vector<float>{1.f});
 }
 
-TEST_F(DerivativeTests, hellTest) {
+TEST_F(DerivativeTests, UltimateDerivativeTest) {
   // stage 1: create computation graph
   ComputationGraph g;
 
@@ -77,34 +78,61 @@ TEST_F(DerivativeTests, hellTest) {
   d.setOutput();
   d.setName("loss");
 
+  // TODO add check for graph
+
   // stage 2: compile existing graph
   Compiler compiler;
 
   GraphExecutorWG gewg = compiler.compileWithGrads(g);
 
-  gewg.printGradInstructions(std::cout); // for debug
-  // gewg.printInstructions(std::cout);
+  // gewg.printInstructions(std::cout); // for debug (unspecified)
+  // gewg.printGradInstructions(std::cout); // for debug (unspecified)
 
   // stage 3: execute compiled grahp executor
 
-  Tensor test1({1.f}, {1});
-  Tensor test2({4.f}, {1});
-  Tensor test3({3.f}, {1});
-  Tensor test4({2.f}, {1});
+  // test1
   TensorMap tensorsMap = {
-      {"test1", test1}, {"test2", test2}, {"test3", test3}, {"test4", test4}};
+      {"test1", -2.f}, {"test2", -0.5f}, {"test3", 4.f}, {"test4", -5.f}};
 
   TensorMap actualForward = gewg.execute(tensorsMap);
 
+  EXPECT_EQ(actualForward.at("loss").getData(),
+            std::vector<float>{-25.f}); // (T1 + T2)(T3 - T4 + 1)
+  EXPECT_EQ(actualForward.at("fake_output").getData(),
+            std::vector<float>{6.25f}); // (T1 + T2)^2
+
+  // backward
   TensorMap actualDerivative = gewg.executeGrads();
 
-  std::vector<float> test1_data = actualDerivative.at("~grad_test1").getData();
-  std::vector<float> test2_data = actualDerivative.at("~grad_test2").getData();
-  std::vector<float> test3_data = actualDerivative.at("~grad_test3").getData();
-  std::vector<float> test4_data = actualDerivative.at("~grad_test4").getData();
+  EXPECT_EQ(actualDerivative.at("~grad_test1").getData(),
+            std::vector<float>{10.f}); // (T3 - T4 + 1)
+  EXPECT_EQ(actualDerivative.at("~grad_test2").getData(),
+            std::vector<float>{10.f}); // (T3 - T4 + 1)
+  EXPECT_EQ(actualDerivative.at("~grad_test3").getData(),
+            std::vector<float>{-2.5f}); // T1 + T2
+  EXPECT_EQ(actualDerivative.at("~grad_test4").getData(),
+            std::vector<float>{2.5f}); // - T1 - T2
 
-  EXPECT_EQ(test1_data, std::vector<float>{2.f});
-  EXPECT_EQ(test2_data, std::vector<float>{2.f});
-  EXPECT_EQ(test3_data, std::vector<float>{5.f});
-  EXPECT_EQ(test4_data, std::vector<float>{-5.f});
+  // test2
+  // forward
+  tensorsMap = {{"test1", 1.f}, {"test2", 4.f}, {"test3", 3.f}, {"test4", 2.f}};
+
+  actualForward = gewg.execute(tensorsMap);
+
+  EXPECT_EQ(actualForward.at("loss").getData(),
+            std::vector<float>{10.f}); // (T1 + T2)(T3 - T4 + 1)
+  EXPECT_EQ(actualForward.at("fake_output").getData(),
+            std::vector<float>{25.f}); // (T1 + T2)^2
+
+  // backward
+  actualDerivative = gewg.executeGrads();
+
+  EXPECT_EQ(actualDerivative.at("~grad_test1").getData(),
+            std::vector<float>{2.f}); // (T3 - T4 + 1)
+  EXPECT_EQ(actualDerivative.at("~grad_test2").getData(),
+            std::vector<float>{2.f}); // (T3 - T4 + 1)
+  EXPECT_EQ(actualDerivative.at("~grad_test3").getData(),
+            std::vector<float>{5.f}); // T1 + T2
+  EXPECT_EQ(actualDerivative.at("~grad_test4").getData(),
+            std::vector<float>{-5.f}); // - T1 - T2
 }
