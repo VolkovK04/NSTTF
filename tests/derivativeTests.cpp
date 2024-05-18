@@ -52,14 +52,8 @@ TEST_F(DerivativeTests, sumTest) {
 }
 
 TEST_F(DerivativeTests, hellTest) {
-  Compiler compiler;
+  // stage 1: create computation graph
   ComputationGraph g;
-  Tensor test1({1.f}, {1});
-  Tensor test2({4.f}, {1});
-  Tensor test3({3.f}, {1});
-  Tensor test4({2.f}, {1});
-  TensorMap tensorsMap = {
-      {"test1", test1}, {"test2", test2}, {"test3", test3}, {"test4", test4}};
 
   NodeInterface nodeInterface1 = g.AddInputNode("test1");
   NodeInterface nodeInterface2 = g.AddInputNode("test2");
@@ -77,18 +71,32 @@ TEST_F(DerivativeTests, hellTest) {
 
   NodeInterface fake = a * a;
   fake.setOutput();
+  fake.setName("fake_output");
 
   NodeInterface d = a + c;
   d.setOutput();
   d.setName("loss");
 
-  GraphExecutorWG gewg = compiler.compileWithGrads(g);
-  TensorMap actualForward = gewg.execute(tensorsMap);
+  // stage 2: compile existing graph
+  Compiler compiler;
 
-  TensorMap actualDerivative = gewg.executeGrads();
+  GraphExecutorWG gewg = compiler.compileWithGrads(g);
 
   gewg.printGradInstructions(std::cout); // for debug
   // gewg.printInstructions(std::cout);
+
+  // stage 3: execute compiled grahp executor
+
+  Tensor test1({1.f}, {1});
+  Tensor test2({4.f}, {1});
+  Tensor test3({3.f}, {1});
+  Tensor test4({2.f}, {1});
+  TensorMap tensorsMap = {
+      {"test1", test1}, {"test2", test2}, {"test3", test3}, {"test4", test4}};
+
+  TensorMap actualForward = gewg.execute(tensorsMap);
+
+  TensorMap actualDerivative = gewg.executeGrads();
 
   std::vector<float> test1_data = actualDerivative.at("~grad_test1").getData();
   std::vector<float> test2_data = actualDerivative.at("~grad_test2").getData();

@@ -26,6 +26,8 @@ std::vector<size_t> Tensor::getShape() const noexcept { return shape; }
 Tensor::Tensor(const std::vector<float> &data)
     : Tensor(data, std::vector<size_t>(1, data.size())) {}
 
+Tensor::Tensor(float number) : Tensor(std::vector<float>{number}) {}
+
 size_t Tensor::getSize() const {
   if (shape.size() == 0) {
     return 0;
@@ -123,7 +125,6 @@ void printTensorPart(std::ostream &stream, float *data, size_t dataLen,
                      size_t *shape, size_t shapeLen);
 
 std::ostream &operator<<(std::ostream &stream, const Tensor &tensor) {
-  // TODO fix this
   std::vector<float> data = tensor.getData();
   std::vector<size_t> shape = tensor.getShape();
   printTensorPart(stream, data.data(), data.size(), shape.data(), shape.size());
