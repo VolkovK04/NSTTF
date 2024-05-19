@@ -233,20 +233,18 @@ TEST_F(OperationTests, matrix_multiplicationWrongSize2) {
 }
 
 TEST_F(OperationTests, matrix_multiplication_3DPositiveTest) {
-  // {
   Tensor a({1, 1, 2, 2, 3, 3}, {3, 1, 2});
-  //   {1, 1}, {2, 2}, {3, 3}
-  //}
+  // {
+  //   {{1, 1}}, {{2, 2}}, {{3, 3}}
+  // }
   Tensor b({4, 4, 5, 5, 6, 6}, {3, 2, 1});
   // {
-  //   { 4,  { 5,  { 6,
-  //     4 },  5 },  6 },
+  //   {{4}, {4}}, {{5}, {5}}, {{6}, {6}}
   // }
 
   Tensor c = functions.at("matrix_multiplication")->compute({a, b});
-  auto res = c.getData();
-
-  EXPECT_EQ(res[0], 8);
+  std::vector<float> expected{8.f, 20.f, 36.f};
+  EXPECT_EQ(c.getData(), expected);
 }
 
 TEST_F(OperationTests, reduce_sum_3DPositiveTest) {

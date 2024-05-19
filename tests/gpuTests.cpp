@@ -186,17 +186,17 @@ TEST_F(GPUTests, matrix_multiplication_updated_test) {
   as_gpu.writeN(as.data(), M * K);
   bs_gpu.writeN(bs.data(), K * N);
 
-  unsigned int x_work_group_size = 16;
-  unsigned int y_work_group_size = 16;
+  unsigned int x_work_group_size = 8;
+  unsigned int y_work_group_size = 8;
   unsigned int x_work_size =
       (M + x_work_group_size - 1) / x_work_group_size * x_work_group_size;
   unsigned int y_work_size =
       (N + y_work_group_size - 1) / y_work_group_size * y_work_group_size;
 
   NSTTF::kernels.at("matrix_multiplication")
-      .exec(gpu::WorkSize(x_work_group_size, y_work_group_size, x_work_size,
-                          y_work_size),
-            as_gpu, bs_gpu, cs_gpu, M, K, N);
+      .exec(gpu::WorkSize(x_work_group_size, y_work_group_size, 1, x_work_size,
+                          y_work_size, 1),
+            as_gpu, bs_gpu, cs_gpu, 1, M, K, N);
 
   cs.resize(M * N);
   cs_gpu.readN(cs.data(), M * N);

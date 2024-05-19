@@ -242,64 +242,65 @@ UnaryMinus::derivative(const std::vector<std::string> &inputs,
   res.push_back(new Instruction("unary_minus", {grad}, resultName));
   return res;
 }
+
 Tensor MatrixMultiplication::compute(const std::vector<Tensor> &inputs) const {
   checkNumOfTensors(inputs, 2);
 
   Tensor arg1 = inputs[0];
   Tensor arg2 = inputs[1];
 
-  if (arg1.getSize() != arg2.getSize()) {
+  std::vector<size_t> arg1Shape = arg1.getShape();
+  std::vector<size_t> arg2Shape = arg2.getShape();
+  size_t shapeSize = arg1Shape.size();
+
+  if (shapeSize < 2) {
     throw std::runtime_error("Wrong matrix shape");
   }
 
-  std::vector<size_t> arg1Shape = arg1.getShape();
-  std::vector<size_t> arg2Shape = arg2.getShape();
-
-  std::vector<size_t> subShape1(arg1Shape.begin(), arg1Shape.end() - 2);
-  std::vector<size_t> subShape2(arg2Shape.begin(), arg2Shape.end() - 2);
-  if (subShape1 != subShape2) {
-    throw std::runtime_error("Different shape");
+  for (size_t i = 0; i < shapeSize - 2; ++i) {
+    if (arg1Shape[i] != arg2Shape[i]) {
+      throw std::runtime_error("Wrong matrix shape");
+    }
   }
 
-  std::vector<uint32_t> shapeVec;
-  shapeVec.resize(arg1Shape.size());
-  std::transform(arg1Shape.begin(), arg1Shape.end(), shapeVec.begin(),
-                 [](size_t x) { return static_cast<uint32_t>(x); });
-
-  gpu::gpu_mem_32u shape_data;
-  shape_data.resizeN(shapeVec.size());
-  shape_data.writeN(shapeVec.data(), shapeVec.size());
-  // Tensor shapeTensor(shapeVec);
-
-  size_t arg1Col = arg1Shape[arg1Shape.size() - 2],
-         arg2Col = arg2Shape[arg2Shape.size() - 2];
-  // size_t arg1Rows = arg1Shape[arg1Shape.size() - 1],
-  size_t arg2Rows = arg2Shape[arg2Shape.size() - 1];
-  if (arg1Col != arg2Rows) {
-    throw std::runtime_error("Different shape");
+  size_t arg1Col = arg1Shape[shapeSize - 2];  // M
+  size_t arg2Col = arg2Shape[shapeSize - 2];  // K
+  size_t arg1Rows = arg1Shape[shapeSize - 1]; // K
+  size_t arg2Rows = arg2Shape[shapeSize - 1]; // N
+  if (arg2Col != arg1Rows) {
+    throw std::runtime_error("Wrong matrix shape");
   }
 
-  std::vector<size_t> new_shape = subShape1;
-  new_shape.push_back(arg1Col);
-  new_shape.push_back(arg2Rows);
-  Tensor res(new_shape);
+  std::vector<size_t> newShape(shapeSize - 2);
+  for (size_t i = 0; i < shapeSize - 2; ++i) {
+    newShape[i] = arg1Shape[i];
+  }
+  newShape.push_back(arg1Col);
+  newShape.push_back(arg2Rows);
 
+  Tensor res(newShape);
+
+  unsigned int L = newShape.size() / arg1Col / arg2Rows;
   unsigned int M = arg1Col;
   unsigned int K = arg2Col;
   unsigned int N = arg2Rows;
   unsigned int x_work_group_size = 8;
   unsigned int y_work_group_size = 8;
+  unsigned int z_work_group_size = 1;
 
   unsigned int x_work_size =
       (M + x_work_group_size - 1) / x_work_group_size * x_work_group_size;
   unsigned int y_work_size =
       (N + y_work_group_size - 1) / y_work_group_size * y_work_group_size;
+  unsigned int z_work_size =
+      (L + z_work_group_size - 1) / z_work_group_size * z_work_group_size;
   kernels.at("matrix_multiplication")
-      .exec(gpu::WorkSize(x_work_group_size, y_work_group_size, x_work_size,
-                          y_work_size),
-            arg1.getGPUBuffer(), arg2.getGPUBuffer(), res.getGPUBuffer(), M, K,
-            N, shape_data, arg1Shape.size());
-            
+      .exec(gpu::WorkSize(x_work_group_size, y_work_group_size,
+                          z_work_group_size, x_work_size, y_work_size,
+                          z_work_size),
+            arg1.getGPUBuffer(), arg2.getGPUBuffer(), res.getGPUBuffer(), L, M,
+            K, N);
+
   return res;
 }
 

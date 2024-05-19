@@ -1,6 +1,6 @@
 #line 6
 
-#define TILE_SIZE 16
+#define TILE_SIZE 8
 
 __kernel void
 matrix_multiplication_updated(__global const float *a, __global const float *b,
@@ -57,25 +57,17 @@ matrix_multiplication_updated(__global const float *a, __global const float *b,
   }
 }
 
-// (M, K, N) x (M, N, L) -> (M, K, L)
+// (..., M, K) x (..., K, N) -> (..., M, N)
+// prod(...) = L 
 __kernel void matrix_multiplication_full(
     __global const float *a, __global const float *b, __global float *c,
-    const unsigned int K, const unsigned int N, const unsigned int L,
-    __global const unsigned int *shape, const unsigned int shape_size) {
+    const unsigned int L, const unsigned int M, 
+    const unsigned int K, const unsigned int N) {
 
-  size_t i = get_global_id(0);
+  size_t i = get_global_id(2);
 
-  size_t global_size = 1;
-  if (i < shape_size) {
-    global_size *= shape[i];
-  }
-
-  size_t local_size_a = global_size / (K * N);
-  size_t local_size_b = global_size / (N * L);
-  // local_size_a = local_size_b (should be equal)
-
-  for (size_t j = 0; j < local_size_a; j++) {
-    matrix_multiplication_updated(a + j * K * N, b + j * N * L, c + j * K * L,
-                                  K, N, L);
+  if (i < L) {
+    matrix_multiplication_updated(a + i * M * K, b + i * K * N, c + i * M * N,
+                                  M, K, N);
   }
 }

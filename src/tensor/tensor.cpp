@@ -158,7 +158,7 @@ void printTensorPart(std::ostream &stream, float *data, size_t dataLen,
       stream << ", ";
     }
   }
-  stream << "]" << std::endl;
+  stream << "]";
 }
 
 } // namespace NSTTF
