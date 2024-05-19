@@ -204,8 +204,6 @@ TEST_F(OperationTests, multiplicationPositiveTest) {
   EXPECT_EQ(v[2], 24);
 }
 
-
-
 TEST_F(OperationTests, matrix_multiplicationWrongSize1) {
   Tensor a({2, 3}, {1, 2});
   Tensor b({2, 3, 4}, {1, 3});
@@ -233,20 +231,34 @@ TEST_F(OperationTests, matrix_multiplicationWrongSize2) {
     FAIL() << "Expected std::runtime_error";
   }
 }
+
 TEST_F(OperationTests, matrix_multiplication_3DPositiveTest) {
-  // TODO
+  // {
+  Tensor a({1, 1, 2, 2, 3, 3}, {3, 1, 2});
+  //   {1, 1}, {2, 2}, {3, 3}
+  //}
+  Tensor b({4, 4, 5, 5, 6, 6}, {3, 2, 1});
+  // {
+  //   { 4,  { 5,  { 6,
+  //     4 },  5 },  6 },
+  // }
+
+  Tensor c = functions.at("matrix_multiplication")->compute({a, b});
+  auto res = c.getData();
+
+  EXPECT_EQ(res[0], 8);
 }
 
 TEST_F(OperationTests, reduce_sum_3DPositiveTest) {
-  //TODO
+  // TODO
 }
 
 TEST_F(OperationTests, reduce_sum_2DPositiveTest) {
-  //TODO
+  // TODO
 }
 
 TEST_F(OperationTests, cross_entropy_2DPositiveTest) {
-  //TODO
+  // TODO
 }
 
 TEST_F(OperationTests, matrix_multiplicationWrongShape) {

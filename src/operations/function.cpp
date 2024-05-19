@@ -1,4 +1,5 @@
 #include "function.h"
+#include <algorithm>
 #include <filesystem>
 #include <fstream>
 #include <limits>
@@ -32,7 +33,7 @@ std::unordered_map<std::string, std::shared_ptr<Function>> initFunctions() {
 
   functions_.insert({"matrix_transpose", std::make_shared<MatrixTranspose>()});
   functions_.insert({"multiply", std::make_shared<ReduceSum>()});
-  functions_.insert({"reduce_sum", std::make_shared<CrossEntropy>()});
+  functions_.insert({"cross_entropy_loss", std::make_shared<CrossEntropy>()});
   return functions_;
 }
 
@@ -66,33 +67,19 @@ void init() {
   kernels.insert({"sum", _sum});
 
   ocl::Kernel _matrix_multiplication = prepareKernel(
-      "src/cl/matrix_multiplication.cl", "matrix_multiplication_updated");
+      "src/cl/matrix_multiplication.cl", "matrix_multiplication_full");
   kernels.insert({"matrix_multiplication", _matrix_multiplication});
-
-  ocl::Kernel _matrix_multiplication_3D = prepareKernel(
-      "src/cl/matrix_multiplication.cl", "matrix_multiplication_3D");
-  kernels.insert({"matrix_multiplication_3D", _matrix_multiplication_3D});
 
   ocl::Kernel _matrix_transpose =
       prepareKernel("src/cl/matrix_transpose.cl", "matrix_transpose");
   kernels.insert({"matrix_transpose", _matrix_transpose});
 
-  ocl::Kernel _reduce_sum_2D =
-      prepareKernel("src/cl/reduce_sum.cl", "reduce_sum_2D");
-  kernels.insert({"reduce_sum_2D", _reduce_sum_2D});
+  ocl::Kernel _reduce_sum = prepareKernel("src/cl/reduce_sum.cl", "reduce_sum");
+  kernels.insert({"reduce_sum", _reduce_sum});
 
-  ocl::Kernel _reduce_sum_3D =
-      prepareKernel("src/cl/reduce_sum.cl", "reduce_sum_3D");
-  kernels.insert({"reduce_sum_3D", _reduce_sum_3D});
-
-  ocl::Kernel _cross_entropy_2D =
-      prepareKernel("src/cl/cross_entropy.cl", "cross_entropy_loss_2D");
-  kernels.insert({"cross_entropy", _cross_entropy_2D});
-
-  // ocl::Kernel _cross_entropy_3D =
-  //     prepareKernel("src/cl/cross_entropy.cl", "cross_entropy_loss_3D");
-  // kernels.insert({"cross_entropy", _cross_entropy_3D});
-  //TODO if needed
+  ocl::Kernel _cross_entropy =
+      prepareKernel("src/cl/cross_entropy.cl", "cross_entropy_loss");
+  kernels.insert({"cross_entropy", _cross_entropy});
 }
 
 std::vector<char> clToCharVector(const std::string &clFilename) {
@@ -256,83 +243,63 @@ UnaryMinus::derivative(const std::vector<std::string> &inputs,
   return res;
 }
 Tensor MatrixMultiplication::compute(const std::vector<Tensor> &inputs) const {
-  bool use3DMult = false;
   checkNumOfTensors(inputs, 2);
 
   Tensor arg1 = inputs[0];
   Tensor arg2 = inputs[1];
 
-  std::vector<size_t> arg1Shape = arg1.getShape();
-  std::vector<size_t> arg2Shape = arg2.getShape();
-
-  size_t arg1Col = arg1Shape[0], arg2Col = arg2Shape[0];
-  size_t arg1Rows = arg1Shape[1], arg2Rows = arg2Shape[1];
-  size_t arg1Depth = std::numeric_limits<size_t>::max(),
-         arg2Depth = std::numeric_limits<size_t>::max();
-
-  if (arg1Shape.size() == 3 && arg2Shape.size() == 3) {
-    arg1Depth = arg1Shape[0], arg2Depth = arg2Shape[0];
-    arg1Col = arg1Shape[1], arg2Col = arg2Shape[1];
-    arg1Rows = arg1Shape[2], arg2Rows = arg2Shape[2];
-
-    use3DMult = true;
-  }
-
-  if (arg1Rows != arg2Col || arg2Depth != arg1Depth) {
+  if (arg1.getSize() != arg2.getSize()) {
     throw std::runtime_error("Wrong matrix shape");
   }
 
-  // arg1Shape.pop_back();
-  // arg1Shape.push_back(arg2Rows);
+  std::vector<size_t> arg1Shape = arg1.getShape();
+  std::vector<size_t> arg2Shape = arg2.getShape();
 
-  std::vector<size_t> new_shape;
-  if (use3DMult) {
-    new_shape = std::vector<size_t>{arg1Depth, arg1Col, arg2Rows};
-  } else {
-    new_shape = std::vector<size_t>{arg1Col, arg2Rows};
+  std::vector<size_t> subShape1(arg1Shape.begin(), arg1Shape.end() - 2);
+  std::vector<size_t> subShape2(arg2Shape.begin(), arg2Shape.end() - 2);
+  if (subShape1 != subShape2) {
+    throw std::runtime_error("Different shape");
   }
+
+  std::vector<uint32_t> shapeVec;
+  shapeVec.resize(arg1Shape.size());
+  std::transform(arg1Shape.begin(), arg1Shape.end(), shapeVec.begin(),
+                 [](size_t x) { return static_cast<uint32_t>(x); });
+
+  gpu::gpu_mem_32u shape_data;
+  shape_data.resizeN(shapeVec.size());
+  shape_data.writeN(shapeVec.data(), shapeVec.size());
+  // Tensor shapeTensor(shapeVec);
+
+  size_t arg1Col = arg1Shape[arg1Shape.size() - 2],
+         arg2Col = arg2Shape[arg2Shape.size() - 2];
+  // size_t arg1Rows = arg1Shape[arg1Shape.size() - 1],
+  size_t arg2Rows = arg2Shape[arg2Shape.size() - 1];
+  if (arg1Col != arg2Rows) {
+    throw std::runtime_error("Different shape");
+  }
+
+  std::vector<size_t> new_shape = subShape1;
+  new_shape.push_back(arg1Col);
+  new_shape.push_back(arg2Rows);
   Tensor res(new_shape);
 
-  if (!use3DMult) {
-    unsigned int M = arg1Col;
-    unsigned int K = arg2Col;
-    unsigned int N = arg2Rows;
-    unsigned int x_work_group_size = 8;
-    unsigned int y_work_group_size = 8;
+  unsigned int M = arg1Col;
+  unsigned int K = arg2Col;
+  unsigned int N = arg2Rows;
+  unsigned int x_work_group_size = 8;
+  unsigned int y_work_group_size = 8;
 
-    unsigned int x_work_size =
-        (M + x_work_group_size - 1) / x_work_group_size * x_work_group_size;
-    unsigned int y_work_size =
-        (N + y_work_group_size - 1) / y_work_group_size * y_work_group_size;
-    kernels.at("matrix_multiplication")
-        .exec(gpu::WorkSize(x_work_group_size, y_work_group_size, x_work_size,
-                            y_work_size),
-              arg1.getGPUBuffer(), arg2.getGPUBuffer(), res.getGPUBuffer(), M,
-              K, N);
-  } else {
-    unsigned int M = arg1Depth;
-    unsigned int K = arg1Col;
-    unsigned int N = arg1Rows;
-    unsigned int L = arg2Rows;
-
-    unsigned int x_work_group_size = 4;
-    unsigned int y_work_group_size = 4;
-    unsigned int z_work_group_size = 4;
-
-    unsigned int x_work_size =
-        (M + x_work_group_size - 1) / x_work_group_size * x_work_group_size;
-    unsigned int y_work_size =
-        (K + y_work_group_size - 1) / y_work_group_size * y_work_group_size;
-    unsigned int z_work_size =
-        (N + z_work_group_size - 1) / z_work_group_size * z_work_group_size;
-
-    kernels.at("matrix_multiplication_3D")
-        .exec(gpu::WorkSize(x_work_group_size, y_work_group_size,
-                            z_work_group_size, x_work_size, y_work_size,
-                            z_work_size),
-              arg1.getGPUBuffer(), arg2.getGPUBuffer(), res.getGPUBuffer(), M,
-              K, N, L);
-  }
+  unsigned int x_work_size =
+      (M + x_work_group_size - 1) / x_work_group_size * x_work_group_size;
+  unsigned int y_work_size =
+      (N + y_work_group_size - 1) / y_work_group_size * y_work_group_size;
+  kernels.at("matrix_multiplication")
+      .exec(gpu::WorkSize(x_work_group_size, y_work_group_size, x_work_size,
+                          y_work_size),
+            arg1.getGPUBuffer(), arg2.getGPUBuffer(), res.getGPUBuffer(), M, K,
+            N, shape_data, arg1Shape.size());
+            
   return res;
 }
 
@@ -397,30 +364,29 @@ MatrixTranspose::derivative(const std::vector<std::string> &inputs,
   return res;
 }
 Tensor ReduceSum::compute(const std::vector<Tensor> &inputs) const {
-  bool call3D = false, call2D = false;
 
   checkNumOfTensors(inputs, 1);
   Tensor arg1 = inputs[0];
 
-  auto argShape = arg1.getShape();
+  std::vector<size_t> argShape = arg1.getShape();
+  std::vector<float> shapePtr;
+  shapePtr.resize(argShape.size());
+  std::transform(argShape.begin(), argShape.end(), shapePtr.begin(),
+                 [](size_t x) { return static_cast<float>(x); });
+
   Tensor res(argShape);
 
-  if (argShape.size() == 2) {
-    call2D = true;
-  } else if (argShape.size() == 3) {
-    call3D = true;
-  }
-  unsigned int n = arg1.getSize();
+  RAMPointer shapeRam(shapePtr);
+
+  unsigned int n = argShape.size();
   unsigned int global_work_size =
       (n + workGroupSize_ - 1) / workGroupSize_ * workGroupSize_;
-  if (call3D)
-    kernels.at("reduce_sum_3D")
-        .exec(gpu::WorkSize(workGroupSize_, global_work_size),
-              arg1.getGPUBuffer(), res.getGPUBuffer(), n);
-  else if (call2D)
-    kernels.at("reduce_sum_2D")
-        .exec(gpu::WorkSize(workGroupSize_, global_work_size),
-              arg1.getGPUBuffer(), res.getGPUBuffer(), n);
+  kernels.at("reduce_sum")
+      .exec(gpu::WorkSize(workGroupSize_, global_work_size),
+            arg1.getGPUBuffer(), res.getGPUBuffer(), 0, shapeRam.toGPUBuffer(),
+            n);
+  // 0 is axis among which elements are summed
+  // TODO make this configurable if needed
   return res;
 }
 std::vector<AbstractInstruction *>
@@ -431,9 +397,7 @@ ReduceSum::derivative(const std::vector<std::string> &inputs, size_t inputIndex,
   // If needed
 }
 
-
 Tensor CrossEntropy::compute(const std::vector<Tensor> &inputs) const {
-  bool call3D = false, call2D = false;
 
   checkNumOfTensors(inputs, 2);
   Tensor arg1 = inputs[0];
@@ -446,11 +410,6 @@ Tensor CrossEntropy::compute(const std::vector<Tensor> &inputs) const {
   }
   Tensor res(arg1Shape);
 
-  if (arg1Shape.size() == 2) {
-    call2D = true;
-  } else if (arg1Shape.size() == 3) {
-    call3D = true;
-  }
   unsigned int n = arg1.getSize();
   unsigned int global_work_size =
       (n + workGroupSize_ - 1) / workGroupSize_ * workGroupSize_;
@@ -459,10 +418,15 @@ Tensor CrossEntropy::compute(const std::vector<Tensor> &inputs) const {
   //       .exec(gpu::WorkSize(workGroupSize_, global_work_size),
   //             arg1.getGPUBuffer(), res.getGPUBuffer(), n);
   // TODO adapt to batch
-  if (call2D)
-    kernels.at("cross_entropy_loss_2D")
-        .exec(gpu::WorkSize(workGroupSize_, global_work_size),
-              arg1.getGPUBuffer(), res.getGPUBuffer(), n);
+  kernels.at("cross_entropy_loss_2D")
+      .exec(gpu::WorkSize(workGroupSize_, global_work_size),
+            arg1.getGPUBuffer(), res.getGPUBuffer(), n);
   return res;
+}
+std::vector<AbstractInstruction *>
+CrossEntropy::derivative(const std::vector<std::string> &inputs,
+                         size_t inputIndex, const std::string &grad,
+                         const std::string &resultName) const {
+  throw std::runtime_error("Not implemented yet");
 }
 } // namespace NSTTF

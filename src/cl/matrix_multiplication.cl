@@ -58,17 +58,24 @@ matrix_multiplication_updated(__global const float *a, __global const float *b,
 }
 
 // (M, K, N) x (M, N, L) -> (M, K, L)
-__kernel void matrix_multiplication_3D(__global const float *a,
-                                       __global const float *b,
-                                       __global float *c, const unsigned int M,
-                                       const unsigned int K,
-                                       const unsigned int N,
-                                       const unsigned int L) {
+__kernel void matrix_multiplication_full(
+    __global const float *a, __global const float *b, __global float *c,
+    const unsigned int K, const unsigned int N, const unsigned int L,
+    __global const unsigned int *shape, const unsigned int shape_size) {
 
-  size_t i = get_global_id(2);
+  size_t i = get_global_id(0);
 
-  if (i < M) {
-    matrix_multiplication_updated(a + i * K * N, b + i * N * L, c + i * K * L,
+  size_t global_size = 1;
+  if (i < shape_size) {
+    global_size *= shape[i];
+  }
+
+  size_t local_size_a = global_size / (K * N);
+  size_t local_size_b = global_size / (N * L);
+  // local_size_a = local_size_b (should be equal)
+
+  for (size_t j = 0; j < local_size_a; j++) {
+    matrix_multiplication_updated(a + j * K * N, b + j * N * L, c + j * K * L,
                                   K, N, L);
   }
 }
