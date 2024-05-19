@@ -233,7 +233,20 @@ TEST_F(OperationTests, matrix_multiplicationWrongSize2) {
     FAIL() << "Expected std::runtime_error";
   }
 }
-TEST_F(OperationTests, matrix_multiplication3DPositiveTest) {
+TEST_F(OperationTests, matrix_multiplication_3DPositiveTest) {
+  // TODO
+}
+
+TEST_F(OperationTests, reduce_sum_3DPositiveTest) {
+  //TODO
+}
+
+TEST_F(OperationTests, reduce_sum_2DPositiveTest) {
+  //TODO
+}
+
+TEST_F(OperationTests, cross_entropy_2DPositiveTest) {
+  //TODO
 }
 
 TEST_F(OperationTests, matrix_multiplicationWrongShape) {

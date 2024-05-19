@@ -120,4 +120,16 @@ public:
              const std::string &resultName) const override;
 };
 
+class CrossEntropy : public Function {
+  friend void init();
+
+public:
+  CrossEntropy() = default;
+  Tensor compute(const std::vector<Tensor> &inputs) const override;
+  std::vector<AbstractInstruction *>  
+  derivative(const std::vector<std::string> &inputs, size_t inputIndex,
+             const std::string &grad,
+             const std::string &resultName) const override;
+};
+
 } // namespace NSTTF

@@ -31,6 +31,8 @@ std::unordered_map<std::string, std::shared_ptr<Function>> initFunctions() {
       {"matrix_multiplication", std::make_shared<MatrixMultiplication>()});
 
   functions_.insert({"matrix_transpose", std::make_shared<MatrixTranspose>()});
+  functions_.insert({"multiply", std::make_shared<ReduceSum>()});
+  functions_.insert({"reduce_sum", std::make_shared<CrossEntropy>()});
   return functions_;
 }
 
@@ -82,6 +84,15 @@ void init() {
   ocl::Kernel _reduce_sum_3D =
       prepareKernel("src/cl/reduce_sum.cl", "reduce_sum_3D");
   kernels.insert({"reduce_sum_3D", _reduce_sum_3D});
+
+  ocl::Kernel _cross_entropy_2D =
+      prepareKernel("src/cl/cross_entropy.cl", "cross_entropy_loss_2D");
+  kernels.insert({"cross_entropy", _cross_entropy_2D});
+
+  // ocl::Kernel _cross_entropy_3D =
+  //     prepareKernel("src/cl/cross_entropy.cl", "cross_entropy_loss_3D");
+  // kernels.insert({"cross_entropy", _cross_entropy_3D});
+  //TODO if needed
 }
 
 std::vector<char> clToCharVector(const std::string &clFilename) {
@@ -418,5 +429,40 @@ ReduceSum::derivative(const std::vector<std::string> &inputs, size_t inputIndex,
                       const std::string &resultName) const {
   throw std::runtime_error("Not implemented yet");
   // If needed
+}
+
+
+Tensor CrossEntropy::compute(const std::vector<Tensor> &inputs) const {
+  bool call3D = false, call2D = false;
+
+  checkNumOfTensors(inputs, 2);
+  Tensor arg1 = inputs[0];
+  Tensor arg2 = inputs[1];
+
+  auto arg1Shape = arg1.getShape();
+  auto arg2Shape = arg2.getShape();
+  if (arg1Shape != arg2Shape) {
+    throw std::runtime_error("Different shape");
+  }
+  Tensor res(arg1Shape);
+
+  if (arg1Shape.size() == 2) {
+    call2D = true;
+  } else if (arg1Shape.size() == 3) {
+    call3D = true;
+  }
+  unsigned int n = arg1.getSize();
+  unsigned int global_work_size =
+      (n + workGroupSize_ - 1) / workGroupSize_ * workGroupSize_;
+  // if (call3D)
+  //   kernels.at("cross_entropy_loss_3D")
+  //       .exec(gpu::WorkSize(workGroupSize_, global_work_size),
+  //             arg1.getGPUBuffer(), res.getGPUBuffer(), n);
+  // TODO adapt to batch
+  if (call2D)
+    kernels.at("cross_entropy_loss_2D")
+        .exec(gpu::WorkSize(workGroupSize_, global_work_size),
+              arg1.getGPUBuffer(), res.getGPUBuffer(), n);
+  return res;
 }
 } // namespace NSTTF
