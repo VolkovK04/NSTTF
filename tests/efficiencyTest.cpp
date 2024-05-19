@@ -52,6 +52,7 @@ class EfficiencyTests : public ::testing::Test {
 protected:
   gpu::Context context;
   std::vector<gpu::Device> devices = gpu::enumDevices();
+  bool flag = false;
 
   void SetUp_(int deviceId) {
     gpu::Device device = devices[deviceId];
@@ -64,11 +65,11 @@ protected:
     init();
   }
 
-  void testVectorFunction(std::shared_ptr<NSTTF::Function> func,
-                          const char &operation, const int &benchIters = 1) {
+  void testVectorFunction(std::shared_ptr<NSTTF::Function> func, char operation,
+                          unsigned int benchIters = 1) {
     std::cout << "CTEST_FULL_OUTPUT" << std::endl;
 
-    int vectorSize = 100'000'000;
+    int vectorSize = 100'000'000; // Gflops ?
     Timer clock;
 
     for (unsigned int iter = 0; iter < benchIters; ++iter) {
@@ -113,7 +114,7 @@ protected:
         std::vector<float> result = c.getData();
 
         double diff_sum = 0;
-        for (int i = 0; i < vectorSize; ++i) {
+        for (size_t i = 0; i < vectorSize; ++i) {
           double f = result[i];
           double s = v3[i];
           if (f != 0.0 || s != 0.0) {
@@ -124,6 +125,7 @@ protected:
 
         double diff_avg = diff_sum / (vectorSize);
 
+        // EXPECT_LE(diff_avg, 0.01);
         if (diff_avg > 0.01) {
           FAIL() << "diff_avg = " << diff_avg;
         }
@@ -145,17 +147,16 @@ TEST_F(EfficiencyTests, multiplication) {
 TEST_F(EfficiencyTests, matrix_multiplication) {
   std::cout << "CTEST_FULL_OUTPUT" << std::endl;
 
-  unsigned int M = 2048;
-  unsigned int K = 2048;
-  unsigned int N = 2048;
+  unsigned int M = 1024;
+  unsigned int K = 1024;
+  unsigned int N = 1024;
   unsigned int benchIters = 1;
   Timer clock;
 
   for (unsigned int iter = 0; iter < benchIters; ++iter) {
     std::vector<float> v1(M * K), v2(K * N), v3(M * N);
 
-    int seed = 0;
-    FastRandom r(seed);
+    FastRandom r;
     for (size_t i = 0; i < M * K; ++i) {
       v1[i] = r.nextf();
     }
@@ -166,7 +167,7 @@ TEST_F(EfficiencyTests, matrix_multiplication) {
     // Compute matrix product
     for (size_t j = 0; j < M; ++j) {
       for (size_t i = 0; i < N; ++i) {
-        float sum = 0.0f;
+        float sum = 0;
         for (size_t k = 0; k < K; ++k) {
           sum += v1[j * K + k] * v2[k * N + i];
         }

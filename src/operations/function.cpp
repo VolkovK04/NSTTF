@@ -280,7 +280,7 @@ Tensor MatrixMultiplication::compute(const std::vector<Tensor> &inputs) const {
 
   Tensor res(newShape);
 
-  unsigned int L = newShape.size() / arg1Col / arg2Rows;
+  unsigned int L = res.getSize() / arg1Col / arg2Rows;
   unsigned int M = arg1Col;
   unsigned int K = arg2Col;
   unsigned int N = arg2Rows;

@@ -24,7 +24,7 @@ void Instruction::printInfo(std::ostream &stream) const {
 }
 
 void ConstInstruction::printInfo(std::ostream &stream) const {
-  stream << outputNodeName << " = " << tensor;
+  stream << outputNodeName << " = " << tensor << std::endl;
 }
 
 } // namespace NSTTF

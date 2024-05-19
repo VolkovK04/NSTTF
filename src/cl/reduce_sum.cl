@@ -1,4 +1,4 @@
-#define TILE_SIZE 128
+#define TILE_SIZE 32
 
 __kernel void reduce_sum(__global const float *a, __global float *c,
                          const unsigned int axis, __global const size_t *shape,
@@ -14,7 +14,7 @@ __kernel void reduce_sum(__global const float *a, __global float *c,
 
   float sum = 0.0f;
 
-  for (size_t j = 0; j < local_size; j++) {
+  for (size_t j = 0; j < local_size; ++j) {
     sum += a[j * local_size + i];
   }
 }
