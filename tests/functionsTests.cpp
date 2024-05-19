@@ -204,6 +204,8 @@ TEST_F(OperationTests, multiplicationPositiveTest) {
   EXPECT_EQ(v[2], 24);
 }
 
+
+
 TEST_F(OperationTests, matrix_multiplicationWrongSize1) {
   Tensor a({2, 3}, {1, 2});
   Tensor b({2, 3, 4}, {1, 3});
@@ -230,6 +232,8 @@ TEST_F(OperationTests, matrix_multiplicationWrongSize2) {
   } catch (...) {
     FAIL() << "Expected std::runtime_error";
   }
+}
+TEST_F(OperationTests, matrix_multiplication3DPositiveTest) {
 }
 
 TEST_F(OperationTests, matrix_multiplicationWrongShape) {

@@ -58,13 +58,17 @@ matrix_multiplication_updated(__global const float *a, __global const float *b,
 }
 
 // (M, K, N) x (M, N, L) -> (M, K, L)
-__kernel void
-matrix_multiplication_3D(__global const float *a, __global const float *b,
-                         __global float *c, const unsigned int M,
-                         const unsigned int K, const unsigned int N,
-                         const unsigned int L) {
+__kernel void matrix_multiplication_3D(__global const float *a,
+                                       __global const float *b,
+                                       __global float *c, const unsigned int M,
+                                       const unsigned int K,
+                                       const unsigned int N,
+                                       const unsigned int L) {
 
-  size_t i = get_global_id(0);
-  matrix_multiplication_updated(a + i * K * N, b + i * N * L, c + i * K * L, K,
-                                N, L);
+  size_t i = get_global_id(2);
+
+  if (i < M) {
+    matrix_multiplication_updated(a + i * K * N, b + i * N * L, c + i * K * L,
+                                  K, N, L);
+  }
 }
