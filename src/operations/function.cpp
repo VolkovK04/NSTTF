@@ -398,36 +398,4 @@ ReduceSum::derivative(const std::vector<std::string> &inputs, size_t inputIndex,
   // If needed
 }
 
-Tensor CrossEntropy::compute(const std::vector<Tensor> &inputs) const {
-
-  checkNumOfTensors(inputs, 2);
-  Tensor arg1 = inputs[0];
-  Tensor arg2 = inputs[1];
-
-  auto arg1Shape = arg1.getShape();
-  auto arg2Shape = arg2.getShape();
-  if (arg1Shape != arg2Shape) {
-    throw std::runtime_error("Different shape");
-  }
-  Tensor res(arg1Shape);
-
-  unsigned int n = arg1.getSize();
-  unsigned int global_work_size =
-      (n + workGroupSize_ - 1) / workGroupSize_ * workGroupSize_;
-  // if (call3D)
-  //   kernels.at("cross_entropy_loss_3D")
-  //       .exec(gpu::WorkSize(workGroupSize_, global_work_size),
-  //             arg1.getGPUBuffer(), res.getGPUBuffer(), n);
-  // TODO adapt to batch
-  kernels.at("cross_entropy_loss_2D")
-      .exec(gpu::WorkSize(workGroupSize_, global_work_size),
-            arg1.getGPUBuffer(), res.getGPUBuffer(), n);
-  return res;
-}
-std::vector<AbstractInstruction *>
-CrossEntropy::derivative(const std::vector<std::string> &inputs,
-                         size_t inputIndex, const std::string &grad,
-                         const std::string &resultName) const {
-  throw std::runtime_error("Not implemented yet");
-}
 } // namespace NSTTF
