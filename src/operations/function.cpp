@@ -32,8 +32,6 @@ std::unordered_map<std::string, std::shared_ptr<Function>> initFunctions() {
       {"matrix_multiplication", std::make_shared<MatrixMultiplication>()});
 
   functions_.insert({"matrix_transpose", std::make_shared<MatrixTranspose>()});
-  functions_.insert({"multiply", std::make_shared<ReduceSum>()});
-  functions_.insert({"cross_entropy_loss", std::make_shared<CrossEntropy>()});
   return functions_;
 }
 
@@ -73,13 +71,6 @@ void init() {
   ocl::Kernel _matrix_transpose =
       prepareKernel("src/cl/matrix_transpose.cl", "matrix_transpose");
   kernels.insert({"matrix_transpose", _matrix_transpose});
-
-  ocl::Kernel _reduce_sum = prepareKernel("src/cl/reduce_sum.cl", "reduce_sum");
-  kernels.insert({"reduce_sum", _reduce_sum});
-
-  ocl::Kernel _cross_entropy =
-      prepareKernel("src/cl/cross_entropy.cl", "cross_entropy_loss");
-  kernels.insert({"cross_entropy", _cross_entropy});
 }
 
 std::vector<char> clToCharVector(const std::string &clFilename) {
