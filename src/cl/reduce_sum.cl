@@ -43,6 +43,7 @@ __kernel void reduce_sum_1D(__global const float *in,
 
     size_t group_i = get_group_id(0);
     if (group_i < i) {
+// TODO make it atomic or do correctly
       partial_sums[group_i] += partial_sums[group_i + TILE_SIZE * i];
     }
   }
