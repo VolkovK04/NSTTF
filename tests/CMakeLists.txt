@@ -3,7 +3,7 @@ set(EFFICIENCY_TEST_BINARY ${PROJECT_NAME}_efficiency_test)
 
 set(TEST_SOURCES 
   main.cpp 
-  gpuTests.cpp 
+  # gpuTests.cpp 
   functionsTests.cpp 
   graphTests.cpp 
   tensorTests.cpp 

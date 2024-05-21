@@ -43,7 +43,6 @@ __kernel void reduce_sum_1D(__global const float *in,
 
     size_t group_i = get_group_id(0);
     if (group_i < i) {
-// TODO make it atomic or do correctly
       partial_sums[group_i] += partial_sums[group_i + TILE_SIZE * i];
     }
   }
@@ -51,7 +50,11 @@ __kernel void reduce_sum_1D(__global const float *in,
   out[0] = partial_sums[0];
 }
 
+
+
 // assume we are reducing only along the first dimension
+
+// shape (M, N ,K), where axis_shape_size = M, resulted_shape_size = N * K
 __kernel void reduce_sum_2D(__global const float *in, __global float *out,
                             unsigned int axis_shape_size,
                             unsigned int resulted_shape_size) {

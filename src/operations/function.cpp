@@ -32,6 +32,7 @@ std::unordered_map<std::string, std::shared_ptr<Function>> initFunctions() {
       {"matrix_multiplication", std::make_shared<MatrixMultiplication>()});
 
   functions_.insert({"matrix_transpose", std::make_shared<MatrixTranspose>()});
+  functions_.insert({"reduce_sum", std::make_shared<ReduceSum>()});
   return functions_;
 }
 
@@ -71,6 +72,14 @@ void init() {
   ocl::Kernel _matrix_transpose =
       prepareKernel("src/cl/matrix_transpose.cl", "matrix_transpose");
   kernels.insert({"matrix_transpose", _matrix_transpose});
+
+  ocl::Kernel _reduce_sum_1D =
+      prepareKernel("src/cl/reduce_sum.cl", "reduce_sum_1D");
+  kernels.insert({"reduce_sum_1D", _reduce_sum_1D});
+
+  ocl::Kernel _reduce_sum_2D =
+      prepareKernel("src/cl/reduce_sum.cl", "reduce_sum_2D");
+  kernels.insert({"reduce_sum_2D", _reduce_sum_2D});
 }
 
 std::vector<char> clToCharVector(const std::string &clFilename) {
@@ -356,29 +365,45 @@ MatrixTranspose::derivative(const std::vector<std::string> &inputs,
   return res;
 }
 Tensor ReduceSum::compute(const std::vector<Tensor> &inputs) const {
+  bool use1D = false;
 
   checkNumOfTensors(inputs, 1);
   Tensor arg1 = inputs[0];
 
   std::vector<size_t> argShape = arg1.getShape();
-  std::vector<float> shapePtr;
-  shapePtr.resize(argShape.size());
-  std::transform(argShape.begin(), argShape.end(), shapePtr.begin(),
-                 [](size_t x) { return static_cast<float>(x); });
 
-  Tensor res(argShape);
+  if (argShape.size() == 1) {
+    use1D = true;
+  }
 
-  RAMPointer shapeRam(shapePtr);
+  std::vector<size_t> resShape(argShape.begin() + 1, argShape.end());
+  Tensor res(resShape);
 
-  unsigned int n = argShape.size();
-  unsigned int global_work_size =
-      (n + workGroupSize_ - 1) / workGroupSize_ * workGroupSize_;
-  kernels.at("reduce_sum")
-      .exec(gpu::WorkSize(workGroupSize_, global_work_size),
-            arg1.getGPUBuffer(), res.getGPUBuffer(), 0, shapeRam.toGPUBuffer(),
-            n);
-  // 0 is axis among which elements are summed
-  // TODO make this configurable if needed
+  if (use1D) {
+    unsigned int N = argShape[0];
+    gpu::gpu_mem_32f partial_sums;
+    partial_sums.resizeN(N);
+
+    unsigned int work_group_size = 32;
+    unsigned int work_size =
+        (N + work_group_size - 1) / work_group_size * work_group_size;
+    kernels.at("reduce_sum_1D")
+        .exec(gpu::WorkSize(work_group_size, work_size), arg1.getGPUBuffer(),
+              partial_sums, res.getGPUBuffer(), N);
+  } else {
+    size_t shapeSize = arg1.getSize();
+
+    unsigned int axis_shape_size = argShape[0];
+    unsigned int resulted_shape_size = shapeSize / axis_shape_size;
+
+    unsigned int work_group_size = 32;
+    unsigned int work_size =
+        (shapeSize + work_group_size - 1) / work_group_size * work_group_size;
+
+    kernels.at("reduce_sum_2D")
+        .exec(gpu::WorkSize(work_group_size, work_size), arg1.getGPUBuffer(),
+              res.getGPUBuffer(), axis_shape_size, resulted_shape_size);
+  }
   return res;
 }
 std::vector<AbstractInstruction *>

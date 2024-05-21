@@ -247,16 +247,26 @@ TEST_F(OperationTests, matrix_multiplication_3DPositiveTest) {
   EXPECT_EQ(c.getData(), expected);
 }
 
-TEST_F(OperationTests, reduce_sum_3DPositiveTest) {
-  // TODO
+TEST_F(OperationTests, reduce_sum_1DPositiveTest) {
+  Tensor a({1, 2, 3, 4,  5,  6,  7, 8, 9, 10, 11, 12, 1, 2, 3, 4,  5,  6,
+            7, 8, 9, 10, 11, 12, 1, 2, 3, 4,  5,  6,  7, 8, 9, 10, 11, 12},
+           {36, 1});
+  Tensor expected({78 * 3}, {1});
+
+  Tensor result = functions.at("reduce_sum")->compute({a});
+
+  ASSERT_EQ(result.getShape(), expected.getShape());
+  ASSERT_EQ(result.getData(), expected.getData());
 }
 
 TEST_F(OperationTests, reduce_sum_2DPositiveTest) {
-  // TODO
-}
+  Tensor a({1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}, {4, 3, 1});
+  Tensor expected({1 + 4 + 7 + 10, 2 + 5 + 8 + 11, 3 + 6 + 9 + 12}, {3, 1});
 
-TEST_F(OperationTests, cross_entropy_2DPositiveTest) {
-  // TODO
+  Tensor result = functions.at("reduce_sum")->compute({a});
+
+  ASSERT_EQ(result.getShape(), expected.getShape());
+  ASSERT_EQ(result.getData(), expected.getData());
 }
 
 TEST_F(OperationTests, matrix_multiplicationWrongShape) {
