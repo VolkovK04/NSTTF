@@ -38,12 +38,12 @@ __kernel void reduce_sum_1D(__global const float *in,
   barrier(CLK_LOCAL_MEM_FENCE);
 
   // TODO get_global_size(0) / TILE_SIZE can be odd
-  for (int i = get_global_size(0) / TILE_SIZE; i > 0; i /= 2) {
+  for (int i = get_global_size(0) / TILE_SIZE * 2; i > 0; i /= 2) {
     barrier(CLK_LOCAL_MEM_FENCE);
 
     size_t group_i = get_group_id(0);
     if (group_i < i) {
-      partial_sums[group_i] += partial_sums[group_i + TILE_SIZE];
+      partial_sums[group_i] += partial_sums[group_i + TILE_SIZE * i];
     }
   }
 
