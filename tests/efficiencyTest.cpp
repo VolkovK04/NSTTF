@@ -16,6 +16,86 @@
 
 using namespace NSTTF;
 
+#include <numeric>
+
+TEST(ReduceSumTest, LargeNumberOfElements1D) {
+  gpu::Context context;
+  std::vector<gpu::Device> devices = gpu::enumDevices();
+
+  gpu::Device device = devices[devices.size() - 1];
+
+  context.init(device.device_id_opencl);
+  context.activate();
+
+  init();
+
+  const size_t numElements = 1000000;
+  float resSum = numElements;
+
+  const float initValue = 1.0f;
+  std::vector<float> v(numElements, initValue);
+  Tensor expected({resSum}, {1});
+
+  Tensor a(v, {numElements});
+  Tensor res = functions.at("reduce_sum")->compute({a});
+  std::vector<float> result = res.getData();
+
+  EXPECT_EQ(res.getShape(), expected.getShape());
+
+  EXPECT_EQ(result[0], resSum);
+}
+
+TEST(ReduceSumTest, LargeNumberOfElements2D) {
+  gpu::Context context;
+  std::vector<gpu::Device> devices = gpu::enumDevices();
+
+  gpu::Device device = devices[devices.size() - 1];
+
+  context.init(device.device_id_opencl);
+  context.activate();
+
+  init();
+
+  const size_t numElements = 1000000;
+
+  const float initValue = 1.0f;
+  std::vector<float> v(numElements, initValue);
+
+  // very awful, but understandable
+  auto vec3D = std::vector<std::vector<std::vector<float>>>(
+      5, std::vector<std::vector<float>>(200, std::vector<float>(1000, 1.0f)));
+  auto vec2D =
+      std::vector<std::vector<float>>(200, std::vector<float>(1000, 0.0f));
+  std::vector<float> resV;
+  float sum = 0.0f;
+
+  // reduce_sum through z axis
+  for (int k = 0; k < 1000; k++) {
+    for (int j = 0; j < 200; j++) {
+      for (int i = 0; i < 5; i++) {
+        sum += vec3D[i][j][k];
+      }
+      vec2D[j][k] = sum;
+      sum = 0.0f;
+    }
+  }
+
+  // flatten 2D vector
+  for (auto subvector : vec2D) {
+    resV.insert(resV.end(), subvector.begin(), subvector.end());
+  }
+
+  Tensor expected(resV, {200, 1000});
+
+  Tensor a(v, {5, 200, 1000});
+  Tensor res = functions.at("reduce_sum")->compute({a});
+  std::vector<float> result = res.getData();
+
+  EXPECT_EQ(res.getShape(), expected.getShape());
+
+  EXPECT_EQ(result, resV);
+}
+
 // 0 - from CPU
 // 1 - from GPU
 const int firstDevice = 1;
