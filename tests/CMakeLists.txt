@@ -10,6 +10,7 @@ set(TEST_SOURCES
   executorTest.cpp
   functionalTests.cpp
   derivativeTests.cpp
+  dataLoaderTest.cpp
 )
 
 set(EFFICIENCY_TEST_SOURCES

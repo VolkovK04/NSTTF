@@ -23,6 +23,7 @@ set(INTERNAL_LIBRARIES
         tensor
         compiler
         neuralNetwork
+        dataLoader
         CACHE INTERNAL "list of internal libraries")
 
 include_directories(src, libs)
