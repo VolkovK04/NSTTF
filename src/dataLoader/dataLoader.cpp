@@ -19,7 +19,6 @@ TensorMap MNIST_DataLoader::operator[](size_t index) const {
 
   size_t shape = 28;
   std::vector<float> data_vector(shape * shape);
-  std::cout << data_vector.size() << std::endl;
   for (size_t i = 0; i < shape * shape; ++i) {
     data_vector.at(i) =
         ((float)dataset->images.at(shape * shape * index + i) / 255.0);
@@ -29,7 +28,7 @@ TensorMap MNIST_DataLoader::operator[](size_t index) const {
 
   std::vector<float> lable_vector(10);
   for (size_t i = 0; i < 10; ++i) {
-    if (i == dataset->labels.at(i)) {
+    if (i == (int)dataset->labels.at(index)) {
       lable_vector.at(i) = 1.0;
       break;
     }

@@ -4,7 +4,6 @@
 #include <libgpu/context.h>
 #include <libgpu/shared_device_buffer.h>
 #include <string>
-#include <tensor/tensor.h>
 #include <unordered_map>
 #include <vector>
 
