@@ -3,6 +3,7 @@
 #include <filesystem>
 #include <fstream>
 #include <limits>
+#include <numeric>
 
 namespace NSTTF {
 
@@ -371,25 +372,37 @@ Tensor ReduceSum::compute(const std::vector<Tensor> &inputs) const {
   Tensor arg1 = inputs[0];
 
   std::vector<size_t> argShape = arg1.getShape();
+  std::vector<size_t> resShape;
+  Tensor res;
 
   if (argShape.size() == 1) {
     use1D = true;
+    resShape = {1};
+  } else {
+    resShape = std::vector<size_t>(argShape.begin() + 1, argShape.end());
+    res = Tensor(resShape);
   }
-
-  std::vector<size_t> resShape(argShape.begin() + 1, argShape.end());
-  Tensor res(resShape);
 
   if (use1D) {
     unsigned int N = argShape[0];
-    gpu::gpu_mem_32f partial_sums;
-    partial_sums.resizeN(N);
-
+    gpu::gpu_mem_32f partialSums;
     unsigned int work_group_size = 32;
+    unsigned int partialSumsSize = (N % work_group_size == 0)
+                                       ? (N / work_group_size)
+                                       : (N / work_group_size + 1);
+    partialSums.resizeN(partialSumsSize);
+
     unsigned int work_size =
         (N + work_group_size - 1) / work_group_size * work_group_size;
     kernels.at("reduce_sum_1D")
         .exec(gpu::WorkSize(work_group_size, work_size), arg1.getGPUBuffer(),
-              partial_sums, res.getGPUBuffer(), N);
+              partialSums, N);
+
+    std::vector<float> sums(partialSumsSize);
+    partialSums.readN(sums.data(), partialSumsSize);
+    float resSum = std::accumulate(sums.begin(), sums.end(), 0.0f);
+
+    res = Tensor({resSum}, {1});
   } else {
     size_t shapeSize = arg1.getSize();
 

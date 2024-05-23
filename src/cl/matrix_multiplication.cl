@@ -58,11 +58,12 @@ matrix_multiplication_updated(__global const float *a, __global const float *b,
 }
 
 // (..., M, K) x (..., K, N) -> (..., M, N)
-// prod(...) = L 
-__kernel void matrix_multiplication_full(
-    __global const float *a, __global const float *b, __global float *c,
-    const unsigned int L, const unsigned int M, 
-    const unsigned int K, const unsigned int N) {
+// prod(...) = L
+__kernel void
+matrix_multiplication_full(__global const float *a, __global const float *b,
+                           __global float *c, const unsigned int L,
+                           const unsigned int M, const unsigned int K,
+                           const unsigned int N) {
 
   size_t i = get_global_id(2);
 

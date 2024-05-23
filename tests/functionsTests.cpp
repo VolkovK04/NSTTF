@@ -250,8 +250,8 @@ TEST_F(OperationTests, matrix_multiplication_3DPositiveTest) {
 TEST_F(OperationTests, reduce_sum_1DPositiveTest) {
   Tensor a({1, 2, 3, 4,  5,  6,  7, 8, 9, 10, 11, 12, 1, 2, 3, 4,  5,  6,
             7, 8, 9, 10, 11, 12, 1, 2, 3, 4,  5,  6,  7, 8, 9, 10, 11, 12},
-           {36, 1});
-  Tensor expected({78 * 3}, {1});
+           {36});
+  Tensor expected({234}, {1});
 
   Tensor result = functions.at("reduce_sum")->compute({a});
 

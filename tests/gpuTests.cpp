@@ -308,7 +308,7 @@ TEST_F(GPUTests, matrix_transposition_test) {
   as_gpu.writeN(as.data(), M * K);
 
   unsigned int x_work_group_size = 16;
-  unsigned int y_work_group_size = 16; // не ставить другое значение
+  unsigned int y_work_group_size = 16;
   unsigned int x_work_size =
       (M + x_work_group_size - 1) / x_work_group_size * x_work_group_size;
   unsigned int y_work_size =
