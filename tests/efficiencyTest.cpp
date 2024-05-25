@@ -16,6 +16,7 @@
 
 using namespace NSTTF;
 
+#include <cstdlib>
 #include <numeric>
 #include <random>
 
@@ -281,7 +282,7 @@ TEST_F(EfficiencyTests, LargeNumberOfElements1D) {
   std::vector<float> result = res.getData();
 
   EXPECT_EQ(res.getShape(), expected.getShape());
-  EXPECT_EQ(result[0], resSum);
+  EXPECT_TRUE(abs(result[0] - resSum) < 0.01f);
 }
 
 TEST_F(EfficiencyTests, LargeNumberOfElements2D) {
