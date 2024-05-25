@@ -404,10 +404,14 @@ Tensor ReduceSum::compute(const std::vector<Tensor> &inputs) const {
 
     res = Tensor({resSum}, {1});
   } else {
+
     size_t shapeSize = arg1.getSize();
 
     unsigned int axis_shape_size = argShape[0];
     unsigned int resulted_shape_size = shapeSize / axis_shape_size;
+
+    gpu::gpu_mem_32f out;
+    out.resizeN(resulted_shape_size);
 
     unsigned int work_group_size = 32;
     unsigned int work_size =
@@ -415,7 +419,11 @@ Tensor ReduceSum::compute(const std::vector<Tensor> &inputs) const {
 
     kernels.at("reduce_sum_2D")
         .exec(gpu::WorkSize(work_group_size, work_size), arg1.getGPUBuffer(),
-              res.getGPUBuffer(), axis_shape_size, resulted_shape_size);
+              out, axis_shape_size, resulted_shape_size);
+
+    std::vector<float> resVec(resulted_shape_size);
+    out.readN(resVec.data(), resulted_shape_size);
+    res = Tensor(resVec, resShape);
   }
   return res;
 }

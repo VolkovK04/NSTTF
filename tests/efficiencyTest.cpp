@@ -17,84 +17,7 @@
 using namespace NSTTF;
 
 #include <numeric>
-
-TEST(ReduceSumTest, LargeNumberOfElements1D) {
-  gpu::Context context;
-  std::vector<gpu::Device> devices = gpu::enumDevices();
-
-  gpu::Device device = devices[devices.size() - 1];
-
-  context.init(device.device_id_opencl);
-  context.activate();
-
-  init();
-
-  const size_t numElements = 1000000;
-  float resSum = numElements;
-
-  const float initValue = 1.0f;
-  std::vector<float> v(numElements, initValue);
-  Tensor expected({resSum}, {1});
-
-  Tensor a(v, {numElements});
-  Tensor res = functions.at("reduce_sum")->compute({a});
-  std::vector<float> result = res.getData();
-
-  EXPECT_EQ(res.getShape(), expected.getShape());
-
-  EXPECT_EQ(result[0], resSum);
-}
-
-TEST(ReduceSumTest, LargeNumberOfElements2D) {
-  gpu::Context context;
-  std::vector<gpu::Device> devices = gpu::enumDevices();
-
-  gpu::Device device = devices[devices.size() - 1];
-
-  context.init(device.device_id_opencl);
-  context.activate();
-
-  init();
-
-  const size_t numElements = 1000000;
-
-  const float initValue = 1.0f;
-  std::vector<float> v(numElements, initValue);
-
-  // very awful, but understandable
-  auto vec3D = std::vector<std::vector<std::vector<float>>>(
-      5, std::vector<std::vector<float>>(200, std::vector<float>(1000, 1.0f)));
-  auto vec2D =
-      std::vector<std::vector<float>>(200, std::vector<float>(1000, 0.0f));
-  std::vector<float> resV;
-  float sum = 0.0f;
-
-  // reduce_sum through z axis
-  for (int k = 0; k < 1000; k++) {
-    for (int j = 0; j < 200; j++) {
-      for (int i = 0; i < 5; i++) {
-        sum += vec3D[i][j][k];
-      }
-      vec2D[j][k] = sum;
-      sum = 0.0f;
-    }
-  }
-
-  // flatten 2D vector
-  for (auto subvector : vec2D) {
-    resV.insert(resV.end(), subvector.begin(), subvector.end());
-  }
-
-  Tensor expected(resV, {200, 1000});
-
-  Tensor a(v, {5, 200, 1000});
-  Tensor res = functions.at("reduce_sum")->compute({a});
-  std::vector<float> result = res.getData();
-
-  EXPECT_EQ(res.getShape(), expected.getShape());
-
-  EXPECT_EQ(result, resV);
-}
+#include <random>
 
 // 0 - from CPU
 // 1 - from GPU
@@ -333,4 +256,78 @@ TEST_F(EfficiencyTests, matrix_transpose) {
       }
     }
   }
+}
+
+TEST_F(EfficiencyTests, LargeNumberOfElements1D) {
+  SetUp_(devices.size() - 1);
+  float minValue = 0.0f;
+  float maxValue = 1.0f;
+
+  std::random_device rd;
+  std::mt19937 eng(rd());
+  std::uniform_real_distribution<float> distr(minValue, maxValue);
+
+  auto gen = [&]() { return distr(eng); };
+
+  const size_t numElements = 100;
+  std::vector<float> v(numElements);
+  std::generate(v.begin(), v.end(), gen);
+  float resSum = std::accumulate(v.begin(), v.end(), 0.0f);
+
+  Tensor expected({resSum}, {1});
+
+  Tensor a(v, {numElements});
+  Tensor res = functions.at("reduce_sum")->compute({a});
+  std::vector<float> result = res.getData();
+
+  EXPECT_EQ(res.getShape(), expected.getShape());
+  EXPECT_EQ(result[0], resSum);
+}
+
+TEST_F(EfficiencyTests, LargeNumberOfElements2D) {
+  SetUp_(devices.size() - 1);
+  float minValue = 0.0f;
+  float maxValue = 1.0f;
+
+  size_t minSize = 10;
+  size_t maxSize = 100;
+
+  std::random_device rd;
+  std::mt19937 eng(rd());
+
+  std::uniform_real_distribution<float> distrFloat(minValue, maxValue);
+  std::uniform_int_distribution<size_t> distrSize(minSize, maxSize);
+
+  auto genFloat = [&]() { return distrFloat(eng); };
+  auto genSize = [&]() { return distrSize(eng); };
+
+  std::vector<size_t> shape(3);
+std:
+  generate(shape.begin(), shape.end(), genSize);
+  size_t size =
+      std::accumulate(shape.begin(), shape.end(), 1, std::multiplies<size_t>());
+
+  std::vector<float> v(size);
+  std::generate(v.begin(), v.end(), genFloat);
+
+  Tensor a(v, shape);
+  std::vector<size_t> resultedShape(shape.begin() + 1, shape.end());
+  size_t resultedSize = size / shape[0];
+  std::vector<float> expectedVector(resultedSize);
+
+  for (size_t i = 0; i < resultedSize; ++i) {
+    float sum = 0.0f;
+    for (size_t j = 0; j < shape[0]; ++j) {
+      sum += v[j * resultedSize + i];
+    }
+    expectedVector[i] = sum;
+  }
+
+  Tensor expectedTensor(expectedVector, resultedShape);
+  Tensor res = functions.at("reduce_sum")->compute({a});
+  std::vector<float> result = res.getData();
+
+  EXPECT_EQ(res.getShape(), expectedTensor.getShape());
+
+  EXPECT_EQ(result, expectedTensor.getData());
 }
