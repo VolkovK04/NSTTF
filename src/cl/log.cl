@@ -1,4 +1,4 @@
-__kernel void log(__global const float *a, __global float *result,
+__kernel void log_kernel(__global const float *a, __global float *result,
                   unsigned int n) {
   const unsigned int index = get_global_id(0);
 
