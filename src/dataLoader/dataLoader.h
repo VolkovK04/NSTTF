@@ -19,7 +19,6 @@ class DataLoader {
 public:
   virtual TensorMap operator[](size_t index) const = 0;
   virtual size_t size() const = 0;
-  // virtual ~DataLoader() = 0;
 };
 
 class MNIST_DataLoader : public DataLoader {
@@ -29,10 +28,12 @@ public:
   TensorMap operator[](size_t index) const override;
   size_t size() const override;
 
-  MNIST_dataset *dataset = new MNIST_dataset();
+  std::vector<uint8_t> get_images() { return dataset->images; }
+  std::vector<uint8_t> get_labels() { return dataset->labels; }
 
 private:
   size_t dataset_size;
+  MNIST_dataset *dataset = new MNIST_dataset();
 
   uint32_t read_header(const std::vector<char> &buffer, size_t position);
   std::vector<char> read_mnist_file(const std::string &name, uint32_t key);
