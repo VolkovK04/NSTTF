@@ -38,10 +38,10 @@ TEST_F(DataLoaderTest, baseSizeCheck) {
   MNIST_DataLoader train_data_loader("train");
   MNIST_DataLoader test_data_loader("test");
 
-  EXPECT_EQ(47040000, train_data_loader.dataset->images.size());
-  EXPECT_EQ(60000, train_data_loader.dataset->labels.size());
-  EXPECT_EQ(7840000, test_data_loader.dataset->images.size());
-  EXPECT_EQ(10000, test_data_loader.dataset->labels.size());
+  EXPECT_EQ(47040000, train_data_loader.get_images().size());
+  EXPECT_EQ(60000, train_data_loader.get_labels().size());
+  EXPECT_EQ(7840000, test_data_loader.get_images().size());
+  EXPECT_EQ(10000, test_data_loader.get_labels().size());
 }
 
 TEST_F(DataLoaderTest, operator) {
