@@ -2,7 +2,7 @@
 
 namespace NSTTF {
 
-RAMPointer::RAMPointer(std::vector<float> &pointer) : pointer(pointer) {};
+RAMPointer::RAMPointer(std::vector<float> &pointer) : pointer(pointer){};
 
 std::vector<float> RAMPointer::toVector() const { return pointer; }
 
