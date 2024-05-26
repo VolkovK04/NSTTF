@@ -1,31 +1,27 @@
 #define TILE_SIZE 32
 
-__kernel void reduce_sum_1D(__global const float *input,
-                            __global float *partialSums,
-                            const unsigned int numElements) {
+// bufferSize should be power of 2 (bufferSize = next_power_of_2(numElements))
+__kernel void reduce_sum_1D(__global const float *input, __global float *buffer,
+                            __global float *out, unsigned int numElements,
+                            unsigned int bufferSize) {
+  size_t global_i = get_global_id(0);
 
-  __local float sdata[TILE_SIZE];
-
-  // Each thread loads one element from global to shared memory
-  unsigned int tid = get_local_id(0);
-  unsigned int i = get_global_id(0);
-
-  // Load input into shared memory
-  sdata[tid] = (i < numElements) ? input[i] : 0;
+  buffer[global_i] = (global_i < numElements) ? input[global_i] : 0;
   barrier(CLK_LOCAL_MEM_FENCE);
 
-  // Do reduction in shared memory
-  for (unsigned int s = TILE_SIZE / 2; s > 0; s >>= 1) {
-    if (tid < s) {
-      sdata[tid] += sdata[tid + s];
+  // printf("buffer[%ld] = %f\n", global_i, buffer[global_i]);
+  for (unsigned int s = bufferSize / 2; s > 0; s >>= 1) {
+
+    if (global_i < s) {
+      buffer[global_i] += buffer[global_i + s];
     }
     barrier(CLK_LOCAL_MEM_FENCE);
   }
 
-  // Write result for this block to global memory
-  if (tid == 0) {
-    partialSums[get_group_id(0)] = sdata[0];
+  if (global_i == 0) {
+    out[0] = buffer[0];
   }
+  return;
 }
 
 __kernel void reduce_sum_2D(__global const float *in, __global float *out,
