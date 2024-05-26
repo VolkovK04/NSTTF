@@ -3,6 +3,7 @@ file(GLOB_RECURSE
      ${PROJECT_SOURCE_DIR}
      src/*.cpp
      src/*.h
+     src/*.cl
      tests/*.cpp
      tests/*.h
      )

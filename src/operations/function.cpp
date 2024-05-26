@@ -354,6 +354,7 @@ Tensor MatrixTranspose::compute(const std::vector<Tensor> &inputs) const {
             arg.getGPUBuffer(), res.getGPUBuffer(), M, K);
   return res;
 }
+
 std::vector<AbstractInstruction *>
 MatrixTranspose::derivative(const std::vector<std::string> &inputs,
                             size_t inputIndex, const std::string &grad,
@@ -365,31 +366,22 @@ MatrixTranspose::derivative(const std::vector<std::string> &inputs,
   res.push_back(new Instruction("matrix_transpose", {grad}, resultName));
   return res;
 }
-Tensor ReduceSum::compute(const std::vector<Tensor> &inputs) const {
-  bool use1D = false;
 
+Tensor ReduceSum::compute(const std::vector<Tensor> &inputs) const {
   checkNumOfTensors(inputs, 1);
   Tensor arg1 = inputs[0];
 
   std::vector<size_t> argShape = arg1.getShape();
-  std::vector<size_t> resShape;
-  Tensor res;
 
   if (argShape.size() == 1) {
-    use1D = true;
-    resShape = {1};
-  } else {
-    resShape = std::vector<size_t>(argShape.begin() + 1, argShape.end());
-    res = Tensor(resShape);
-  }
-
-  if (use1D) {
+    // use 1d
     unsigned int N = argShape[0];
-    gpu::gpu_mem_32f partialSums;
     unsigned int work_group_size = 32;
     unsigned int partialSumsSize = (N % work_group_size == 0)
                                        ? (N / work_group_size)
                                        : (N / work_group_size + 1);
+
+    gpu::gpu_mem_32f partialSums;
     partialSums.resizeN(partialSumsSize);
 
     unsigned int work_size =
@@ -398,41 +390,38 @@ Tensor ReduceSum::compute(const std::vector<Tensor> &inputs) const {
         .exec(gpu::WorkSize(work_group_size, work_size), arg1.getGPUBuffer(),
               partialSums, N);
 
-    std::vector<float> sums(partialSumsSize);
+    std::vector<float> sums(partialSumsSize); // FIXME
     partialSums.readN(sums.data(), partialSumsSize);
     float resSum = std::accumulate(sums.begin(), sums.end(), 0.0f);
 
-    res = Tensor({resSum}, {1});
+    return Tensor(resSum);
   } else {
+    std::vector<size_t> resShape =
+        std::vector<size_t>(argShape.begin() + 1, argShape.end());
 
     size_t shapeSize = arg1.getSize();
 
     unsigned int axis_shape_size = argShape[0];
     unsigned int resulted_shape_size = shapeSize / axis_shape_size;
 
-    gpu::gpu_mem_32f out;
-    out.resizeN(resulted_shape_size);
-
     unsigned int work_group_size = 32;
     unsigned int work_size =
         (shapeSize + work_group_size - 1) / work_group_size * work_group_size;
 
+    Tensor result(resShape);
     kernels.at("reduce_sum_2D")
         .exec(gpu::WorkSize(work_group_size, work_size), arg1.getGPUBuffer(),
-              out, axis_shape_size, resulted_shape_size);
+              result.getGPUBuffer(), axis_shape_size, resulted_shape_size);
 
-    std::vector<float> resVec(resulted_shape_size);
-    out.readN(resVec.data(), resulted_shape_size);
-    res = Tensor(resVec, resShape);
+    return result;
   }
-  return res;
 }
 std::vector<AbstractInstruction *>
 ReduceSum::derivative(const std::vector<std::string> &inputs, size_t inputIndex,
                       const std::string &grad,
                       const std::string &resultName) const {
   throw std::runtime_error("Not implemented yet");
-  // If needed
+  // TODO
 }
 
 } // namespace NSTTF

@@ -259,7 +259,7 @@ TEST_F(EfficiencyTests, matrix_transpose) {
   }
 }
 
-TEST_F(EfficiencyTests, LargeNumberOfElements1D) {
+TEST_F(EfficiencyTests, LargeNumberOfElements1D) { // FIXME
   SetUp_(devices.size() - 1);
   float minValue = 0.0f;
   float maxValue = 1.0f;
@@ -275,17 +275,17 @@ TEST_F(EfficiencyTests, LargeNumberOfElements1D) {
   std::generate(v.begin(), v.end(), gen);
   float resSum = std::accumulate(v.begin(), v.end(), 0.0f);
 
-  Tensor expected({resSum}, {1});
+  Tensor expected(resSum);
 
-  Tensor a(v, {numElements});
+  Tensor a(v);
   Tensor res = functions.at("reduce_sum")->compute({a});
   std::vector<float> result = res.getData();
 
   EXPECT_EQ(res.getShape(), expected.getShape());
-  EXPECT_TRUE(abs(result[0] - resSum) < 0.01f);
+  EXPECT_NEAR(result[0], resSum, 1e-2);
 }
 
-TEST_F(EfficiencyTests, LargeNumberOfElements2D) {
+TEST_F(EfficiencyTests, LargeNumberOfElements2D) { // FIXME
   SetUp_(devices.size() - 1);
   float minValue = 0.0f;
   float maxValue = 1.0f;

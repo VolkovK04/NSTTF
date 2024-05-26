@@ -1,5 +1,5 @@
 __kernel void division(__global const float *a, __global const float *b,
-                     __global float *c, unsigned int n) {
+                       __global float *c, unsigned int n) {
   const unsigned int index = get_global_id(0);
 
   if (index >= n)

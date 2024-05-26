@@ -33,10 +33,13 @@ __kernel void reduce_sum_2D(__global const float *in, __global float *out,
                             unsigned int resulted_shape_size) {
 
   size_t global_i = get_global_id(0);
-
-  for (int i = 0; i < axis_shape_size; i++) {
-    if (global_i < resulted_shape_size) {
-      out[global_i] += in[i * resulted_shape_size + global_i];
-    }
+  if (global_i >= resulted_shape_size) {
+    return;
   }
+
+  float sum = 0;
+  for (size_t i = 0; i < axis_shape_size; ++i) {
+    sum += in[i * resulted_shape_size + global_i];
+  }
+  out[global_i] = sum;
 }
