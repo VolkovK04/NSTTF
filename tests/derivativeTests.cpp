@@ -136,3 +136,33 @@ TEST_F(DerivativeTests, UltimateDerivativeTest) {
   EXPECT_EQ(actualDerivative.at("~grad_test4").getData(),
             std::vector<float>{-5.f}); // - T1 - T2
 }
+
+TEST_F(DerivativeTests, reduceSumDerivative) {
+  ComputationGraph g;
+  NodeInterface nodeInterface = g.AddInputNode("test1");
+  NodeInterface rs = NodeInterface::ReduceSum(nodeInterface);
+  rs.setName("loss");
+  rs.setOutput();
+
+  Compiler compiler;
+  GraphExecutorWG gewg = compiler.compileWithGrads(g);
+
+  std::vector<float> inputData{1.f, 2.f, 3.f, 4.f};
+  std::vector<size_t> shape{2, 2, 1};
+
+  Tensor input(inputData, shape);
+
+  TensorMap tensorsMap;
+  tensorsMap["test1"] = input;
+  TensorMap actualForward = gewg.execute(tensorsMap);
+  std::vector<float> res{4, 6};
+  EXPECT_EQ(actualForward.at("loss").getData(), res);
+
+  TensorMap actualDerivative = gewg.executeGrads();
+
+  std::vector<float> expected{
+      1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f,
+  };
+
+  EXPECT_EQ(actualDerivative["~grad_test1"].getData(), expected);
+}

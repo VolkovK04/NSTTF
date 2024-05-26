@@ -66,6 +66,11 @@ NodeInterface NodeInterface::MatrixTranspose(const NodeInterface &node) {
                                      false);
 }
 
+NodeInterface NodeInterface::ReduceSum(const NodeInterface &node) {
+  std::string name = createName();
+  return node.graph.AddOperationNode("reduce_sum", {node.node}, name, false);
+}
+
 void NodeInterface::checkSameGraph(NodeInterface i1, NodeInterface i2) {
   if (&i1.graph != &i2.graph) {
     throw std::runtime_error("Nodes defined in different graphs");

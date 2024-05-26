@@ -75,6 +75,41 @@ TensorMap GraphExecutorWG::executeGrads() {
       continue;
     }
 
+    ExtendInstruction *extendInstruction =
+        dynamic_cast<ExtendInstruction *>(abstractInstruction);
+
+    if (extendInstruction) {
+      //
+      Tensor reducedTensor = grads[extendInstruction->getReducedTensor()];
+      std::vector<size_t> shapeReducedTensor = reducedTensor.getShape();
+      Tensor grad = grads[extendInstruction->getInput()];
+      std::vector<float> gradData = grad.getData();
+
+      size_t vectorSize = shapeReducedTensor[0];
+      for (size_t shapeEl : shapeReducedTensor) {
+        vectorSize *= shapeEl;
+      };
+
+      std::vector<float> extendedData(vectorSize);
+
+      // TODO: need to do it smarter or with broadcast idk
+      size_t reduceShapeIdx = 0;
+      for (size_t i = 0; i < vectorSize; ++i) {
+        extendedData[i] = gradData[reduceShapeIdx++];
+        if (reduceShapeIdx == gradData.size()) {
+          reduceShapeIdx = 0;
+        }
+      }
+
+      std::string outputName = extendInstruction->getOutput();
+
+      shapeReducedTensor.insert(shapeReducedTensor.begin(),
+                                shapeReducedTensor[0]);
+
+      grads[outputName] = Tensor{extendedData, shapeReducedTensor};
+      continue;
+    }
+
     Instruction *instruction = dynamic_cast<Instruction *>(abstractInstruction);
     if (!instruction) {
       throw std::runtime_error("Unlucky ;("); // TODO

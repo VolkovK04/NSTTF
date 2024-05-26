@@ -61,4 +61,25 @@ public:
   ~ConstInstruction() = default;
 };
 
+class ExtendInstruction : public AbstractInstruction {
+protected:
+  std::string reducedTensor;
+  std::string inputNodeName;
+  std::string outputNodeName;
+
+public:
+  ExtendInstruction() = default;
+  ExtendInstruction(const std::string &name, const std::string &inputNodeName,
+                    const std::string &outputNodeName,
+                    const std::string &reducedTensor)
+      : AbstractInstruction(name), reducedTensor(reducedTensor),
+        inputNodeName(inputNodeName), outputNodeName(outputNodeName) {}
+
+  const std::string &getOutput() const { return outputNodeName; }
+  const std::string &getInput() const { return inputNodeName; }
+  const std::string &getReducedTensor() const { return reducedTensor; }
+  void printInfo(std::ostream &stream) const override;
+  ~ExtendInstruction() = default;
+};
+
 } // namespace NSTTF

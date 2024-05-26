@@ -27,4 +27,8 @@ void ConstInstruction::printInfo(std::ostream &stream) const {
   stream << outputNodeName << " = " << tensor << std::endl;
 }
 
+void ExtendInstruction::printInfo(std::ostream &stream) const {
+  stream << inputNodeName << "extends to " << outputNodeName << std::endl;
+}
+
 } // namespace NSTTF

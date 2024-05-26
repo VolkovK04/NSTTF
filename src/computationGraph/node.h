@@ -75,6 +75,8 @@ public:
   static NodeInterface MatrixMult(const NodeInterface &left,
                                   const NodeInterface &right);
   static NodeInterface MatrixTranspose(const NodeInterface &node);
+
+  static NodeInterface ReduceSum(const NodeInterface &node);
 };
 
 class ConstNode : public AbstractNode {

@@ -416,11 +416,17 @@ Tensor ReduceSum::compute(const std::vector<Tensor> &inputs) const {
     return result;
   }
 }
+
 std::vector<AbstractInstruction *>
 ReduceSum::derivative(const std::vector<std::string> &inputs, size_t inputIndex,
                       const std::string &grad,
                       const std::string &resultName) const {
-  throw std::runtime_error("Not implemented yet");
+  if (inputIndex != 0) {
+    throw std::out_of_range("input index out of range");
+  }
+  std::vector<AbstractInstruction *> res;
+  res.push_back(new ExtendInstruction("extend", grad, resultName, inputs[0]));
+  return res;
   // TODO
 }
 
