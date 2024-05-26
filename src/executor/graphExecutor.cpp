@@ -85,8 +85,13 @@ TensorMap GraphExecutorWG::executeGrads() {
       Tensor grad = grads[extendInstruction->getInput()];
       std::vector<float> gradData = grad.getData();
 
+      std::vector<size_t> gradShape = grad.getShape();
+
       size_t vectorSize = shapeReducedTensor[0];
-      for (size_t shapeEl : shapeReducedTensor) {
+      if (gradShape.size() == 1 && shapeReducedTensor.size() >= 2) {
+        vectorSize *= shapeReducedTensor[1];
+      }
+      for (size_t shapeEl : gradShape) {
         vectorSize *= shapeEl;
       };
 
@@ -103,8 +108,7 @@ TensorMap GraphExecutorWG::executeGrads() {
 
       std::string outputName = extendInstruction->getOutput();
 
-      shapeReducedTensor.insert(shapeReducedTensor.begin(),
-                                shapeReducedTensor[0]);
+      gradShape.insert(gradShape.begin(), shapeReducedTensor[0]);
 
       grads[outputName] = Tensor{extendedData, shapeReducedTensor};
       continue;

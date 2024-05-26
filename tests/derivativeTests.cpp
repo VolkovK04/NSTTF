@@ -137,7 +137,7 @@ TEST_F(DerivativeTests, UltimateDerivativeTest) {
             std::vector<float>{-5.f}); // - T1 - T2
 }
 
-TEST_F(DerivativeTests, reduceSumDerivative) {
+TEST_F(DerivativeTests, reduceSumDerivative1) {
   ComputationGraph g;
   NodeInterface nodeInterface = g.AddInputNode("test1");
   NodeInterface rs = NodeInterface::ReduceSum(nodeInterface);
@@ -147,10 +147,7 @@ TEST_F(DerivativeTests, reduceSumDerivative) {
   Compiler compiler;
   GraphExecutorWG gewg = compiler.compileWithGrads(g);
 
-  std::vector<float> inputData{1.f, 2.f, 3.f, 4.f};
-  std::vector<size_t> shape{2, 2, 1};
-
-  Tensor input(inputData, shape);
+  Tensor input({1.f, 2.f, 3.f, 4.f}, {2, 2, 1});
 
   TensorMap tensorsMap;
   tensorsMap["test1"] = input;
@@ -160,9 +157,37 @@ TEST_F(DerivativeTests, reduceSumDerivative) {
 
   TensorMap actualDerivative = gewg.executeGrads();
 
-  std::vector<float> expected{
-      1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f,
-  };
+  std::vector<float> dataExpected{1.f, 1.f, 1.f, 1.f};
+
+  std::vector<size_t> shapeExpected{2, 2, 1};
+
+  EXPECT_EQ(actualDerivative["~grad_test1"].getShape(), shapeExpected);
+  EXPECT_EQ(actualDerivative["~grad_test1"].getData(), dataExpected);
+}
+
+TEST_F(DerivativeTests, reduceSumDerivative2) {
+  ComputationGraph g;
+  NodeInterface nodeInterface1 = g.AddInputNode("test1");
+  NodeInterface nodeInterface2 = g.AddInputNode("test2");
+  NodeInterface rs = NodeInterface::ReduceSum(nodeInterface1);
+  NodeInterface loss = rs * nodeInterface2;
+  loss.setName("loss");
+  loss.setOutput();
+
+  Compiler compiler;
+  GraphExecutorWG gewg = compiler.compileWithGrads(g);
+
+  Tensor input1({1.f, 2.f}, {2, 1});
+  Tensor input2({5.f}, {1});
+
+  TensorMap tensorsMap{{"test1", input1}, {"test2", input2}};
+  TensorMap actualForward = gewg.execute(tensorsMap);
+  std::vector<float> res{15};
+  EXPECT_EQ(actualForward.at("loss").getData(), res);
+
+  TensorMap actualDerivative = gewg.executeGrads();
+
+  std::vector<float> expected{5.f, 5.f};
 
   EXPECT_EQ(actualDerivative["~grad_test1"].getData(), expected);
 }
