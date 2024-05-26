@@ -261,14 +261,18 @@ TEST_F(EfficiencyTests, matrix_transpose) {
 
 TEST_F(EfficiencyTests, LargeNumberOfElements1D) { // FIXME
   SetUp_(devices.size() - 1);
-  float minValue = 0.0f;
-  float maxValue = 1.0f;
+  float minValue = 1.0f;
+  float maxValue = 10.0f;
 
   std::random_device rd;
   std::mt19937 eng(rd());
-  std::uniform_real_distribution<float> distr(minValue, maxValue);
+  // std::uniform_real_distribution<float> distr(minValue, maxValue);
+  // fot better debugging (switch back when all is ok)
+  std::uniform_int_distribution<int> distr(static_cast<int>(minValue),
+                                           static_cast<int>(maxValue));
 
-  auto gen = [&]() { return distr(eng); };
+  // auto gen = [&]() { return distr(eng); };
+  auto gen = [&]() { return static_cast<float>(distr(eng)); };
 
   const size_t numElements = 100;
   std::vector<float> v(numElements);
