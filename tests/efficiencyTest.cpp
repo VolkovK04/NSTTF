@@ -259,7 +259,7 @@ TEST_F(EfficiencyTests, matrix_transpose) {
   }
 }
 
-//Strange things happens with this method. Avoid using reduce_sum_1D for now
+// Strange things happens with this method. Avoid using reduce_sum_1D for now
 TEST_F(EfficiencyTests, LargeNumberOfElements1D) {
   SetUp_(devices.size() - 1);
   float minValue = 0.0f;
