@@ -1,6 +1,5 @@
 #include "function.h"
 #include <algorithm>
-#include <cmath>
 #include <filesystem>
 #include <fstream>
 #include <limits>
@@ -368,13 +367,6 @@ MatrixTranspose::derivative(const std::vector<std::string> &inputs,
   return res;
 }
 
-size_t nextPowerOf2(size_t n) {
-  if (n == 0) {
-    return 1;
-  }
-  return std::pow(2, std::ceil(std::log2(n)));
-}
-
 Tensor ReduceSum::compute(const std::vector<Tensor> &inputs) const {
   checkNumOfTensors(inputs, 1);
   Tensor arg1 = inputs[0];
@@ -383,24 +375,26 @@ Tensor ReduceSum::compute(const std::vector<Tensor> &inputs) const {
 
   if (argShape.size() == 1) {
     // use 1d
-
-    std::vector<size_t> newShape = {1};
-    Tensor res(newShape);
-
     unsigned int N = argShape[0];
     unsigned int work_group_size = 32;
+    unsigned int partialSumsSize = (N % work_group_size == 0)
+                                       ? (N / work_group_size)
+                                       : (N / work_group_size + 1);
 
-    unsigned int bufferSize = nextPowerOf2(N);
-    gpu::gpu_mem_32f buffer;
-    buffer.resizeN(bufferSize);
+    gpu::gpu_mem_32f partialSums;
+    partialSums.resizeN(partialSumsSize);
 
     unsigned int work_size =
-        (bufferSize + work_group_size - 1) / work_group_size * work_group_size;
+        (N + work_group_size - 1) / work_group_size * work_group_size;
     kernels.at("reduce_sum_1D")
         .exec(gpu::WorkSize(work_group_size, work_size), arg1.getGPUBuffer(),
-              buffer, res.getGPUBuffer(), N, bufferSize);
+              partialSums, N);
 
-    return res;
+    std::vector<float> sums(partialSumsSize); // FIXME
+    partialSums.readN(sums.data(), partialSumsSize);
+    float resSum = std::accumulate(sums.begin(), sums.end(), 0.0f);
+
+    return Tensor(resSum);
   } else {
     std::vector<size_t> resShape =
         std::vector<size_t>(argShape.begin() + 1, argShape.end());

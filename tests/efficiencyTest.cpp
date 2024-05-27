@@ -267,13 +267,9 @@ TEST_F(EfficiencyTests, LargeNumberOfElements1D) {
 
   std::random_device rd;
   std::mt19937 eng(rd());
-  // std::uniform_real_distribution<float> distr(minValue, maxValue);
-  // fot better debugging (switch back when all is ok)
-  std::uniform_int_distribution<int> distr(static_cast<int>(minValue),
-                                           static_cast<int>(maxValue));
+  std::uniform_real_distribution<float> distr(minValue, maxValue);
 
-  // auto gen = [&]() { return distr(eng); };
-  auto gen = [&]() { return static_cast<float>(distr(eng)); };
+  auto gen = [&]() { return distr(eng); };
 
   const size_t numElements = 100;
   std::vector<size_t> shape = {numElements};
