@@ -9,8 +9,13 @@ __kernel void reduce_sum_1D(__global const float *input, __global float *buffer,
   buffer[global_i] = (global_i < numElements) ? input[global_i] : 0;
   barrier(CLK_LOCAL_MEM_FENCE);
 
-  // printf("buffer[%ld] = %f\n", global_i, buffer[global_i]);
   for (unsigned int s = bufferSize / 2; s > 0; s >>= 1) {
+    if (global_i == 0) {
+      printf("-----------------------------------------------------------------"
+             "-\n");
+      printf("s = %d\n", s);
+    }
+    printf("buffer[%ld] = %f\n", global_i, buffer[global_i]);
 
     if (global_i < s) {
       buffer[global_i] += buffer[global_i + s];
