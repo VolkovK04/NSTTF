@@ -388,9 +388,9 @@ Tensor ReduceSum::compute(const std::vector<Tensor> &inputs) const {
     Tensor res(newShape);
 
     unsigned int N = argShape[0];
-    unsigned int work_group_size = 32;
 
     unsigned int bufferSize = nextPowerOf2(N);
+    unsigned int work_group_size = bufferSize;
     gpu::gpu_mem_32f buffer;
     buffer.resizeN(bufferSize);
 
