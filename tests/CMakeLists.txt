@@ -3,7 +3,7 @@ set(EFFICIENCY_TEST_BINARY ${PROJECT_NAME}_efficiency_test)
 
 set(TEST_SOURCES 
   main.cpp 
-  # gpuTests.cpp 
+  # gpuTests.cpp # deprecated
   functionsTests.cpp 
   graphTests.cpp 
   tensorTests.cpp 
@@ -11,6 +11,7 @@ set(TEST_SOURCES
   functionalTests.cpp
   derivativeTests.cpp
   dataLoaderTest.cpp
+  neuralNetworkTest.cpp
 )
 
 set(EFFICIENCY_TEST_SOURCES

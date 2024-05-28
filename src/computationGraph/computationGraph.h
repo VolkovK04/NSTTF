@@ -37,6 +37,10 @@ public:
                                  const std::vector<AbstractNode *> &nodes,
                                  const std::string &name, bool output);
 
+  NodeInterface
+  AddOperationNode(const std::string &operationName,
+                   const std::vector<NodeInterface> &nodeInterfaces);
+
   const std::unordered_map<std::string, AbstractNode *> &getNodeMap() const {
     return nodeMap;
   }
