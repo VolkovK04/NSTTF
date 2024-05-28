@@ -1,39 +1,13 @@
 #include "gtest/gtest.h"
 
-#include <CL/cl.h>
-
-#include <libgpu/context.h>
-#include <libgpu/shared_device_buffer.h>
-#include <libutils/misc.h>
-
+#include <dataLoader/dataLoader.h>
 #include <operations/function.h>
 #include <tensor/tensor.h>
-
-#include <dataLoader/dataLoader.h>
 #include <vector>
 
 using namespace NSTTF;
 
-using namespace NSTTF;
-class DataLoaderTest : public ::testing::Test {
-protected:
-  gpu::Context context;
-  virtual void SetUp() {
-    // Initialize OpenCL context, command queue, and other resources
-    // This code is specific to your OpenCL setup and platform
-
-    std::vector<gpu::Device> devices = gpu::enumDevices();
-
-    gpu::Device device = devices[devices.size() - 1];
-
-    context.init(device.device_id_opencl);
-    context.activate();
-
-    init();
-  }
-};
-
-TEST_F(DataLoaderTest, baseSizeCheck) {
+TEST(DataLoaderTest, baseSizeCheck) {
   // Load MNIST data;
   MNIST_DataLoader train_data_loader("train");
   MNIST_DataLoader test_data_loader("test");
@@ -44,7 +18,7 @@ TEST_F(DataLoaderTest, baseSizeCheck) {
   EXPECT_EQ(10000, test_data_loader.get_labels().size());
 }
 
-TEST_F(DataLoaderTest, operator) {
+TEST(DataLoaderTest, operator) {
   // Load MNIST data;
   MNIST_DataLoader train_data_loader("train");
   MNIST_DataLoader test_data_loader("test");
