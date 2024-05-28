@@ -28,6 +28,18 @@ NodeInterface ComputationGraph::AddOperationNode(
   return NodeInterface(node, *this);
 }
 
+NodeInterface ComputationGraph::AddOperationNode(
+    const std::string &operationName,
+    const std::vector<NodeInterface> &nodeInterfaces) {
+  size_t size = nodeInterfaces.size();
+  std::vector<AbstractNode *> nodes(size);
+  for (size_t i = 0; i < size; ++i) {
+    nodes[i] = nodeInterfaces[i].node;
+  }
+  std::string name = NodeInterface::createName();
+  return AddOperationNode(operationName, nodes, name);
+}
+
 void ComputationGraph::renameNode(const std::string &oldName,
                                   const std::string &newName) {
   auto node = nodeMap.at(oldName);

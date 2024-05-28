@@ -53,6 +53,8 @@ public:
 };
 
 class NodeInterface {
+  friend class ComputationGraph;
+
 private:
   AbstractNode *node;
   ComputationGraph &graph;
