@@ -4,12 +4,14 @@
 #include <random>
 
 namespace NSTTF {
+std::mt19937 generator;
+
+void setSeed(int seed) { generator.seed(seed); }
+
 std::vector<float> generateUniformRandomVector(size_t n, float minValue,
                                                float maxValue) {
   std::vector<float> result(n);
 
-  std::random_device rd;
-  std::mt19937 generator(rd());
   std::uniform_real_distribution<float> distribution(minValue, maxValue);
   for (size_t i = 0; i < n; ++i) {
     result[i] = distribution(generator);
@@ -38,8 +40,6 @@ size_t getRandomIndex(size_t n) {
     throw std::out_of_range("Count = 0");
   }
 
-  std::random_device rd;
-  std::mt19937 generator(rd());
   std::uniform_int_distribution<size_t> distribution(0, n - 1);
 
   return distribution(generator);
