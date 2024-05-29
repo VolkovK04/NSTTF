@@ -18,7 +18,7 @@ public:
   MNIST_pipeline();
   // return accuracy
   float testing();
-  float training(int epochs, bool verbose = false);
+  float training(size_t epochs, bool verbose = false);
   float training(bool verbose = false);
   void forward(Tensor data, Tensor expected);
   void backward();

@@ -15,8 +15,7 @@ GraphExecutorWG createExecutor() {
   NodeInterface input = g.AddInputNode("input");
   NodeInterface W = g.AddInputNode("W");
   NodeInterface b = g.AddInputNode("b");
-  NodeInterface tmp1 = NodeInterface::MatrixMult(W, input);
-  NodeInterface result = tmp1 + b;
+  NodeInterface result = NodeInterface::MatrixMult(W, input) + b;
   result.setName("result");
   result.setOutput();
 
@@ -68,7 +67,7 @@ float MNIST_pipeline::testing() {
   return (float)matches / datasetSize;
 }
 
-float MNIST_pipeline::training(int epochs, bool verbose) {
+float MNIST_pipeline::training(size_t epochs, bool verbose) {
   size_t datasetSize = trainDataLoader.size();
   int matches = 0;
   for (size_t epochNumber = 0; epochNumber < epochs; ++epochNumber) {

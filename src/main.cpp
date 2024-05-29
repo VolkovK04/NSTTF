@@ -28,9 +28,9 @@ int main() {
   init();
 
   MNIST_pipeline nn;
-  nn.setLearningRate(0.003);
+  nn.setLearningRate(0.1);
   for (size_t i = 0; i < 100; ++i) {
-    float acc = nn.training(100);
+    float acc = nn.training((size_t)100);
     std::cout << acc << std::endl;
   }
   std::cout << "Final accuracy on tests: " << nn.testing() << std::endl;
