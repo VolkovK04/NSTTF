@@ -2,7 +2,6 @@
 
 #include <compiler/instruction.h>
 #include <computationGraph/node.h>
-#include <map>
 #include <tensor/tensor.h>
 #include <vector>
 
@@ -33,6 +32,7 @@ protected:
   std::vector<std::string> inputs;
 
 public:
+  GraphExecutorWG() = default;
   GraphExecutorWG(const std::vector<AbstractInstruction *> &instructions,
                   const std::vector<std::string> &outputs,
                   const std::vector<std::string> &inputs,

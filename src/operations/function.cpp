@@ -38,7 +38,7 @@ std::unordered_map<std::string, std::shared_ptr<Function>> initFunctions() {
   return functions_;
 }
 
-template <typename T> // TODO check
+template <typename T> // TODO test
 void registerFunction(const std::string &name) {
   static_assert(std::is_base_of<Function, T>::value,
                 "T must be derived from Function");
@@ -255,7 +255,7 @@ Tensor MatrixMultiplication::compute(const std::vector<Tensor> &inputs) const {
   std::vector<size_t> arg2Shape = arg2.getShape();
   size_t shapeSize = arg1Shape.size();
 
-  if (shapeSize < 2) {
+  if (arg1Shape.size() < 2 || arg2Shape.size() < 2) {
     throw std::runtime_error("Wrong matrix shape");
   }
 

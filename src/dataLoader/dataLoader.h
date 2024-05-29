@@ -25,6 +25,8 @@ class MNIST_DataLoader : public DataLoader {
 public:
   MNIST_DataLoader(const std::string &type);
   ~MNIST_DataLoader() { delete dataset; }
+
+  // TensorMap{{"data", data_tensor}, {"label", lable_tensor}};
   TensorMap operator[](size_t index) const override;
   size_t size() const override;
 

@@ -5,26 +5,27 @@
 #include <executor/graphExecutor.h>
 
 namespace NSTTF {
-class NN {
-public:
-  virtual void forward(Tensor data) = 0;
-  virtual void backward() = 0;
-};
-
-class NN_MNIST : public NN {
+class MNIST_pipeline {
 private:
-  float learningRate;
-  GraphExecutor executor;
+  float learningRate = 0;
   MNIST_DataLoader trainDataLoader;
   MNIST_DataLoader testDataLoader;
+  GraphExecutorWG executor;
   TensorMap params;
   TensorMap result;
 
 public:
-  NN_MNIST();
-  void forward(Tensor data) override;
-  void backward() override;
+  MNIST_pipeline();
+  // return accuracy
+  float testing();
+  float training(int epochs, bool verbose = false);
+  float training(bool verbose = false);
+  void forward(Tensor data, Tensor expected);
+  void backward();
   void setLearningRate(float newLearningRate);
+  // use after forward
+  Tensor getPrediction() const;
+  // use after forward
   float getLoss() const;
 };
 

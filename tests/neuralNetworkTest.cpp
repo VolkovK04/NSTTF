@@ -7,7 +7,6 @@
 #include <libutils/misc.h>
 #include <operations/function.h>
 
-#include <neuralNetwork/SGD.h>
 #include <neuralNetwork/neuralNetwork.h>
 
 using namespace NSTTF;
@@ -30,7 +29,4 @@ protected:
   }
 };
 
-TEST_F(NNTests, initTest) {
-  NN_MNIST nn;
-  //   nn.setLearningRate(0.1);
-}
+TEST_F(NNTests, initTest) { MNIST_pipeline nn; }

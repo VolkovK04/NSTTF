@@ -34,7 +34,7 @@ TensorMap MNIST_DataLoader::operator[](size_t index) const {
   Tensor lable_tensor(lable_vector, {10});
 
   TensorMap tensorMap =
-      TensorMap{{"data", data_tensor}, {"lable", lable_tensor}};
+      TensorMap{{"data", data_tensor}, {"label", lable_tensor}};
 
   return tensorMap;
 }
